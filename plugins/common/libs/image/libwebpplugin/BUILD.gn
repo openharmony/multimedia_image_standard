@@ -54,7 +54,7 @@ ohos_shared_library("webpplugin") {
     include_dirs += [ "//utils/native/base/include" ]
 
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_ohos",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_ohos",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
       "//utils/native/base:utils",
     ]

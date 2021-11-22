@@ -92,7 +92,7 @@ ohos_shared_library("pixelconvertadapter") {
     defines = image_decode_windows_defines
     deps = [
       "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_windows",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_windows",
       "//foundation/communication/ipc/utils/include",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//utils/jni:utils_jnikit_win",
@@ -100,12 +100,12 @@ ohos_shared_library("pixelconvertadapter") {
   } else if (use_clang_mac) {
     defines = image_decode_mac_defines
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_mac",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_mac",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
     ]
   } else {
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_ohos",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_ohos",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//utils/native/base:utils",
     ]
@@ -125,18 +125,18 @@ ohos_static_library("pixelconvertadapter_static") {
   if (use_mingw_win) {
     defines = image_decode_windows_defines
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_windows",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_windows",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
     ]
   } else if (use_clang_mac) {
     defines = image_decode_mac_defines
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_mac",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_mac",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
     ]
   } else {
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/skia:ace_skia_ohos",
+      "//foundation/ace/ace_engine/build/external_config/flutter/skia:ace_skia_ohos",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//utils/native/base:utils",
     ]

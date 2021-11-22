@@ -44,7 +44,7 @@ ohos_shared_library("jpegplugin") {
       "//third_party/flutter/skia/third_party/libjpeg-turbo",
     ]
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/libjpeg:ace_libjpeg",
+      "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg",
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_static",
       "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager_static",
@@ -56,7 +56,7 @@ ohos_shared_library("jpegplugin") {
       "//third_party/flutter/skia/third_party/libjpeg-turbo",
     ]
     deps = [
-      "//foundation/ace/ace_engine/build/third_party/flutter/libjpeg:ace_libjpeg",
+      "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg",
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_static",
       "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager_static",
@@ -68,7 +68,7 @@ ohos_shared_library("jpegplugin") {
     sources += [ "//foundation/multimedia/image_standard/plugins/common/libs/image/libjpegplugin/src/jpeg_encoder.cpp" ]
     deps = [
       #"//third_party/flutter/skia/third_party/libjpeg-turbo:libjpeg",
-      "//foundation/ace/ace_engine/build/third_party/flutter/libjpeg:ace_libjpeg",
+      "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg",
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
       "//utils/native/base:utils",
@@ -76,7 +76,7 @@ ohos_shared_library("jpegplugin") {
 
     if (DUAL_ADAPTER) {
     } else {
-      deps += [ "//foundation/ace/ace_engine/build/third_party/flutter/libjpeg:ace_libjpeg" ]
+      deps += [ "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg" ]
       include_dirs += [ "//third_party/flutter/skia/third_party/libjpeg-turbo" ]
     }
 
