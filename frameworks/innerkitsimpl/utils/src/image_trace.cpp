@@ -27,7 +27,7 @@ ImageTrace::ImageTrace(const std::string &title) : title_(title)
 
 ImageTrace::~ImageTrace()
 {
-    FinishTrace(BYTRACE_TAG_ZIMAGE, title_);
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
 }
 
 ImageTrace::ImageTrace(const char *fmt, ...)
