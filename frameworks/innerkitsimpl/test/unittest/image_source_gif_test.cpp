@@ -19,6 +19,7 @@
 #include "hilog/log.h"
 #include "image_packer.h"
 #include "image_source.h"
+#include "image_source_util.h"
 #include "image_type.h"
 #include "image_utils.h"
 #include "incremental_pixel_map.h"
@@ -40,8 +41,8 @@ bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t buffe
 
 class ImageSourceGifTest : public testing::Test {
 public:
-    ImageSourceGifTest(){};
-    ~ImageSourceGifTest(){};
+    ImageSourceGifTest() {};
+    ~ImageSourceGifTest() {};
 };
 
 /**
@@ -59,7 +60,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode001, TestSize.Level3)
     SourceOptions opts;
     opts.formatHint = "image/gif";
     std::unique_ptr<ImageSource> imageSource =
-        ImageSource::CreateImageSource("/sdcard/multimedia/image/test.gif", opts, errorCode);
+        ImageSource::CreateImageSource("/data/local/tmp/image/test.gif", opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
     /**
@@ -119,7 +120,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode002, TestSize.Level3)
     uint32_t errorCode = 0;
     SourceOptions opts;
     std::unique_ptr<ImageSource> imageSource =
-        ImageSource::CreateImageSource("/sdcard/multimedia/image/test.gif", opts, errorCode);
+        ImageSource::CreateImageSource("/data/local/tmp/image/test.gif", opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
     /**
@@ -146,7 +147,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode003, TestSize.Level3)
     SourceOptions opts;
     opts.formatHint = "image/gif";
     std::unique_ptr<ImageSource> imageSource =
-        ImageSource::CreateImageSource("/sdcard/multimedia/image/gif/test.gif", opts, errorCode);
+        ImageSource::CreateImageSource("/data/local/tmp/image/gif/test.gif", opts, errorCode);
     ASSERT_EQ(errorCode, ERR_IMAGE_SOURCE_DATA);
     ASSERT_EQ(imageSource.get(), nullptr);
 }
@@ -163,11 +164,11 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode004, TestSize.Level3)
      * @tc.expected: step1. create image source success.
      */
     size_t bufferSize = 0;
-    bool ret = ImageUtils::GetFileSize("/sdcard/multimedia/image/test.gif", bufferSize);
+    bool ret = ImageUtils::GetFileSize("/data/local/tmp/image/test.gif", bufferSize);
     ASSERT_EQ(ret, true);
     uint8_t *buffer = (uint8_t *)malloc(bufferSize);
     ASSERT_NE(buffer, nullptr);
-    ret = ReadFileToBuffer("/sdcard/multimedia/image/test.gif", buffer, bufferSize);
+    ret = ReadFileToBuffer("/data/local/tmp/image/test.gif", buffer, bufferSize);
     ASSERT_EQ(ret, true);
     uint32_t errorCode = 0;
     SourceOptions opts;
@@ -216,7 +217,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode005, TestSize.Level3)
      * @tc.expected: step1. create image source success.
      */
     std::unique_ptr<std::fstream> fs = std::make_unique<std::fstream>();
-    fs->open("/sdcard/multimedia/image/test.gif", std::fstream::binary | std::fstream::in);
+    fs->open("/data/local/tmp/image/test.gif", std::fstream::binary | std::fstream::in);
     bool isOpen = fs->is_open();
     ASSERT_EQ(isOpen, true);
     uint32_t errorCode = 0;
@@ -266,7 +267,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode006, TestSize.Level3)
     SourceOptions opts;
     opts.formatHint = "image/gif";
     std::unique_ptr<ImageSource> imageSource =
-        ImageSource::CreateImageSource("/sdcard/multimedia/image/moving_test.gif", opts, errorCode);
+        ImageSource::CreateImageSource("/data/local/tmp/image/moving_test.gif", opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
     /**
@@ -325,11 +326,11 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode007, TestSize.Level3)
      * @tc.expected: step1. create image source success.
      */
     size_t bufferSize = 0;
-    bool fileRet = ImageUtils::GetFileSize("/sdcard/multimedia/image/moving_test.gif", bufferSize);
+    bool fileRet = ImageUtils::GetFileSize("/data/local/tmp/image/moving_test.gif", bufferSize);
     ASSERT_EQ(fileRet, true);
     uint8_t *buffer = (uint8_t *)malloc(bufferSize);
     ASSERT_NE(buffer, nullptr);
-    fileRet = ReadFileToBuffer("/sdcard/multimedia/image/moving_test.gif", buffer, bufferSize);
+    fileRet = ReadFileToBuffer("/data/local/tmp/image/moving_test.gif", buffer, bufferSize);
     ASSERT_EQ(fileRet, true);
     uint32_t errorCode = 0;
     IncrementalSourceOptions incOpts;

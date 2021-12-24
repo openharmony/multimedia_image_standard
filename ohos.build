@@ -27,9 +27,17 @@
             ],
             "header_base": "//foundation/multimedia/image_standard/interfaces/innerkits/include"
           },
-          "name": "//foundation/multimedia/image_standard/interfaces/innerkits:image"
+          "name": "//foundation/multimedia/image_standard/interfaces/innerkits:image_native"
+        },
+        {
+          "header": {
+            "header_files": [
+              "pimage_source_napi.h",
+\            ],
+            "header_base": "//foundation/multimedia/image_standard/interfaces/kits/js/common/includ"
+          },
+          "name": "//foundation/multimedia/image_standard/interfaces/kits/js/common/include:image"
         }
-        
       ],
       "system_capabilities":[
         "SystemCapability.Multimedia.Image"

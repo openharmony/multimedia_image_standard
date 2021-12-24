@@ -17,9 +17,14 @@
 #ifndef IMAGE_SOURCE_UTIL_H
 #define IMAGE_SOURCE_UTIL_H
 #include <fstream>
+#include "image_source.h"
 #include "pixel_map.h"
 
+namespace OHOS {
+namespace ImageSourceUtil {
 int64_t PackImage(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
+int64_t PackImage(std::unique_ptr<OHOS::Media::ImageSource> imageSource);
 bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize);
-
+}
+}
 #endif // IMAGE_SOURCE_UTIL_H

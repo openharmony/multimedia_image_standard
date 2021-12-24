@@ -50,9 +50,11 @@ public:
     uint32_t Decode(uint32_t index, DecodeContext &context) override;
     uint32_t GetImageSize(uint32_t index, PlSize &size) override;
     uint32_t PromoteIncrementalDecode(uint32_t index, ProgDecodeContext &context) override;
-
+    uint32_t GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value) override;
+    uint32_t GetImagePropertyString(uint32_t index, const std::string &key, std::string &value) override;
 private:
     DISALLOW_COPY_AND_MOVE(JpegDecoder);
+    int ExifPrintMethod();
     J_COLOR_SPACE GetDecodeFormat(PlPixelFormat format, PlPixelFormat &outputFormat);
     void CreateHwDecompressor();
     uint32_t DoSwDecode(DecodeContext &context);

@@ -19,6 +19,7 @@
 #include "hilog/log.h"
 #include "image_packer.h"
 #include "image_source.h"
+#include "image_source_util.h"
 #include "image_type.h"
 #include "image_utils.h"
 #include "incremental_pixel_map.h"
@@ -34,8 +35,8 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceWebpTest"
 };
 static constexpr uint32_t DEFAULT_DELAY_UTIME = 10000;  // 10 ms.
-static const std::string IMAGE_INPUT_WEBP_PATH = "/sdcard/multimedia/image/test_large.webp";
-static const std::string IMAGE_INPUT_HW_JPEG_PATH = "/sdcard/multimedia/image/test_hw.jpg";
+static const std::string IMAGE_INPUT_WEBP_PATH = "/data/local/tmp/image/test_large.webp";
+static const std::string IMAGE_INPUT_HW_JPEG_PATH = "/data/local/tmp/image/test_hw.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_FILE_PATH = "/data/test/test_webp_file.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_BUFFER_PATH = "/data/test/test_webp_buffer.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_ISTREAM_PATH = "/data/test/test_webp_istream.jpg";
@@ -52,8 +53,8 @@ bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t buffe
 
 class ImageSourceWebpTest : public testing::Test {
 public:
-    ImageSourceWebpTest(){};
-    ~ImageSourceWebpTest(){};
+    ImageSourceWebpTest() {};
+    ~ImageSourceWebpTest() {};
 };
 
 /**
@@ -508,7 +509,7 @@ HWTEST_F(ImageSourceWebpTest, WebpImageCrop001, TestSize.Level3)
      * @tc.expected: step1. create webp image source success.
      */
     std::unique_ptr<std::fstream> fs = std::make_unique<std::fstream>();
-    fs->open("/sdcard/multimedia/image/test_large.webp", std::fstream::binary | std::fstream::in);
+    fs->open("/data/local/tmp/image/test_large.webp", std::fstream::binary | std::fstream::in);
     bool isOpen = fs->is_open();
     ASSERT_EQ(isOpen, true);
     uint32_t errorCode = 0;

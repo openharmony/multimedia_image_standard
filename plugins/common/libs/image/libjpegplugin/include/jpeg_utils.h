@@ -19,6 +19,7 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <cstdint>
+#include <string>
 #include "hilog/log.h"
 #include "input_data_stream.h"
 #include "jerror.h"
@@ -32,6 +33,7 @@ static constexpr uint8_t SET_JUMP_VALUE = 1;
 static constexpr uint8_t RW_LINE_NUM = 1;
 static constexpr uint16_t JPEG_BUFFER_SIZE = 1024;
 static constexpr uint32_t JPEG_IMAGE_NUM = 1;
+static constexpr uint32_t PRINTF_SUCCESS = 0;
 
 // redefine jpeg error manager struct.
 struct ErrorMgr : jpeg_error_mgr {
@@ -74,6 +76,7 @@ void TermSrcStream(j_decompress_ptr dinfo);
 void InitDstStream(j_compress_ptr cinfo);
 boolean EmptyOutputBuffer(j_compress_ptr cinfo);
 void TermDstStream(j_compress_ptr cinfo);
+std::string DoubleToString(double num);
 } // namespace ImagePlugin
 } // namespace OHOS
 

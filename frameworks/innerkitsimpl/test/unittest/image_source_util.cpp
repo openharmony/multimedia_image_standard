@@ -27,15 +27,22 @@
 
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::ImageSourceUtil;
 
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = { LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceUtil" };
+namespace OHOS {
+namespace ImageSourceUtil {
+constexpr uint32_t NUM_1 = 1;
+constexpr uint32_t NUM_100 = 100;
+constexpr int64_t BUFFER_SIZE = 2 * 1024 * 1024;
+
 int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
 {
     ImagePacker imagePacker;
     PackOption option;
     option.format = "image/jpeg";
-    option.quality = 100;
-    option.numberHint = 1;
+    option.quality = NUM_100;
+    option.numberHint = NUM_1;
     std::set<std::string> formats;
     uint32_t ret = imagePacker.GetSupportedFormats(formats);
     if (ret != SUCCESS) {
@@ -50,6 +57,32 @@ int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMa
     return packedSize;
 }
 
+int64_t PackImage(std::unique_ptr<ImageSource> imageSource)
+{
+    ImagePacker imagePacker;
+    PackOption option;
+    option.format = "image/jpeg";
+    option.quality = NUM_100;
+    option.numberHint = 1;
+    std::set<std::string> formats;
+    uint32_t ret = imagePacker.GetSupportedFormats(formats);
+    if (ret != SUCCESS) {
+        HiLog::Error(LABEL_TEST, "image packer get supported format failed, ret=%{public}u.", ret);
+        return 0;
+    }
+    int64_t bufferSize = BUFFER_SIZE;
+    uint8_t *resultBuffer = (uint8_t *)malloc(bufferSize);
+    if (resultBuffer == nullptr) {
+        HiLog::Error(LABEL_TEST, "image packer malloc buffer failed.");
+        return 0;
+    }
+    imagePacker.StartPacking(resultBuffer, bufferSize, option);
+    imagePacker.AddImage(*imageSource);
+    int64_t packedSize = 0;
+    imagePacker.FinalizePacking(packedSize);
+    HiLog::Debug(LABEL_TEST, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
+    return packedSize;
+}
 bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize)
 {
     std::string realPath;
@@ -80,3 +113,5 @@ bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t buffe
     fclose(fp);
     return true;
 }
+}
+} // namespace

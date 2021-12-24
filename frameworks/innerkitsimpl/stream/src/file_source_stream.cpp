@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include <cerrno>
 #include "directory_ex.h"
 #include "file_source_stream.h"
 #include "image_log.h"
@@ -50,7 +49,27 @@ unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const string &
     }
     FILE *filePtr = fopen(realPath.c_str(), "rb");
     if (filePtr == nullptr) {
-        IMAGE_LOGE("[FileSourceStream]open file fail, error:%{public}s.", strerror(errno));
+        IMAGE_LOGE("[FileSourceStream]open file fail.");
+        return nullptr;
+    }
+    long offset = ftell(filePtr);
+    if (offset < 0) {
+        IMAGE_LOGE("[FileSourceStream]get the position fail.");
+        fclose(filePtr);
+        return nullptr;
+    }
+    return (unique_ptr<FileSourceStream>(new FileSourceStream(filePtr, size, offset, offset)));
+}
+unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const int fd)
+{
+    size_t size = 0;
+    if (!ImageUtils::GetFileSize(fd, size)) {
+        IMAGE_LOGE("[FileSourceStream]get the file size fail.");
+        return nullptr;
+    }
+    FILE *filePtr = fdopen(fd, "rb");
+    if (filePtr == nullptr) {
+        IMAGE_LOGE("[FileSourceStream]open file fail.");
         return nullptr;
     }
     long offset = ftell(filePtr);

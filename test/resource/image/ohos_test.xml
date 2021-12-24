@@ -16,56 +16,56 @@
 <configuration ver="2.0">
     <target name="test_imagecodec_java_maple">
         <preparer>
-            <option name="push" value="images/test.png -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.jpg -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.gif -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_exif.jpg -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_hw.jpg -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.webp -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="txts/colors.txt -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.bmp -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.9.png -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_large.webp -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/moving_test.gif -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.dng -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.arw -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.cr2 -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.nrw -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.pef -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.raf -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.rw2 -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.wbmp -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/hasNoExif.jpg -> /sdcard/multimedia/image" src="res"/>
+            <option name="push" value="images/test.png -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.gif -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_exif.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_hw.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.webp -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="txts/colors.txt -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.bmp -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.9.png -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_large.webp -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/moving_test.gif -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.dng -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.arw -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.cr2 -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.nrw -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.pef -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.raf -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.rw2 -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.wbmp -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/hasNoExif.jpg -> /data/local/tmp/image" src="res"/>
             <option name="push" value="multimedia/multimedia_image/libimage_ndk_test_jni.z.so -> /system/lib64" src="out"/>
             <option name="push" value="multimedia/multimedia_image/libimage_ndk_test_jni.z.so -> /system/lib" src="out"/>
         </preparer>
     </target>
     <target name="imagesourcetest">
         <preparer>
-            <option name="push" value="images/test.png -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.jpg -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.gif -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/moving_test.gif -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_hw.jpg -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_exif.jpg -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_large.webp -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.bmp -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.9.png -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.dng -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.arw -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.cr2 -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.nrw -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.pef -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.raf -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.rw2 -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.wbmp -> /sdcard/multimedia/image" src="res"/>
+            <option name="push" value="images/test.png -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.gif -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/moving_test.gif -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_hw.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_exif.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_large.webp -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.bmp -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.9.png -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.dng -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.arw -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.cr2 -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.nrw -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.pef -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.raf -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.rw2 -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.wbmp -> /data/local/tmp/image" src="res"/>
         </preparer>
     </target>
     <target name="test_imagesystemadapter_java_maple">
         <preparer>
-            <option name="push" value="images/test.png -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test.gif -> /sdcard/multimedia/image" src="res"/>
-            <option name="push" value="images/test_large.webp -> /sdcard/multimedia/image" src="res"/>
+            <option name="push" value="images/test.png -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.gif -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test_large.webp -> /data/local/tmp/image" src="res"/>
         </preparer>
     </target>
     <target name="pixlmapndktest">
