@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 #include "pixel_map_napi.h"
 #include "media_errors.h"
 #include "hilog/log.h"
@@ -231,7 +230,6 @@ STATIC_COMPLETE_FUNC(EmptyResult)
 
     CommonCallbackRoutine(env, context, result);
 }
-
 
 STATIC_COMPLETE_FUNC(Uint32Result)
 {
@@ -917,7 +915,7 @@ napi_value PixelMapNapi::Release(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, pixelMapNapi), result, HiLog::Error(LABEL, "fail to unwrap context"));
 
-    pixelMapNapi->nativePixelMap_= nullptr;
+    pixelMapNapi->nativePixelMap_ = nullptr;
 
     return result;
 }

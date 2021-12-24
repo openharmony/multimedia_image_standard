@@ -573,16 +573,19 @@ static void CreatePixelMapExecute(napi_env env, void *data)
     HiLog::Debug(LABEL, "CreatePixelMapExecute IN");
     uint32_t errorCode = 0;
     auto context = static_cast<ImageSourceAsyncContext*>(data);
-    if (context == nullptr)
+    if (context == nullptr) {
         HiLog::Error(LABEL, "empty context");
+    }
 
-    if (context->rImageSource == nullptr)
+    if (context->rImageSource == nullptr) {
         HiLog::Error(LABEL, "empty context rImageSource");
+    }
 
     context->rPixelMap = context->rImageSource->CreatePixelMap(context->decodeOpts, errorCode);
 
-    if (context->rPixelMap == nullptr)
+    if (context->rPixelMap == nullptr) {
         HiLog::Error(LABEL, "empty context rPixelMap");
+    }
     HiLog::Error(LABEL, "CreatePixelMap out");
     if (IMG_NOT_NULL(context->rPixelMap)) {
         context->status = SUCCESS;
@@ -633,23 +636,26 @@ napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info
         nullptr, HiLog::Error(LABEL, "empty native rImageSource"));
 
     if (argCount == NUM_2) {
-        if (ImageNapiUtils::getType(env, argValue[NUM_1]) == napi_function)
+        if (ImageNapiUtils::getType(env, argValue[NUM_1]) == napi_function) {
             napi_create_reference(env, argValue[NUM_1], refCount, &asyncContext->callbackRef);
+        }
         if (ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_object) {
             IMG_NAPI_CHECK_RET_D(ParseDecodeOptions(env, argValue[NUM_0], &(asyncContext->decodeOpts)),
                 nullptr, HiLog::Error(LABEL, "DecodeOptions mismatch"));
         }
     } else if (argCount == NUM_3) {
-        if (ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_number)
+        if (ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_number) {
             napi_get_value_uint32(env, argValue[NUM_0], &asyncContext->index);
+        }
 
         if (ImageNapiUtils::getType(env, argValue[NUM_1]) == napi_object) {
             IMG_NAPI_CHECK_RET_D(ParseDecodeOptions(env, argValue[NUM_1], &(asyncContext->decodeOpts)),
                 nullptr, HiLog::Error(LABEL, "DecodeOptions mismatch"));
         }
 
-        if (ImageNapiUtils::getType(env, argValue[NUM_2]) == napi_function)
+        if (ImageNapiUtils::getType(env, argValue[NUM_2]) == napi_function) {
             napi_create_reference(env, argValue[NUM_2], refCount, &asyncContext->callbackRef);
+        }
 
     } else {
         HiLog::Error(LABEL, "argCount missmatch");
