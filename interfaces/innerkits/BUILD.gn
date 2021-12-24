@@ -66,18 +66,18 @@ ohos_copy("image_declaration") {
 ohos_shared_library("image") {
   public_configs = [ ":image_external_config" ]
   sources = [
-    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_source_napi.cpp",
-    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_packer_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_napi_utils.cpp",
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_packer_napi.cpp",
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_source_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/native_module_ohos_image.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/pixel_map_napi.cpp",
   ]
   deps = [
+    ":image_native",
     "//foundation/ace/napi:ace_napi",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
     "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-    ":image_native",
     "//utils/native/base:utils",
   ]
 
@@ -180,18 +180,18 @@ ohos_static_library("image_static_napi") {
   public_configs = [ ":image_external_config" ]
 
   sources = [
-    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_source_napi.cpp",
-    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_packer_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_napi_utils.cpp",
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_packer_napi.cpp",
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_source_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/native_module_ohos_image.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/pixel_map_napi.cpp",
   ]
   deps = [
+    ":image_native",
     "//foundation/ace/napi:ace_napi",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
     "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-    ":image_native",
     "//utils/native/base:utils",
   ]
   subsystem_name = "multimedia"

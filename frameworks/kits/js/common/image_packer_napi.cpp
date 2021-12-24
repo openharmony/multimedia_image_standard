@@ -58,7 +58,6 @@ struct PackingOption {
     uint8_t quality = 100;
 };
 
-
 ImagePackerNapi::ImagePackerNapi()
     :env_(nullptr), wrapper_(nullptr)
 {}
@@ -264,7 +263,7 @@ static bool parsePackOptions(napi_env env, napi_value root, PackOption* opts)
     char buffer[SIZE];
     napi_value property = nullptr;
     bool present = false;
-    size_t res;
+    size_t res = 0;
     uint32_t len = 0;
     napi_value stringItem = nullptr;
     int32_t quality = 0;

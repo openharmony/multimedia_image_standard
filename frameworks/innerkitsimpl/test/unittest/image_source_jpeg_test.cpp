@@ -228,7 +228,7 @@ HWTEST_F(ImageSourceJpegTest, TC035, TestSize.Level3)
 }
 /**
  * @tc.name: TC036
- * @tc.desc: Test Area decoding,configure area 
+ * @tc.desc: Test Area decoding,configure area
  * @tc.type: FUNC
  */
 HWTEST_F(ImageSourceJpegTest, TC036, TestSize.Level3)
@@ -447,12 +447,11 @@ HWTEST_F(ImageSourceJpegTest, TC057, TestSize.Level3)
      */
     int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_JPEG_ISTREAM_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
-   
-    GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC057 end";
 
+    GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC057 end";
 }
-/**                                    
- * @tc.name: TC059 
+/**
+ * @tc.name: TC059
  * @tc.desc: Test AddImage ImageSource
  * @tc.type: FUNC
  */
@@ -468,7 +467,7 @@ HWTEST_F(ImageSourceJpegTest, TC059, TestSize.Level3)
     opts.formatHint = "image/jpeg";
     std::unique_ptr<ImageSource> imageSource = ImageSource::CreateImageSource(IMAGE_INPUT_JPEG_PATH, opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
-    ASSERT_NE(imageSource.get(), nullptr); 
+    ASSERT_NE(imageSource.get(), nullptr);
 
     uint32_t index = 0;
     DecodeOptions optsPixel;
@@ -478,7 +477,7 @@ HWTEST_F(ImageSourceJpegTest, TC059, TestSize.Level3)
     imagePacker.AddImage(*imageSource);
     ASSERT_NE(pixelMap.get(), nullptr);
     GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC059 end";
-} 
+}
 /**
  * @tc.name: TC061
  * @tc.desc: Test GetSupportedFormats
@@ -496,7 +495,7 @@ HWTEST_F(ImageSourceJpegTest, TC061, TestSize.Level3)
     opts.formatHint = "image/jpeg";
     std::unique_ptr<ImageSource> imageSource = ImageSource::CreateImageSource(IMAGE_INPUT_JPEG_PATH, opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
-    ASSERT_NE(imageSource.get(), nullptr); 
+    ASSERT_NE(imageSource.get(), nullptr);
     std::set<std::string> formats;
     uint32_t ret = imageSource->GetSupportedFormats(formats);
     ASSERT_EQ(ret, SUCCESS);
