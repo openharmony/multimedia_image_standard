@@ -54,20 +54,22 @@ ohos_unittest("imagepixelmapparceltest") {
   sources = [ "./unittest/image_pixel_map_parcel_test.cpp" ]
 
   deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-#    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
-#    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
+
+    #    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
+    #    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
   ]
- external_deps = [
-   "bytrace_standard:bytrace_core",
-   "hiviewdfx_hilog_native:libhilog",
-   "ipc:ipc_core",
-   #"//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
- ]
+  external_deps = [
+    "bytrace_standard:bytrace_core",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+
+    #"//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+  ]
 }
 
 ohos_unittest("imagesourcetest") {
@@ -84,17 +86,19 @@ ohos_unittest("imagesourcetest") {
     "//foundation/multimedia/image_standard/plugins/manager/include",
   ]
   sources = [
-#    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_gif_test.cpp",
+    #    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_gif_test.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_jpeg_test.cpp",
-#    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_png_test.cpp",
+
+    #    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_png_test.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_util.cpp",
-#    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_webp_test.cpp",
+
+    #    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_webp_test.cpp",
   ]
   if (DUAL_ADAPTER) {
     sources += [
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_bmp_test.cpp",
-#      "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_raw_test.cpp",
-#     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_wbmp_test.cpp",
+      #      "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_raw_test.cpp",
+      #     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_wbmp_test.cpp",
     ]
   }
 
@@ -165,7 +169,6 @@ group("unittest") {
   testonly = true
   deps = [
     ":colorconvertertest",
-
     ":imagepixelmapparceltest",
     ":imagepixelmaptest",
     ":imagesourcetest",

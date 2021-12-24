@@ -32,8 +32,8 @@
         {
           "header": {
             "header_files": [
-              "pimage_source_napi.h",
-\            ],
+              "pimage_source_napi.h"
+            ],
             "header_base": "//foundation/multimedia/image_standard/interfaces/kits/js/common/includ"
           },
           "name": "//foundation/multimedia/image_standard/interfaces/kits/js/common/include:image"
