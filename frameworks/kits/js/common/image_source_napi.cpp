@@ -520,7 +520,7 @@ napi_value ImageSourceNapi::GetImageInfo(napi_env env, napi_callback_info info)
     size_t argCount = 2;
     HiLog::Debug(LABEL, "GetImageInfo IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
-    HiLog::Debug(LABEL, "GetImageInfo argCount is [%{public}u]", argCount);
+    HiLog::Debug(LABEL, "GetImageInfo argCount is [%{public}zu]", argCount);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
 
@@ -534,7 +534,7 @@ napi_value ImageSourceNapi::GetImageInfo(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rImageSource),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
-    HiLog::Debug(LABEL, "GetImageInfo argCount is [%{public}u]", argCount);
+    HiLog::Debug(LABEL, "GetImageInfo argCount is [%{public}zu]", argCount);
     if (argCount == NUM_1 && ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_function) {
         HiLog::Debug(LABEL, "GetImageInfo arg0 getType is [%{public}u]", ImageNapiUtils::getType(env, argValue[NUM_0]));
         napi_create_reference(env, argValue[NUM_0], refCount, &asyncContext->callbackRef);
@@ -778,7 +778,7 @@ napi_value ImageSourceNapi::GetImagePropertyString(napi_env env, napi_callback_i
     size_t argCount = 2;
     HiLog::Debug(LABEL, "GetImagePropertyString IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
-    HiLog::Debug(LABEL, "GetImagePropertyString argCount is [%{public}u]", argCount);
+    HiLog::Debug(LABEL, "GetImagePropertyString argCount is [%{public}zu]", argCount);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
 
@@ -853,7 +853,7 @@ napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
     size_t argCount = 5;
     HiLog::Debug(LABEL, "UpdateData IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
-    HiLog::Debug(LABEL, "UpdateData argCount is [%{public}u]", argCount);
+    HiLog::Debug(LABEL, "UpdateData argCount is [%{public}zu]", argCount);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
 
@@ -935,7 +935,7 @@ napi_value ImageSourceNapi::Release(napi_env env, napi_callback_info info)
     size_t argCount = 1;
 
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
-    HiLog::Debug(LABEL, "Release argCount is [%{public}u]", argCount);
+    HiLog::Debug(LABEL, "Release argCount is [%{public}zu]", argCount);
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), result, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
 
     std::unique_ptr<ImageSourceAsyncContext> asyncContext = std::make_unique<ImageSourceAsyncContext>();
@@ -943,7 +943,8 @@ napi_value ImageSourceNapi::Release(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->constructor_), result,
         HiLog::Error(LABEL, "fail to unwrap context"));
-    HiLog::Debug(LABEL, "Release argCount is [%{public}u]", argCount);
+
+    HiLog::Debug(LABEL, "Release argCount is [%{public}zu]", argCount);
     if (argCount == 1 && ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_function) {
         napi_create_reference(env, argValue[NUM_0], refCount, &asyncContext->callbackRef);
     }
