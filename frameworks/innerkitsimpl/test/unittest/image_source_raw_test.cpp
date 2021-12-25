@@ -29,13 +29,13 @@ using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 
-static const std::string IMAGE_INPUT_DNG_PATH = "/sdcard/multimedia/image/test.dng";
+static const std::string IMAGE_INPUT_DNG_PATH = "/data/local/tmp/image/test.dng";
 static const std::string IMAGE_OUTPUT_DNG_FILE_PATH = "/data/test/test_raw_file.jpg";
 
 class ImageSourceRawTest : public testing::Test {
 public:
-    ImageSourceRawTest(){};
-    ~ImageSourceRawTest(){};
+    ImageSourceRawTest() {};
+    ~ImageSourceRawTest() {};
 };
 
 /**
@@ -68,7 +68,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode001, TestSize.Level3)
      * @tc.steps: step3. compress the pixel map to jpeg file.
      * @tc.expected: step3. pack pixel map success and compare the jpeg compress file size.
      */
-    int64_t packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
+    int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
 }
 
@@ -103,7 +103,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode002, TestSize.Level3)
      * @tc.steps: step3. compress the pixel map to jpeg file.
      * @tc.expected: step3. pack pixel map success and compare the jpeg compress file size.
      */
-    int64_t packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
+    int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
 }
 
@@ -167,7 +167,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode004, TestSize.Level3)
      * @tc.steps: step3. compress the pixel map to jpeg file.
      * @tc.expected: step3. pack pixel map success and compare the jpeg compress file size.
      */
-    int64_t packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
+    int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
 }
 
@@ -234,7 +234,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode007, TestSize.Level3)
     ASSERT_EQ(ret, true);
     auto *buffer = (uint8_t *)malloc(bufferSize);
     ASSERT_NE(buffer, nullptr);
-    ret = ReadFileToBuffer(IMAGE_INPUT_DNG_PATH, buffer, bufferSize);
+    ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_DNG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
     uint32_t errorCode = 0;
     SourceOptions opts;
@@ -263,7 +263,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode007, TestSize.Level3)
      * @tc.expected: step3. pack pixel map success and compare the jpeg compress file size.
      */
     ImagePacker imagePacker;
-    int64_t packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
+    int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
     free(buffer);
 }
@@ -299,7 +299,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode008, TestSize.Level3)
      * @tc.steps: step3. compress the pixel map to jpeg file.
      * @tc.expected: step3. pack pixel map success and the jpeg compress file size.
      */
-    int64_t packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
+    int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
 }
 
@@ -338,9 +338,9 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode009, TestSize.Level3)
      * @tc.steps: step4. compress the pixel map to jpeg file.
      * @tc.expected: step4. pack pixel map success and compare the jpeg compress file size.
      */
-    int64_t packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap1));
+    int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap1));
     ASSERT_NE(packSize, 0);
-    packSize = PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap2));
+    packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_DNG_FILE_PATH, std::move(pixelMap2));
     ASSERT_NE(packSize, 0);
 }
 
@@ -361,7 +361,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode010, TestSize.Level3)
     ASSERT_EQ(ret, true);
     auto *buffer = (uint8_t *)malloc(bufferSize);
     ASSERT_NE(buffer, nullptr);
-    ret = ReadFileToBuffer(IMAGE_INPUT_DNG_PATH, buffer, bufferSize);
+    ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_DNG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
     buffer[0] = 43;
     uint32_t errorCode = 0;

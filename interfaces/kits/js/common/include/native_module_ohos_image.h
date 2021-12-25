@@ -19,5 +19,6 @@
 #include "napi/native_node_api.h"
 #include "image_source_napi.h"
 #include "pixel_map_napi.h"
+#include "image_packer_napi.h"
 
 #endif /* NATIVE_MODULE_OHOS_IMAGE_H_ */

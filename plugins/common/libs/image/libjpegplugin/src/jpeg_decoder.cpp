@@ -29,6 +29,7 @@ using namespace MultimediaPlugin;
 using namespace Media;
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "JpegDecoder" };
 namespace {
+constexpr uint32_t NUM_100 = 100;
 constexpr uint32_t PIXEL_BYTES_RGB_565 = 2;
 constexpr uint32_t MARKER_SIZE = 2;
 constexpr uint32_t MARKER_LENGTH = 2;
@@ -46,6 +47,14 @@ constexpr uint8_t JPG_MARKER_RSTN = 0XD7;
 constexpr uint8_t JPG_MARKER_APP = 0XE0;
 constexpr uint8_t JPG_MARKER_APP0 = 0XE0;
 constexpr uint8_t JPG_MARKER_APPN = 0XEF;
+const std::string BITS_PER_SAMPLE = "BitsPerSample";
+const std::string ORIENTATION = "Orientation";
+const std::string IMAGE_HEIGHT = "ImageHeight";
+const std::string IMAGE_WIDTH = "ImageWidth";
+const std::string GPS_LATITUDE = "GPSLatitude";
+const std::string GPS_LONGITUDE = "GPSLongitude";
+const std::string GPS_LATITUDE_REF = "GPSLatitudeRef";
+const std::string GPS_LONGITUDE_REF = "GPSLongitudeRef";
 } // namespace
 
 PluginServer &JpegDecoder::pluginServer_ = DelayedRefSingleton<PluginServer>::GetInstance();
@@ -361,7 +370,7 @@ uint32_t JpegDecoder::PromoteIncrementalDecode(uint32_t index, ProgDecodeContext
     }
     // get promote decode progress, in percentage: 0~100.
     progContext.totalProcessProgress =
-        decodeInfo_.output_height == 0 ? 0 : decodeInfo_.output_scanline * 100 / decodeInfo_.output_height;
+        decodeInfo_.output_height == 0 ? 0 : (decodeInfo_.output_scanline * NUM_100) / decodeInfo_.output_height;
     HiLog::Debug(LABEL, "incremental decode progress %{public}u.", progContext.totalProcessProgress);
     return ret;
 }
@@ -527,6 +536,19 @@ uint32_t JpegDecoder::StartDecompress(const PixelDecodeOptions &opts)
         return ERR_IMAGE_INVALID_PARAMETER;
     }
     streamPosition_ = srcMgr_.inputStream->Tell();
+    return Media::SUCCESS;
+}
+
+uint32_t JpegDecoder::GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value)
+{
+    HiLog::Error(LABEL, "[GetImagePropertyInt] enter jped plugin, key:%{public}s", key.c_str());
+    return Media::SUCCESS;
+}
+
+uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &key, std::string &value)
+{
+    HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, key:%{public}s", key.c_str());
+
     return Media::SUCCESS;
 }
 } // namespace ImagePlugin

@@ -27,6 +27,7 @@ namespace Media {
 class FileSourceStream : public SourceStream {
 public:
     static std::unique_ptr<FileSourceStream> CreateSourceStream(const std::string &pathName);
+    static std::unique_ptr<FileSourceStream> CreateSourceStream(const int fd);
     ~FileSourceStream();
 
     bool Read(uint32_t desiredSize, ImagePlugin::DataStreamBuffer &outData) override;

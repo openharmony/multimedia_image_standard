@@ -158,7 +158,9 @@ struct DecodeOptions {
     int32_t fitDensity = 0;
     Rect CropRect;
     Size desiredSize;
+    Rect desiredRegion;
     float rotateDegrees = 0;
+    uint32_t rotateNewDegrees = 0;
     static constexpr uint32_t DEFAULT_SAMPLE_SIZE = 1;
     uint32_t sampleSize = DEFAULT_SAMPLE_SIZE;
     PixelFormat desiredPixelFormat = PixelFormat::UNKNOWN;

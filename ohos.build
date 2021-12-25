@@ -27,9 +27,8 @@
             ],
             "header_base": "//foundation/multimedia/image_standard/interfaces/innerkits/include"
           },
-          "name": "//foundation/multimedia/image_standard/interfaces/innerkits:image"
+          "name": "//foundation/multimedia/image_standard/interfaces/innerkits:image_native"
         }
-        
       ],
       "system_capabilities":[
         "SystemCapability.Multimedia.Image"

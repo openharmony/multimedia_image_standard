@@ -13,53 +13,49 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_SOURCE_NAPI_H_
-#define IMAGE_SOURCE_NAPI_H_
+#ifndef IMAGE_PACKER_NAPI_H_
+#define IMAGE_PACKER_NAPI_H_
 
-#include "pixel_map.h"
+#include <cerrno>
+#include <dirent.h>
+#include <fcntl.h>
+#include <ftw.h>
+#include <securec.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <variant>
+
+#include "image_packer.h"
 #include "image_type.h"
 #include "image_source.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
-#include "pixel_map_napi.h"
+#include "pixel_map.h"
+#include "image_source_napi.h"
 
 namespace OHOS {
 namespace Media {
-class ImageSourceNapi {
+class ImagePackerNapi {
 public:
-    ImageSourceNapi();
-    ~ImageSourceNapi();
-
+    ImagePackerNapi();
+    ~ImagePackerNapi();
     static napi_value Init(napi_env env, napi_value exports);
-    std::shared_ptr<ImageSource> nativeImgSrc = nullptr;
+    static napi_value CreateImagePacker(napi_env env, napi_callback_info info);
+
 private:
     static napi_value Constructor(napi_env env, napi_callback_info info);
     static void Destructor(napi_env env, void *nativeObject, void *finalize);
-
-    // readonly property
-    static napi_value GetSupportedFormats(napi_env env, napi_callback_info info);
-
-    // static methods
-    static napi_value CreateImageSource(napi_env env, napi_callback_info info);
-    static napi_value CreateIncrementalSource(napi_env env, napi_callback_info info);
-
-    static napi_value CreateImageSourceComplete(napi_env env, napi_status status, void *data);
-    // methods
-    static napi_value GetImageInfo(napi_env env, napi_callback_info info);
-    static napi_value CreatePixelMap(napi_env env, napi_callback_info info);
-    static napi_value GetImagePropertyInt(napi_env env, napi_callback_info info);
-    static napi_value GetImagePropertyString(napi_env env, napi_callback_info info);
-    static napi_value UpdateData(napi_env env, napi_callback_info info);
+    static napi_value Packing(napi_env env, napi_callback_info info);
     static napi_value Release(napi_env env, napi_callback_info info);
 
     static napi_ref sConstructor_;
-    static std::shared_ptr<ImageSource> sImgSrc_;
+    static std::shared_ptr<ImageSource> sImgSource_;
+    static std::shared_ptr<ImagePacker> sImgPck_;
 
     napi_env env_ = nullptr;
     napi_ref wrapper_ = nullptr;
-
-    bool isRelease = false;
+    std::shared_ptr<ImagePacker> nativeImgPck = nullptr;
 };
 } // namespace Media
 } // namespace OHOS
-#endif /* PIXEL_MAP_NAPI_H_ */
+#endif /* IMAGE_PACKER_NAPI_H_ */

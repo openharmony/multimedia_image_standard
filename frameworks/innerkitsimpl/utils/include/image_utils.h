@@ -29,6 +29,7 @@ const std::string IMAGE_ENCODE_FORMAT = "encodeFormat";
 class ImageUtils {
 public:
     static bool GetFileSize(const std::string &pathName, size_t &size);
+    static bool GetFileSize(const int fd, size_t &size);
     static bool GetInputStreamSize(std::istream &inputStream, size_t &size);
     static int32_t GetPixelBytes(const PixelFormat &pixelFormat);
     static bool PathToRealPath(const std::string &path, std::string &realPath);

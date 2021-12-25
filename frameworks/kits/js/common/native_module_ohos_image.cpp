@@ -14,7 +14,12 @@
  */
 
 #include "native_module_ohos_image.h"
+#include "hilog/log.h"
 
+using OHOS::HiviewDFX::HiLog;
+namespace {
+    constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, LOG_DOMAIN, "NAPITEST"};
+}
 namespace OHOS {
 namespace Media{
 /*
@@ -22,8 +27,12 @@ namespace Media{
  */
 static napi_value Export(napi_env env, napi_value exports)
 {
-
+    HiLog::Error(LABEL, "ImagePackerNapi CALL");
+    ImagePackerNapi::Init(env, exports);
+    HiLog::Error(LABEL, "PixelMapNapi CALL");
     PixelMapNapi::Init(env, exports);
+    HiLog::Error(LABEL, "ImageSourceNapi CALL");
+    ImageSourceNapi::Init(env, exports);
     return exports;
 }
 

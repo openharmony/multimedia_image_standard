@@ -14,6 +14,7 @@
  */
 
 #include "jpeg_utils.h"
+#include "securec.h"
 
 namespace OHOS {
 namespace ImagePlugin {
@@ -189,6 +190,16 @@ void TermDstStream(j_compress_ptr cinfo)
         }
     }
     dest->outputStream->Flush();
+}
+std::string DoubleToString(double num)
+{
+    char str[256];
+    int32_t ret = sprintf_s(str, sizeof(str), "%lf", num);
+    if (ret <= PRINTF_SUCCESS) {
+        return "";
+    }
+    std::string result = str;
+    return result;
 }
 } // namespace ImagePlugin
 } // namespace OHOS

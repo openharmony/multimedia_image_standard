@@ -1085,7 +1085,7 @@ bool PixelMap::WriteImageData(Parcel &parcel, size_t size) const
         return false;
     }
     void *ptr = ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    
+
     if (ptr == MAP_FAILED) {
         return false;
     }
@@ -1162,7 +1162,6 @@ uint8_t *PixelMap::ReadImageData(Parcel &parcel, int32_t bufferSize)
         ReleaseMemory(AllocatorType::SHARE_MEM_ALLOC, ptr, &fd, bufferSize);
 #endif
     }
-    
     return base;
 }
 
@@ -1235,7 +1234,7 @@ bool PixelMap::Marshalling(Parcel &parcel) const
         HiLog::Error(LABEL, "write image info to parcel failed.");
         return false;
     }
-    
+
     if (!parcel.WriteInt32(static_cast<int32_t>(allocatorType_))) {
         HiLog::Error(LABEL, "write pixel map allocator type:[%{public}d] to parcel failed.",
                      allocatorType_);
@@ -1291,7 +1290,7 @@ PixelMap *PixelMap::Unmarshalling(Parcel &parcel)
         HiLog::Error(LABEL, "read imageInfo fail");
         return nullptr;
     }
-    
+
     AllocatorType allocType = static_cast<AllocatorType>(parcel.ReadInt32());
     int32_t bufferSize = parcel.ReadInt32();
     uint8_t *base = nullptr;

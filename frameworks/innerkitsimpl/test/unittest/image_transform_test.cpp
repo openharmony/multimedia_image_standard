@@ -23,8 +23,8 @@ namespace OHOS {
 namespace Multimedia {
 class ImageTransformTest : public testing::Test {
 public:
-    ImageTransformTest(){};
-    ~ImageTransformTest(){};
+    ImageTransformTest() {};
+    ~ImageTransformTest() {};
 };
 
 /*

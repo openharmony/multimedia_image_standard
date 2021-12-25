@@ -30,12 +30,12 @@ using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 
-static const std::string IMAGE_INPUT_WBMP_PATH = "/sdcard/multimedia/image/test.wbmp";
+static const std::string IMAGE_INPUT_WBMP_PATH = "/data/local/tmp/image/test.wbmp";
 
 class ImageSourceWbmpTest : public testing::Test {
 public:
-    ImageSourceWbmpTest(){};
-    ~ImageSourceWbmpTest(){};
+    ImageSourceWbmpTest() {};
+    ~ImageSourceWbmpTest() {};
 };
 
 /**
@@ -216,7 +216,7 @@ HWTEST_F(ImageSourceWbmpTest, WbmpImageDecode007, TestSize.Level3)
     ASSERT_EQ(ret, true);
     auto *buffer = (uint8_t *)malloc(bufferSize);
     ASSERT_NE(buffer, nullptr);
-    ret = ReadFileToBuffer(IMAGE_INPUT_WBMP_PATH, buffer, bufferSize);
+    ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_WBMP_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
     uint32_t errorCode = 0;
     SourceOptions opts;
@@ -321,7 +321,7 @@ HWTEST_F(ImageSourceWbmpTest, WbmpImageDecode010, TestSize.Level3)
     ASSERT_EQ(ret, true);
     auto *buffer = (uint8_t *)malloc(bufferSize);
     ASSERT_NE(buffer, nullptr);
-    ret = ReadFileToBuffer(IMAGE_INPUT_WBMP_PATH, buffer, bufferSize);
+    ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_WBMP_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
     buffer[0] = 43;
     uint32_t errorCode = 0;

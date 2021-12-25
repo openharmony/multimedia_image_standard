@@ -217,6 +217,30 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(const std::string &pathNa
     return unique_ptr<ImageSource>(sourcePtr);
 }
 
+unique_ptr<ImageSource> ImageSource::CreateImageSource(const int fd, const SourceOptions &opts,
+                                                       uint32_t &errorCode)
+{
+#if !defined(_WIN32) && !defined(_APPLE)
+    StartTrace(BYTRACE_TAG_ZIMAGE, "CreateImageSource by fd");
+#endif
+    unique_ptr<SourceStream> streamPtr = FileSourceStream::CreateSourceStream(fd);
+    if (streamPtr == nullptr) {
+        IMAGE_LOGE("[ImageSource]failed to create file source stream.");
+        errorCode = ERR_IMAGE_SOURCE_DATA;
+        return nullptr;
+    }
+    ImageSource *sourcePtr = new (std::nothrow) ImageSource(std::move(streamPtr), opts);
+    if (sourcePtr == nullptr) {
+        IMAGE_LOGE("[ImageSource]failed to create ImageSource by fd.");
+        errorCode = ERR_IMAGE_SOURCE_DATA;
+        return nullptr;
+    }
+    errorCode = SUCCESS;
+#if !defined(_WIN32) && !defined(_APPLE)
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
+#endif
+    return unique_ptr<ImageSource>(sourcePtr);
+}
 unique_ptr<ImageSource> ImageSource::CreateIncrementalImageSource(const IncrementalSourceOptions &opts,
                                                                   uint32_t &errorCode)
 {
@@ -527,6 +551,22 @@ uint32_t ImageSource::GetImagePropertyInt(uint32_t index, const std::string &key
     return SUCCESS;
 }
 
+uint32_t ImageSource::GetImagePropertyString(uint32_t index, const std::string &key, std::string &value)
+{
+    std::unique_lock<std::mutex> guard(decodingMutex_);
+    uint32_t ret;
+    auto iter = GetValidImageStatus(0, ret);
+    if (iter == imageStatusMap_.end()) {
+        IMAGE_LOGE("[ImageSource]get valid image status fail on get image property, ret:%{public}u.", ret);
+        return ret;
+    }
+    ret = mainDecoder_->GetImagePropertyString(index, key, value);
+    if (ret != SUCCESS) {
+        IMAGE_LOGE("[ImageSource] GetImagePropertyInt fail, ret:%{public}u", ret);
+        return ret;
+    }
+    return SUCCESS;
+}
 const SourceInfo &ImageSource::GetSourceInfo(uint32_t &errorCode)
 {
     std::lock_guard<std::mutex> guard(decodingMutex_);
@@ -694,6 +734,7 @@ uint32_t ImageSource::GetEncodedFormat(const string &formatHint, string &format)
             return SUCCESS;
         } else if (ret == ERR_IMAGE_SOURCE_DATA_INCOMPLETE) {
             streamIncomplete = true;
+            IMAGE_LOGE("[ImageSource]image source data error ERR_IMAGE_SOURCE_DATA_INCOMPLETE.");
         }
     }
 

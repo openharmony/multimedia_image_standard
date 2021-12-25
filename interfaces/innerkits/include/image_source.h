@@ -131,6 +131,8 @@ public:
                                                                        const SourceOptions &opts, uint32_t &errorCode);
     NATIVEEXPORT static std::unique_ptr<ImageSource> CreateImageSource(const std::string &pathName,
                                                                        const SourceOptions &opts, uint32_t &errorCode);
+    NATIVEEXPORT static std::unique_ptr<ImageSource> CreateImageSource(const int fd, const SourceOptions &opts,
+                                                       uint32_t &errorCode);
     NATIVEEXPORT static std::unique_ptr<ImageSource> CreateIncrementalImageSource(const IncrementalSourceOptions &opts,
                                                                                   uint32_t &errorCode);
 
@@ -159,6 +161,7 @@ public:
     NATIVEEXPORT void RemoveDecodeListener(DecodeListener *listener);
     NATIVEEXPORT bool IsIncrementalSource();
     NATIVEEXPORT uint32_t GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value);
+    NATIVEEXPORT uint32_t GetImagePropertyString(uint32_t index, const std::string &key, std::string &value);
     NATIVEEXPORT const NinePatchInfo &GetNinePatchInfo() const;
     NATIVEEXPORT void SetMemoryUsagePreference(const MemoryUsagePreference preference);
     NATIVEEXPORT MemoryUsagePreference GetMemoryUsagePreference();

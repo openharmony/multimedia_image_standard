@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 #include "pixel_map_napi.h"
 #include "media_errors.h"
 #include "hilog/log.h"
@@ -22,6 +21,11 @@
 using OHOS::HiviewDFX::HiLog;
 namespace {
     constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, LOG_DOMAIN, "PixelMapNapi"};
+    constexpr uint32_t NUM_0 = 0;
+    constexpr uint32_t NUM_1 = 1;
+    constexpr uint32_t NUM_2 = 2;
+    constexpr uint32_t NUM_3 = 3;
+    constexpr uint32_t NUM_4 = 4;
 }
 
 namespace OHOS {
@@ -52,12 +56,12 @@ struct PixelMapAsyncContext {
     PositionArea area;
     std::shared_ptr<PixelMap> rPixelMap;
     uint32_t resultUint32;
+    ImageInfo imageInfo;
 };
 
 static PixelFormat ParsePixlForamt(int32_t val)
 {
-    if(val <= static_cast<int32_t>(PixelFormat::CMYK))
-    {
+    if (val <= static_cast<int32_t>(PixelFormat::CMYK)) {
         return PixelFormat(val);
     }
 
@@ -66,8 +70,7 @@ static PixelFormat ParsePixlForamt(int32_t val)
 
 static AlphaType ParseAlphaType(int32_t val)
 {
-    if(val <= static_cast<int32_t>(AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL))
-    {
+    if (val <= static_cast<int32_t>(AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL)) {
         return AlphaType(val);
     }
 
@@ -77,8 +80,7 @@ static AlphaType ParseAlphaType(int32_t val)
 
 static ScaleMode ParseScaleMode(int32_t val)
 {
-    if(val <= static_cast<int32_t>(ScaleMode::CENTER_CROP))
-    {
+    if (val <= static_cast<int32_t>(ScaleMode::CENTER_CROP)) {
         return ScaleMode(val);
     }
 
@@ -87,13 +89,11 @@ static ScaleMode ParseScaleMode(int32_t val)
 
 static bool parseSize(napi_env env, napi_value root, Size* size)
 {
-    if(!GET_INT32_BY_NAME(root, "height", size->height))
-    {
+    if (!GET_INT32_BY_NAME(root, "height", size->height)) {
         return false;
     }
 
-    if(!GET_INT32_BY_NAME(root, "width", size->width))
-    {
+    if (!GET_INT32_BY_NAME(root, "width", size->width)) {
         return false;
     }
 
@@ -105,39 +105,33 @@ static bool parseInitializationOptions(napi_env env, napi_value root, Initializa
     uint32_t tmpNumber = 0;
     napi_value tmpValue = nullptr;
 
-    if(!GET_BOOL_BY_NAME(root, "editable", opts->editable))
-    {
+    if (!GET_BOOL_BY_NAME(root, "editable", opts->editable)) {
         return false;
     }
 
-    if(!GET_UINT32_BY_NAME(root, "alphaType", tmpNumber))
-    {
+    if (!GET_UINT32_BY_NAME(root, "alphaType", tmpNumber)) {
         return false;
     }
     opts->alphaType = ParseAlphaType(tmpNumber);
 
     tmpNumber = 0;
-    if(!GET_UINT32_BY_NAME(root, "pixelFormat", tmpNumber))
-    {
+    if (!GET_UINT32_BY_NAME(root, "pixelFormat", tmpNumber)) {
         return false;
     }
     opts->pixelFormat = ParsePixlForamt(tmpNumber);
     
 
     tmpNumber = 0;
-    if(!GET_UINT32_BY_NAME(root, "scaleMode", tmpNumber))
-    {
+    if (!GET_UINT32_BY_NAME(root, "scaleMode", tmpNumber)) {
         return false;
     }
     opts->scaleMode = ParseScaleMode(tmpNumber);
     
-    if(!GET_NODE_BY_NAME(root, "size", tmpValue))
-    {
+    if (!GET_NODE_BY_NAME(root, "size", tmpValue)) {
         return false;
     }
     
-    if(!parseSize(env, tmpValue, &(opts->size)))
-    {
+    if (!parseSize(env, tmpValue, &(opts->size))) {
         return false;
     }
     return true;
@@ -147,28 +141,23 @@ static bool parseRegion(napi_env env, napi_value root, Rect* region)
 {
     napi_value tmpValue = nullptr;
 
-    if(!GET_INT32_BY_NAME(root, "x", region->left))
-    {
+    if (!GET_INT32_BY_NAME(root, "x", region->left)) {
         return false;
     }
 
-    if(!GET_INT32_BY_NAME(root, "y", region->top))
-    {
+    if (!GET_INT32_BY_NAME(root, "y", region->top)) {
         return false;
     }
 
-    if(!GET_NODE_BY_NAME(root, "size", tmpValue))
-    {
+    if (!GET_NODE_BY_NAME(root, "size", tmpValue)) {
         return false;
     }
 
-    if(!GET_INT32_BY_NAME(tmpValue, "height", region->height))
-    {
+    if (!GET_INT32_BY_NAME(tmpValue, "height", region->height)) {
         return false;
     }
 
-    if(!GET_INT32_BY_NAME(tmpValue, "width", region->width))
-    {
+    if (!GET_INT32_BY_NAME(tmpValue, "width", region->width)) {
         return false;
     }
 
@@ -179,28 +168,23 @@ static bool parsePositionArea(napi_env env, napi_value root, PositionArea* area)
 {
     napi_value tmpValue = nullptr;
 
-    if(!GET_BUFFER_BY_NAME(root, "pixels", area->pixels, area->size))
-    {
+    if (!GET_BUFFER_BY_NAME(root, "pixels", area->pixels, area->size)) {
         return false;
     }
 
-    if(!GET_UINT32_BY_NAME(root, "offset", area->offset))
-    {
+    if (!GET_UINT32_BY_NAME(root, "offset", area->offset)) {
         return false;
     }
 
-    if(!GET_UINT32_BY_NAME(root, "stride", area->stride))
-    {
+    if (!GET_UINT32_BY_NAME(root, "stride", area->stride)) {
         return false;
     }
-    
-    if(!GET_NODE_BY_NAME(root, "region", tmpValue))
-    {
+
+    if (!GET_NODE_BY_NAME(root, "region", tmpValue)) {
         return false;
     }
-    
-    if(!parseRegion(env, tmpValue, &(area->region)))
-    {
+
+    if (!parseRegion(env, tmpValue, &(area->region))) {
         return false;
     }
     return true;
@@ -208,26 +192,26 @@ static bool parsePositionArea(napi_env env, napi_value root, PositionArea* area)
 
 static void CommonCallbackRoutine(napi_env env, PixelMapAsyncContext* &asyncContext, const napi_value &valueParam)
 {
-    napi_value result[2] = {0};
+    napi_value result[NUM_2] = {0};
     napi_value retVal;
     napi_value callback = nullptr;
 
-    napi_get_undefined(env, &result[0]);
-    napi_get_undefined(env, &result[1]);
+    napi_get_undefined(env, &result[NUM_0]);
+    napi_get_undefined(env, &result[NUM_1]);
 
     if (asyncContext->status == SUCCESS) {
-        result[1] = valueParam;
+        result[NUM_1] = valueParam;
     }
 
     if (asyncContext->deferred) {
         if (asyncContext->status == SUCCESS) {
-            napi_resolve_deferred(env, asyncContext->deferred, result[1]);
+            napi_resolve_deferred(env, asyncContext->deferred, result[NUM_1]);
         } else {
-            napi_reject_deferred(env, asyncContext->deferred, result[0]);
+            napi_reject_deferred(env, asyncContext->deferred, result[NUM_0]);
         }
     } else {
         napi_get_reference_value(env, asyncContext->callbackRef, &callback);
-        napi_call_function(env, nullptr, callback, 2, result, &retVal);
+        napi_call_function(env, nullptr, callback, NUM_2, result, &retVal);
         napi_delete_reference(env, asyncContext->callbackRef);
     }
 
@@ -247,7 +231,6 @@ STATIC_COMPLETE_FUNC(EmptyResult)
     CommonCallbackRoutine(env, context, result);
 }
 
-
 STATIC_COMPLETE_FUNC(Uint32Result)
 {
     napi_value result = nullptr;
@@ -257,14 +240,11 @@ STATIC_COMPLETE_FUNC(Uint32Result)
 
     status = napi_create_int32(env, context->resultUint32, &result);
 
-    if(!IMG_IS_OK(status))
-    {
+    if (!IMG_IS_OK(status)) {
         context->status = ERROR;
         HiLog::Error(LABEL, "napi_create_int32 failed!");
         napi_get_undefined(env, &result);
-    }
-    else
-    {
+    } else {
         context->status = SUCCESS;
     }
 
@@ -279,13 +259,11 @@ PixelMapNapi::PixelMapNapi()
 
 PixelMapNapi::~PixelMapNapi()
 {
-    if(nativePixelMap_ != nullptr)
-    {
+    if (nativePixelMap_ != nullptr) {
         nativePixelMap_ = nullptr;
     }
 
-    if (wrapper_ != nullptr)
-    {
+    if (wrapper_ != nullptr) {
         napi_delete_reference(env_, wrapper_);
     }
 }
@@ -347,8 +325,7 @@ std::shared_ptr<PixelMap> PixelMapNapi::GetPixelMap(napi_env env, napi_value pix
 
     napi_status status = napi_unwrap(env, pixelmap, reinterpret_cast<void**>(&pixelMapNapi));
 
-    if(IMG_IS_OK(status))
-    {
+    if (IMG_IS_OK(status)) {
         return pixelMapNapi->nativePixelMap_;
     }
 
@@ -389,8 +366,7 @@ void PixelMapNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
 {
     PixelMapNapi *pixelMapNapi = reinterpret_cast<PixelMapNapi*>(nativeObject);
 
-    if (IMG_NOT_NULL(pixelMapNapi))
-    {
+    if (IMG_NOT_NULL(pixelMapNapi)) {
         pixelMapNapi->~PixelMapNapi();
     }
 }
@@ -403,12 +379,9 @@ STATIC_EXEC_FUNC(CreatePixelMap)
 
     context->rPixelMap = std::move(pixelmap);
 
-    if(IMG_NOT_NULL(context->rPixelMap))
-    {
+    if (IMG_NOT_NULL(context->rPixelMap)) {
         context->status = SUCCESS;
-    }
-    else
-    {
+    } else {
         context->status = ERROR;
     }
 }
@@ -425,18 +398,16 @@ void PixelMapNapi::CreatePixelMapComplete(napi_env env, napi_status status, void
 
     if (IMG_IS_OK(status)) {
         sPixelMap_ = context->rPixelMap;
-        status = napi_new_instance(env, constructor, 0, nullptr, &result);
+        status = napi_new_instance(env, constructor, NUM_0, nullptr, &result);
     }
 
-    if(!IMG_IS_OK(status))
-    {
+    if (!IMG_IS_OK(status)) {
         context->status = ERROR;
         HiLog::Error(LABEL, "New instance could not be obtained");
         napi_get_undefined(env, &result);
     }
 
     CommonCallbackRoutine(env, context, result);
-    
 }
 
 napi_value PixelMapNapi::CreatePixelMap(napi_env env, napi_callback_info info)
@@ -448,28 +419,27 @@ napi_value PixelMapNapi::CreatePixelMap(napi_env env, napi_callback_info info)
 
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[4] = {0};
-    size_t argCount = 4;
+    napi_value argValue[NUM_4] = {0};
+    size_t argCount = NUM_4;
     HiLog::Debug(LABEL, "CreatePixelMap IN");
 
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
 
     // we are static method!
-    // this Var is nullptr here
+    // thisVar is nullptr here
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
-
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
 
-    status = napi_get_arraybuffer_info(env, argValue[0], &(asyncContext->colorsBuffer), &(asyncContext->colorsBufferSize));
+    status = napi_get_arraybuffer_info(env, argValue[NUM_0], &(asyncContext->colorsBuffer),
+        &(asyncContext->colorsBufferSize));
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "colors mismatch"));
 
     IMG_NAPI_CHECK_RET_D(parseInitializationOptions(env, argValue[1], &(asyncContext->opts)),
         nullptr, HiLog::Error(LABEL, "InitializationOptions mismatch"));
-    
-    if(argCount == 3 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+
+    if (argCount == NUM_3 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -488,7 +458,6 @@ napi_value PixelMapNapi::CreatePixelMap(napi_env env, napi_callback_info info)
 
 napi_value PixelMapNapi::CreatePixelMap(napi_env env, std::shared_ptr<PixelMap> pixelmap)
 {
-
     napi_value constructor = nullptr;
     napi_value result = nullptr;
     napi_status status;
@@ -498,11 +467,10 @@ napi_value PixelMapNapi::CreatePixelMap(napi_env env, std::shared_ptr<PixelMap> 
 
     if (IMG_IS_OK(status)) {
         sPixelMap_ = pixelmap;
-        status = napi_new_instance(env, constructor, 0, nullptr, &result);
+        status = napi_new_instance(env, constructor, NUM_0, nullptr, &result);
     }
 
-    if(!IMG_IS_OK(status))
-    {
+    if (!IMG_IS_OK(status)) {
         HiLog::Error(LABEL, "CreatePixelMap | New instance could not be obtained");
         napi_get_undefined(env, &result);
     }
@@ -544,8 +512,8 @@ napi_value PixelMapNapi::ReadPixelsToBuffer(napi_env env, napi_callback_info inf
     int32_t refCount = 1;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[2] = {0};
-    size_t argCount = 2;
+    napi_value argValue[NUM_2] = {0};
+    size_t argCount = NUM_2;
 
     HiLog::Debug(LABEL, "ReadPixelsToBuffer IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
@@ -554,7 +522,7 @@ napi_value PixelMapNapi::ReadPixelsToBuffer(napi_env env, napi_callback_info inf
 
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
 
@@ -563,14 +531,13 @@ napi_value PixelMapNapi::ReadPixelsToBuffer(napi_env env, napi_callback_info inf
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
 
-    status = napi_get_arraybuffer_info(env, argValue[0],
+    status = napi_get_arraybuffer_info(env, argValue[NUM_0],
             &(asyncContext->colorsBuffer), &(asyncContext->colorsBufferSize));
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "colors mismatch"));
-    
-    if(argCount == 2 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+
+    if (argCount == NUM_2 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -602,8 +569,8 @@ napi_value PixelMapNapi::ReadPixels(napi_env env, napi_callback_info info)
     int32_t refCount = 1;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[2] = {0};
-    size_t argCount = 2;
+    napi_value argValue[NUM_2] = {0};
+    size_t argCount = NUM_2;
 
     HiLog::Debug(LABEL, "ReadPixels IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
@@ -612,7 +579,7 @@ napi_value PixelMapNapi::ReadPixels(napi_env env, napi_callback_info info)
 
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
 
@@ -620,13 +587,12 @@ napi_value PixelMapNapi::ReadPixels(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
-    
-    IMG_NAPI_CHECK_RET_D(parsePositionArea(env, argValue[0], &(asyncContext->area)),
+
+    IMG_NAPI_CHECK_RET_D(parsePositionArea(env, argValue[NUM_0], &(asyncContext->area)),
         nullptr, HiLog::Error(LABEL, "fail to parse position area"));
 
-    if(argCount == 2 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+    if (argCount == NUM_2 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -657,8 +623,8 @@ napi_value PixelMapNapi::WritePixels(napi_env env, napi_callback_info info)
     int32_t refCount = 1;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[2] = {0};
-    size_t argCount = 2;
+    napi_value argValue[NUM_2] = {0};
+    size_t argCount = NUM_2;
 
     HiLog::Debug(LABEL, "WritePixels IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
@@ -667,7 +633,7 @@ napi_value PixelMapNapi::WritePixels(napi_env env, napi_callback_info info)
 
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
 
@@ -675,13 +641,12 @@ napi_value PixelMapNapi::WritePixels(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
-    
-    IMG_NAPI_CHECK_RET_D(parsePositionArea(env, argValue[0], &(asyncContext->area)),
+
+    IMG_NAPI_CHECK_RET_D(parsePositionArea(env, argValue[NUM_0], &(asyncContext->area)),
         nullptr, HiLog::Error(LABEL, "fail to parse position area"));
 
-    if(argCount == 2 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+    if (argCount == NUM_2 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -713,8 +678,8 @@ napi_value PixelMapNapi::WriteBufferToPixels(napi_env env, napi_callback_info in
     int32_t refCount = 1;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[2] = {0};
-    size_t argCount = 2;
+    napi_value argValue[NUM_2] = {0};
+    size_t argCount = NUM_2;
 
     HiLog::Debug(LABEL, "WriteBufferToPixels IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
@@ -723,7 +688,7 @@ napi_value PixelMapNapi::WriteBufferToPixels(napi_env env, napi_callback_info in
 
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
 
@@ -731,15 +696,14 @@ napi_value PixelMapNapi::WriteBufferToPixels(napi_env env, napi_callback_info in
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
-    status = napi_get_arraybuffer_info(env, argValue[0],
+    status = napi_get_arraybuffer_info(env, argValue[NUM_0],
         &(asyncContext->colorsBuffer), &(asyncContext->colorsBufferSize));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status),
         nullptr, HiLog::Error(LABEL, "fail to get buffer info"));
 
-    if(argCount == 2 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+    if (argCount == NUM_2 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -752,8 +716,8 @@ napi_value PixelMapNapi::WriteBufferToPixels(napi_env env, napi_callback_info in
         [](napi_env env, void *data)
         {
             auto context = static_cast<PixelMapAsyncContext*>(data);
-            context->status = context->rPixelMap->WritePixels(static_cast<uint8_t*>(context->colorsBuffer), context->colorsBufferSize);
-
+            context->status = context->rPixelMap->WritePixels(static_cast<uint8_t*>(context->colorsBuffer),
+                context->colorsBufferSize);
         }, EmptyResultComplete, asyncContext, asyncContext->work);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status),
@@ -761,10 +725,77 @@ napi_value PixelMapNapi::WriteBufferToPixels(napi_env env, napi_callback_info in
     return result;
 }
 
+STATIC_COMPLETE_FUNC(GetImageInfo)
+{
+    HiLog::Debug(LABEL, "[PixelMap]GetImageInfoComplete IN");
+    napi_value result = nullptr;
+    napi_create_object(env, &result);
+    auto context = static_cast<PixelMapAsyncContext*>(data);
+    napi_value size = nullptr;
+    napi_create_object(env, &size);
+    napi_value sizeWith = nullptr;
+    napi_create_int32(env, context->imageInfo.size.width, &sizeWith);
+    napi_set_named_property(env, size, "width", sizeWith);
+    napi_value sizeHeight = nullptr;
+    napi_create_int32(env, context->imageInfo.size.height, &sizeHeight);
+    napi_set_named_property(env, size, "height", sizeHeight);
+    napi_set_named_property(env, result, "size", size);
+    napi_value pixelFormatValue = nullptr;
+    napi_create_int32(env, static_cast<int32_t>(context->imageInfo.pixelFormat), &pixelFormatValue);
+    napi_set_named_property(env, result, "pixelFormat", pixelFormatValue);
+    napi_value colorSpaceValue = nullptr;
+    napi_create_int32(env, static_cast<int32_t>(context->imageInfo.colorSpace), &colorSpaceValue);
+    napi_set_named_property(env, result, "colorSpace", colorSpaceValue);
+    napi_value alphaTypeValue = nullptr;
+    napi_create_int32(env, static_cast<int32_t>(context->imageInfo.alphaType), &alphaTypeValue);
+    napi_set_named_property(env, result, "alphaType", alphaTypeValue);
+    if (!IMG_IS_OK(status)) {
+        context->status = ERROR;
+        HiLog::Error(LABEL, "napi_create_int32 failed!");
+        napi_get_undefined(env, &result);
+    } else {
+        context->status = SUCCESS;
+    }
+    HiLog::Debug(LABEL, "[PixelMap]GetImageInfoComplete OUT");
+    CommonCallbackRoutine(env, context, result);
+}
 napi_value PixelMapNapi::GetImageInfo(napi_env env, napi_callback_info info)
 {
+    napi_value result = nullptr;
+    napi_get_undefined(env, &result);
+    int32_t refCount = 1;
+    napi_status status;
+    napi_value thisVar = nullptr;
+    napi_value argValue[NUM_1] = {0};
+    size_t argCount = 1;
     HiLog::Debug(LABEL, "GetImageInfo IN");
-    return nullptr;
+    IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
+    IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
+    std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
+    status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
+    IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
+        nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
+    asyncContext->rPixelMap = asyncContext->nConstructor->nativePixelMap_;
+    IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
+        nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
+    if (argCount == NUM_1 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
+    }
+    if (asyncContext->callbackRef == nullptr) {
+        napi_create_promise(env, &(asyncContext->deferred), &result);
+    } else {
+        napi_get_undefined(env, &result);
+    }
+    IMG_CREATE_CREATE_ASYNC_WORK(env, status, "GetImageInfo",
+        [](napi_env env, void *data)
+        {
+            auto context = static_cast<PixelMapAsyncContext*>(data);
+            context->rPixelMap->GetImageInfo(context->imageInfo);
+            context->status = SUCCESS;
+        }, GetImageInfoComplete, asyncContext, asyncContext->work);
+    IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status),
+        nullptr, HiLog::Error(LABEL, "fail to create async work"));
+    return result;
 }
 
 napi_value PixelMapNapi::GetBytesNumberPerRow(napi_env env, napi_callback_info info)
@@ -775,8 +806,8 @@ napi_value PixelMapNapi::GetBytesNumberPerRow(napi_env env, napi_callback_info i
     int32_t refCount = 1;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[1] = {0};
-    size_t argCount = 1;
+    napi_value argValue[NUM_1] = {0};
+    size_t argCount = NUM_1;
 
     HiLog::Debug(LABEL, "GetBytesNumberPerRow IN");
     IMG_JS_ARGS(env, info, status, argCount, argValue, thisVar);
@@ -785,7 +816,7 @@ napi_value PixelMapNapi::GetBytesNumberPerRow(napi_env env, napi_callback_info i
 
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
 
@@ -794,9 +825,8 @@ napi_value PixelMapNapi::GetBytesNumberPerRow(napi_env env, napi_callback_info i
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
 
-    if(argCount == 1 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+    if (argCount == 1 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -806,12 +836,10 @@ napi_value PixelMapNapi::GetBytesNumberPerRow(napi_env env, napi_callback_info i
     }
 
     IMG_CREATE_CREATE_ASYNC_WORK(env, status, "GetBytesNumberPerRow",
-        [](napi_env env, void *data)
-        {
+        [](napi_env env, void *data) {
             auto context = static_cast<PixelMapAsyncContext*>(data);
             context->resultUint32 = context->rPixelMap->GetRowBytes();
             context->status = SUCCESS;
-
         }, Uint32ResultComplete, asyncContext, asyncContext->work);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status),
@@ -837,7 +865,7 @@ napi_value PixelMapNapi::GetPixelBytesNumber(napi_env env, napi_callback_info in
 
     std::unique_ptr<PixelMapAsyncContext> asyncContext = std::make_unique<PixelMapAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->nConstructor));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->nConstructor),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
 
@@ -846,9 +874,8 @@ napi_value PixelMapNapi::GetPixelBytesNumber(napi_env env, napi_callback_info in
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rPixelMap),
         nullptr, HiLog::Error(LABEL, "empty native pixelmap"));
 
-    if(argCount == 1 && ImageNapiUtils::getType(env, argValue[argCount -1]) == napi_function)
-    {
-        napi_create_reference(env, argValue[argCount -1], refCount, &asyncContext->callbackRef);
+    if (argCount == 1 && ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
+        napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -863,7 +890,6 @@ napi_value PixelMapNapi::GetPixelBytesNumber(napi_env env, napi_callback_info in
             auto context = static_cast<PixelMapAsyncContext*>(data);
             context->resultUint32 = context->rPixelMap->GetByteCount();
             context->status = SUCCESS;
-
         }, Uint32ResultComplete, asyncContext, asyncContext->work);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status),
@@ -886,13 +912,12 @@ napi_value PixelMapNapi::Release(napi_env env, napi_callback_info info)
 
     std::unique_ptr<PixelMapNapi> pixelMapNapi = std::make_unique<PixelMapNapi>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&pixelMapNapi));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, pixelMapNapi), result, HiLog::Error(LABEL, "fail to unwrap context"));
 
-    pixelMapNapi->nativePixelMap_= nullptr;
+    pixelMapNapi->nativePixelMap_ = nullptr;
 
     return result;
 }
-
 }  // namespace Media
 }  // namespace OHOS

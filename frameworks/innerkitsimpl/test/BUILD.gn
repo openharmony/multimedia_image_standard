@@ -39,36 +39,38 @@ ohos_unittest("imagepixelmaptest") {
   # external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 }
 
-#ohos_unittest("imagepixelmapparceltest") {
-#  module_out_path = module_output_path
+ohos_unittest("imagepixelmapparceltest") {
+  module_out_path = module_output_path
 
-#  include_dirs = [
-#    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-#    "//foundation/multimedia/utils/include",
-#    "//third_party/googletest/googletest/include",
-#    "//utils/native/base/include",
-#    "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-#    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
-#    "//foundation/multimedia/image_standard/mock/native/include",
-#  ]
-#  sources = [ "./unittest/image_pixel_map_parcel_test.cpp" ]
+  include_dirs = [
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    "//foundation/multimedia/utils/include",
+    "//third_party/googletest/googletest/include",
+    "//utils/native/base/include",
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+    "//foundation/multimedia/image_standard/mock/native/include",
+  ]
+  sources = [ "./unittest/image_pixel_map_parcel_test.cpp" ]
 
-#  deps = [
-#    "//third_party/googletest:gmock_main",
-#    "//third_party/googletest:gtest_main",
-#    "//utils/native/base:utils",
-#    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-#    "//foundation/multimedia/image_standard:image_framework",
-#    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
-#    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
-#  ]
-# external_deps = [
-#   "bytrace_standard:bytrace_core",
-#   "hiviewdfx_hilog_native:libhilog",
-#   "ipc:ipc_core",
-#   "multimedia_image:libimage",
-# ]
-#}
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+
+    #    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
+    #    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
+  ]
+  external_deps = [
+    "bytrace_standard:bytrace_core",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+
+    #"//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+  ]
+}
 
 ohos_unittest("imagesourcetest") {
   DUAL_ADAPTER = true
@@ -84,17 +86,19 @@ ohos_unittest("imagesourcetest") {
     "//foundation/multimedia/image_standard/plugins/manager/include",
   ]
   sources = [
-    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_gif_test.cpp",
+    #    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_gif_test.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_jpeg_test.cpp",
-    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_png_test.cpp",
+
+    #    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_png_test.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_util.cpp",
-    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_webp_test.cpp",
+
+    #    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_webp_test.cpp",
   ]
   if (DUAL_ADAPTER) {
     sources += [
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_bmp_test.cpp",
-      "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_raw_test.cpp",
-      "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_wbmp_test.cpp",
+      #      "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_raw_test.cpp",
+      #     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_wbmp_test.cpp",
     ]
   }
 
@@ -165,8 +169,7 @@ group("unittest") {
   testonly = true
   deps = [
     ":colorconvertertest",
-
-    #    ":imagepixelmapparceltest",
+    ":imagepixelmapparceltest",
     ":imagepixelmaptest",
     ":imagesourcetest",
     ":transformtest",

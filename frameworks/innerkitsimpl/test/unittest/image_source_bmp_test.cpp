@@ -19,6 +19,7 @@
 #include "hilog/log.h"
 #include "image_packer.h"
 #include "image_source.h"
+#include "image_source_util.h"
 #include "image_type.h"
 #include "image_utils.h"
 #include "media_errors.h"
@@ -27,17 +28,15 @@
 using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::ImageSourceUtil;
 
-static const std::string IMAGE_INPUT_BMP_PATH = "/sdcard/multimedia/image/test.bmp";
+static const std::string IMAGE_INPUT_BMP_PATH = "/data/local/tmp/image/test.bmp";
 static const std::string IMAGE_OUTPUT_BMP_FILE_PATH = "/data/test/test_bmp_file.jpg";
-
-int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap);
-bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize);
 
 class ImageSourceBmpTest : public testing::Test {
 public:
-    ImageSourceBmpTest(){};
-    ~ImageSourceBmpTest(){};
+    ImageSourceBmpTest() {};
+    ~ImageSourceBmpTest() {};
 };
 
 /**
