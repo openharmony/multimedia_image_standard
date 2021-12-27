@@ -150,7 +150,7 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(unique_ptr<istream> is, c
     }
     errorCode = SUCCESS;
 #if !defined(_WIN32) && !defined(_APPLE)
-    FinishTrace(BYTRACE_TAG_ZIMAGE, "CreateImageSource by istream");
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
 #endif
     return unique_ptr<ImageSource>(sourcePtr);
 }
@@ -184,7 +184,7 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(const uint8_t *data, uint
     }
     errorCode = SUCCESS;
 #if !defined(_WIN32) && !defined(_APPLE)
-    FinishTrace(BYTRACE_TAG_ZIMAGE, "CreateImageSource by data");
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
 #endif
     return unique_ptr<ImageSource>(sourcePtr);
 }
@@ -212,7 +212,7 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(const std::string &pathNa
     }
     errorCode = SUCCESS;
 #if !defined(_WIN32) && !defined(_APPLE)
-    FinishTrace(BYTRACE_TAG_ZIMAGE, "CreateImageSource by path");
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
 #endif
     return unique_ptr<ImageSource>(sourcePtr);
 }
@@ -237,7 +237,7 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(const int fd, const Sourc
     }
     errorCode = SUCCESS;
 #if !defined(_WIN32) && !defined(_APPLE)
-    FinishTrace(BYTRACE_TAG_ZIMAGE, "CreateImageSource by fd");
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
 #endif
     return unique_ptr<ImageSource>(sourcePtr);
 }
@@ -381,7 +381,7 @@ unique_ptr<PixelMap> ImageSource::CreatePixelMap(uint32_t index, const DecodeOpt
         }
     }
 #if !defined(_WIN32) && !defined(_APPLE)
-    FinishTrace(BYTRACE_TAG_ZIMAGE, "CreatePixelMap");
+    FinishTrace(BYTRACE_TAG_ZIMAGE);
 #endif
     return pixelMap;
 }

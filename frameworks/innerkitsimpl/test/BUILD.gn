@@ -54,13 +54,14 @@ ohos_unittest("imagepixelmapparceltest") {
   sources = [ "./unittest/image_pixel_map_parcel_test.cpp" ]
 
   deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-#    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
-#    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
+
+    #    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
+    #    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
   ]
   external_deps = [
     "bytrace_standard:bytrace_core",
