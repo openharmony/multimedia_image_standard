@@ -80,7 +80,7 @@ bool BasicTransformer::CheckAllocateBuffer(PixmapInfo &outPixmap, AllocateMem al
                                            int &fd, uint64_t &bufferSize, Size &dstSize)
 {
     if (bufferSize == 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
-        IMAGE_LOGE("[BasicTransformer]Invalid value, bufferSize = %{public}llu", bufferSize);
+        IMAGE_LOGE("[BasicTransformer]Invalid value of bufferSize");
         return false;
     }
     if (allocate == nullptr) {

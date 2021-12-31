@@ -662,7 +662,7 @@ uint32_t GifDecoder::SetSavedImageRasterBits(SavedImage *saveImagePtr, int32_t f
     if (saveImagePtr->RasterBits == nullptr) {
         if (imageSize == 0 || imageSize > PIXEL_MAP_MAX_RAM_SIZE) {
             HiLog::Error(LABEL, "[SetSavedImageData]malloc frame %{public}d failed for invalid imagesize", frameIndex);
-            return ERR_IMAGE_MALLOC_ABNORMAL;            
+            return ERR_IMAGE_MALLOC_ABNORMAL;
         }
         saveImagePtr->RasterBits = static_cast<GifPixelType *>(malloc(imageSize * sizeof(GifPixelType)));
         if (saveImagePtr->RasterBits == nullptr) {
