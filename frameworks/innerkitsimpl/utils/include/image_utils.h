@@ -25,6 +25,7 @@
 namespace OHOS {
 namespace Media {
 const std::string IMAGE_ENCODE_FORMAT = "encodeFormat";
+constexpr uint32_t MALLOC_MAX_LENTH = 0x40000000;
 
 class ImageUtils {
 public:
