@@ -59,7 +59,7 @@ namespace OHOS {
             std::unique_ptr<PixelMap> getSurfacePixelMap(InitializationOptions initializationOpts);
             void ReleaseReceiver();
         };
-        
+
         class ImageReceiverSurfaceListener : public IBufferConsumerListener {
         public:
             std::shared_ptr<ImageReceiverContext> irContext_;

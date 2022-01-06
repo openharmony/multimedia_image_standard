@@ -153,7 +153,7 @@ bool IstreamSourceStream::GetData(uint32_t desiredSize, DataStreamBuffer &outDat
                    streamSize_, streamOffset_);
         return false;
     }
-    
+
     if (desiredSize == 0 || desiredSize > MALLOC_MAX_LENTH) {
         IMAGE_LOGE("IstreamSourceStream]Invalid value, desiredSize out of size.");
         return false;

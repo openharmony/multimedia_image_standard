@@ -30,14 +30,12 @@
 using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::ImageSourceUtil;
 
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourcePngTest"
 };
 static constexpr uint32_t DEFAULT_DELAY_UTIME = 10000;  // 10 ms.
-
-int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap);
-bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize);
 
 class ImageSourcePngTest : public testing::Test {
 public:
