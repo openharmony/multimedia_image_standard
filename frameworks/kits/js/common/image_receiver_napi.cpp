@@ -215,20 +215,20 @@ napi_value ImageReceiverNapi::JSCreateImageReceiver(napi_env env, napi_callback_
     }
 
     if (argc != ARGS4) {
-        IMAGE_ERR("Invailed arg counts %{public}d", argc);
+        IMAGE_ERR("Invailed arg counts %{public}zu", argc);
         return result;
     }
 
     for (size_t i = PARAM0; i < argc; i++) {
         napi_valuetype argvType = ImageNapiUtils::getType(env, argv[i]);
         if (argvType != napi_number) {
-            IMAGE_ERR("Invailed arg %{public}d type %{public}d", i, argvType);
+            IMAGE_ERR("Invailed arg %{public}zu type %{public}d", i, argvType);
             return result;
         }
 
         status = napi_get_value_int32(env, argv[i], &(args[i]));
         if (status != napi_ok) {
-            IMAGE_ERR("fail to get arg %{public}d : %{public}d", i, status);
+            IMAGE_ERR("fail to get arg %{public}zu : %{public}d", i, status);
             return result;
         }
     }
@@ -625,7 +625,7 @@ static bool JsOnQueryArgs(ImageReceiverCommonArgs &args, ImageReceiverInnerConte
             return false;
         }
     } else {
-        IMAGE_ERR("Invailed argc: %{public}d", ic.argc);
+        IMAGE_ERR("Invailed argc: %{public}zu", ic.argc);
         return false;
     }
 
