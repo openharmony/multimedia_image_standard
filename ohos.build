@@ -28,6 +28,18 @@
             "header_base": "//foundation/multimedia/image_standard/interfaces/innerkits/include"
           },
           "name": "//foundation/multimedia/image_standard/interfaces/innerkits:image_native"
+        },
+        {
+          "header": {
+            "header_files": [
+              "image_packer_napi.h",
+              "image_source_napi.h",
+              "native_module_ohos_image.h",
+              "pixel_map_napi.h"
+            ],
+            "header_base": "//foundation/multimedia/image_standard/interfaces/kits/js/common/include"
+          },
+          "name": "//foundation/multimedia/image_standard/interfaces/innerkits:image"
         }
       ],
       "system_capabilities":[
