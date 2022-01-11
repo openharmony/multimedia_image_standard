@@ -30,42 +30,57 @@
 #include "image_receiver_context.h"
 
 namespace OHOS {
-    namespace Media {
-        class ImageReceiver {
-        public:
-            std::shared_ptr<ImageReceiverContext> iraContext_ = nullptr;
-            sptr<Surface> receiverConsumerSurface_ = nullptr;
-            sptr<Surface> receiverProducerSurface_ = nullptr;
-            ImageReceiver() {
-            };
-            ~ImageReceiver()
-            {
-                receiverConsumerSurface_ = nullptr;
-                receiverProducerSurface_ = nullptr;
-                iraContext_ = nullptr;
-            };
-            static inline int32_t pipeFd[2] = {};
-            static inline std::string OPTION_FORMAT = "image/jpeg";
-            static inline std::int32_t OPTION_QUALITY = 100;
-            static inline std::int32_t OPTION_NUMBERHINT = 1;
-            static std::shared_ptr<ImageReceiver> CreateImageReceiver(int32_t width,
-                                                                      int32_t height);
-            sptr<Surface> GetReceiverSurface();
-            OHOS::sptr<OHOS::SurfaceBuffer> ReadNextImage();
-            int32_t SaveBufferAsImage(std::string path,
-                                      OHOS::sptr<OHOS::SurfaceBuffer> buffer,
-                                      InitializationOptions initializationOpts);
-            int32_t SaveBufferAsImage(std::string path, InitializationOptions initializationOpts);
-            std::unique_ptr<PixelMap> getSurfacePixelMap(InitializationOptions initializationOpts);
-            void ReleaseReceiver();
-        };
-        
-        class ImageReceiverSurfaceListener : public IBufferConsumerListener {
-        public:
-            std::shared_ptr<ImageReceiverContext> irContext_;
-            void OnBufferAvailable() override;
-        };
-    } // namespace Media
+namespace Media {
+class SurfaceBufferAvaliableListener {
+public:
+    SurfaceBufferAvaliableListener()= default;
+    virtual ~SurfaceBufferAvaliableListener()= default;
+    virtual void OnSurfaceBufferAvaliable() = 0;
+};
+class ImageReceiver {
+public:
+    std::shared_ptr<ImageReceiverContext> iraContext_ = nullptr;
+    sptr<Surface> receiverConsumerSurface_ = nullptr;
+    sptr<Surface> receiverProducerSurface_ = nullptr;
+    std::shared_ptr<SurfaceBufferAvaliableListener> surfaceBufferAvaliableListener_ = nullptr;
+    ImageReceiver() {};
+    ~ImageReceiver()
+    {
+        receiverConsumerSurface_ = nullptr;
+        receiverProducerSurface_ = nullptr;
+        iraContext_ = nullptr;
+        surfaceBufferAvaliableListener_ = nullptr;
+    };
+    static inline int32_t pipeFd[2] = {};
+    static inline std::string OPTION_FORMAT = "image/jpeg";
+    static inline std::int32_t OPTION_QUALITY = 100;
+    static inline std::int32_t OPTION_NUMBERHINT = 1;
+    static std::shared_ptr<ImageReceiver> CreateImageReceiver(int32_t width,
+                                                              int32_t height,
+                                                              int32_t format,
+                                                              int32_t capicity);
+    sptr<Surface> GetReceiverSurface();
+    OHOS::sptr<OHOS::SurfaceBuffer> ReadNextImage();
+    OHOS::sptr<OHOS::SurfaceBuffer> ReadLastImage();
+    int32_t SaveBufferAsImage(int &fd,
+                              OHOS::sptr<OHOS::SurfaceBuffer> buffer,
+                              InitializationOptions initializationOpts);
+    int32_t SaveBufferAsImage(int &fd, InitializationOptions initializationOpts);
+    std::unique_ptr<PixelMap> getSurfacePixelMap(InitializationOptions initializationOpts);
+    void RegisterBufferAvaliableListener(
+        std::shared_ptr<SurfaceBufferAvaliableListener> surfaceBufferAvaliableListener)
+    {
+        surfaceBufferAvaliableListener_ = surfaceBufferAvaliableListener;
+    }
+    static sptr<Surface> getSurfaceById(std::string id);
+    void ReleaseReceiver();
+};
+class ImageReceiverSurfaceListener : public IBufferConsumerListener {
+public:
+    std::shared_ptr<ImageReceiver> ir_;
+    void OnBufferAvailable() override;
+};
+} // namespace Media
 } // namespace OHOS
 
 #endif // IMAGE_RECEIVER_H

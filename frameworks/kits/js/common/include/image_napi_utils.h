@@ -80,6 +80,28 @@ do \
 #define STATIC_EXEC_FUNC(name) static void name ## Exec(napi_env env, void *data)
 #define STATIC_COMPLETE_FUNC(name) static void name ## Complete(napi_env env, napi_status status, void *data)
 
+#define DECORATOR_HILOG(op, fmt, args...) \
+do { \
+    op(LABEL, fmt, ##args); \
+} while (0)
+
+#define IMAGE_ERR(fmt, ...) DECORATOR_HILOG(HiLog::Error, fmt, ##__VA_ARGS__)
+#ifdef IMAGE_DEBUG_FLAG
+#define IMAGE_INFO(fmt, ...) DECORATOR_HILOG(HiLog::Info, fmt, ##__VA_ARGS__)
+#define IMAGE_DEBUG(fmt, ...) DECORATOR_HILOG(HiLog::Debug, fmt, ##__VA_ARGS__)
+#define IMAGE_FUNCTION_IN(fmt, ...) DECORATOR_HILOG(HiLog::Info, fmt "%{public}s IN", __FUNCTION__, ##__VA_ARGS__)
+#define IMAGE_FUNCTION_OUT(fmt, ...) DECORATOR_HILOG(HiLog::Info, fmt "%{public}s OUT", __FUNCTION__, ##__VA_ARGS__)
+#define IMAGE_LINE_IN(fmt, ...) DECORATOR_HILOG(HiLog::Info, fmt "%{public}d IN", __LINE__, ##__VA_ARGS__)
+#define IMAGE_LINE_OUT(fmt, ...) DECORATOR_HILOG(HiLog::Info, fmt "%{public}d OUT", __LINE__, ##__VA_ARGS__)
+#else
+#define IMAGE_INFO(fmt, ...)
+#define IMAGE_DEBUG(fmt, ...)
+#define IMAGE_FUNCTION_IN(fmt, ...)
+#define IMAGE_FUNCTION_OUT(fmt, ...)
+#define IMAGE_LINE_IN(fmt, ...)
+#define IMAGE_LINE_OUT(fmt, ...)
+#endif
+
 namespace OHOS {
 namespace Media {
 class ImageNapiUtils {
@@ -89,6 +111,7 @@ public:
     static bool GetInt32ByName(napi_env env, napi_value root, const char* name, int32_t *res);
     static bool GetBoolByName(napi_env env, napi_value root, const char* name, bool *res);
     static bool GetNodeByName(napi_env env, napi_value root, const char* name, napi_value *res);
+    static bool GetUtf8String(napi_env env, napi_value root, std::string &res);
     static napi_valuetype getType(napi_env env, napi_value root);
 };
 } // namespace Media

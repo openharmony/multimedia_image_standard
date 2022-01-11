@@ -18,47 +18,52 @@
 #include "image_source.h"
 #include "image_utils.h"
 #include "hilog/log.h"
+#include "image_receiver_manager.h"
 
 namespace OHOS {
-namespace Media {
+    namespace Media {
         constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "imageReceiver"};
         using namespace OHOS::HiviewDFX;
+
         enum class mode_ {
             MODE_PREVIEW = 0,
             MODE_PHOTO
         };
-        int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
+        int64_t PackImage(int &fd, std::unique_ptr<PixelMap> pixelMap)
         {
-            HiLog::Error(LABEL, "PackImage");
+            HiLog::Debug(LABEL, "PackImage");
             ImagePacker imagePacker;
             PackOption option;
             option.format = ImageReceiver::OPTION_FORMAT;
             option.quality = ImageReceiver::OPTION_QUALITY;
             option.numberHint = ImageReceiver::OPTION_NUMBERHINT;
             std::set<std::string> formats;
+
             uint32_t ret = imagePacker.GetSupportedFormats(formats);
             if (ret != SUCCESS) {
                 HiLog::Error(LABEL, "image packer get supported format failed, ret=%{public}u.", ret);
                 return 0;
             } else {
-                HiLog::Error(LABEL, "SUCCESS");
+                HiLog::Debug(LABEL, "SUCCESS");
             }
-            imagePacker.StartPacking(filePath, option);
+            imagePacker.StartPacking(fd, option);
             imagePacker.AddImage(*pixelMap);
             int64_t packedSize = 0;
             imagePacker.FinalizePacking(packedSize);
             HiLog::Debug(LABEL, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
             return packedSize;
         }
+
         std::unique_ptr<PixelMap> ImageReceiver::getSurfacePixelMap(InitializationOptions initializationOpts)
         {
             uint32_t *addr = (uint32_t *)iraContext_->currentBuffer_->GetVirAddr();
             int32_t size = iraContext_->currentBuffer_->GetSize();
             return PixelMap::Create(addr, (uint32_t)size, initializationOpts);
         }
+
         static int32_t SaveSTP(uint32_t *buffer,
                                uint32_t bufferSize,
-                               std::string path,
+                               int &fd,
                                InitializationOptions initializationOpts)
         {
             int64_t errorCode = -1;
@@ -72,7 +77,7 @@ namespace Media {
                 return ERR_MEDIA_INVALID_VALUE;
             }
             ImagePacker imagePacker;
-            errorCode = PackImage(path, std::move(pixelMap));
+            errorCode = PackImage(fd, std::move(pixelMap));
             if (errorCode > 0) {
                 errorCode = SUCCESS;
             } else {
@@ -80,7 +85,7 @@ namespace Media {
             }
             return errorCode;
         }
-        int32_t ImageReceiver::SaveBufferAsImage(std::string path,
+        int32_t ImageReceiver::SaveBufferAsImage(int &fd,
                                                  OHOS::sptr<OHOS::SurfaceBuffer> buffer,
                                                  InitializationOptions initializationOpts)
         {
@@ -88,44 +93,50 @@ namespace Media {
             if (buffer != nullptr) {
                 uint32_t *addr = (uint32_t *)buffer->GetVirAddr();
                 int32_t size = buffer->GetSize();
-                errorcode = SaveSTP(addr, (uint32_t)size, path, initializationOpts);
+                errorcode = SaveSTP(addr, (uint32_t)size, fd, initializationOpts);
                 (iraContext_->GetReceiverBufferConsumer())->ReleaseBuffer(buffer, -1);
             } else {
                 HiLog::Debug(LABEL, "SaveBufferAsImage buffer == nullptr");
             }
             return errorcode;
         }
-        int32_t ImageReceiver::SaveBufferAsImage(std::string path,
+
+        int32_t ImageReceiver::SaveBufferAsImage(int &fd,
                                                  InitializationOptions initializationOpts)
         {
             if (iraContext_->currentBuffer_ != nullptr) {
-                return SaveBufferAsImage(path, iraContext_->currentBuffer_, initializationOpts);
+                return SaveBufferAsImage(fd, iraContext_->currentBuffer_, initializationOpts);
             } else {
                 HiLog::Debug(LABEL, "iraContext_->GetCurrentBuffer() == nullptr");
                 return 0;
             }
             return 0;
         }
+
         void ImageReceiverSurfaceListener ::OnBufferAvailable()
         {
-            int32_t flushFence = 0;
-            int64_t timestamp = 0;
-            OHOS::Rect damage = {};
-            OHOS::sptr<OHOS::SurfaceBuffer> buffer;
-            sptr<Surface> listenerConsumerSerface = irContext_->GetReceiverBufferConsumer();
-            listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
-            if (buffer != nullptr) {
-                irContext_->currentBuffer_ = buffer;
+            HiLog::Debug(LABEL, "OnBufferAvailable");
+            if (ir_->surfaceBufferAvaliableListener_ != nullptr) {
+                ir_->surfaceBufferAvaliableListener_->OnSurfaceBufferAvaliable();
             }
         }
+
         std::shared_ptr<ImageReceiverContext> ImageReceiverContext ::CreateImageReceiverContext()
         {
             std::shared_ptr<ImageReceiverContext> irc = std::make_shared<ImageReceiverContext>();
             return irc;
         }
-
+        sptr<Surface> ImageReceiver::getSurfaceById(std::string id)
+        {
+            ImageReceiverManager& imageReceiverManager = ImageReceiverManager::getInstance();
+            sptr<Surface> surface = imageReceiverManager.getSurfaceByKeyId(id);
+            HiLog::Debug(LABEL, "getSurfaceById");
+            return surface;
+        }
         std::shared_ptr<ImageReceiver> ImageReceiver::CreateImageReceiver(int32_t width,
-                                                                          int32_t height)
+                                                                          int32_t height,
+                                                                          int32_t format,
+                                                                          int32_t capicity)
         {
             std::shared_ptr<ImageReceiver> iva = std::make_shared<ImageReceiver>();
             iva->iraContext_ = ImageReceiverContext::CreateImageReceiverContext();
@@ -134,6 +145,7 @@ namespace Media {
                 HiLog::Debug(LABEL, "SurfaceAsConsumer == nullptr");
             }
             iva->receiverConsumerSurface_->SetDefaultWidthAndHeight(width, height);
+            iva->receiverConsumerSurface_->SetQueueSize(capicity);
             auto p = iva->receiverConsumerSurface_->GetProducer();
             iva->receiverProducerSurface_ = Surface::CreateSurfaceAsProducer(p);
             if (iva->receiverProducerSurface_ == nullptr) {
@@ -143,20 +155,54 @@ namespace Media {
             iva->iraContext_->SetReceiverBufferProducer(iva->receiverProducerSurface_);
             iva->iraContext_->SetWidth(width);
             iva->iraContext_->SetHeight(height);
+            iva->iraContext_->SetFormat(format);
+            iva->iraContext_->SetCapicity(capicity);
+            ImageReceiverManager& imageReceiverManager = ImageReceiverManager::getInstance();
+            std::string receiverKey = imageReceiverManager.SaveImageReceiver(iva);
+            iva->iraContext_->SetReceiverKey(receiverKey);
             sptr<ImageReceiverSurfaceListener> listener = new ImageReceiverSurfaceListener();
-            listener->irContext_ = iva->iraContext_;
+            listener->ir_ = iva;
             iva->receiverConsumerSurface_->
             RegisterConsumerListener((sptr<IBufferConsumerListener> &)listener);
             return iva;
         }
+
         OHOS::sptr<OHOS::SurfaceBuffer> ImageReceiver::ReadNextImage()
         {
+            int32_t flushFence = 0;
+            int64_t timestamp = 0;
+            OHOS::Rect damage = {};
+            OHOS::sptr<OHOS::SurfaceBuffer> buffer;
+            sptr<Surface> listenerConsumerSerface = iraContext_->GetReceiverBufferConsumer();
+            SurfaceError surfaceError = listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
+            if (surfaceError == SURFACE_ERROR_OK) {
+                iraContext_->currentBuffer_ = buffer;
+            } else {
+                HiLog::Debug(LABEL, "buffer is null");
+            }
+            return iraContext_->GetCurrentBuffer();
+        }
+        OHOS::sptr<OHOS::SurfaceBuffer> ImageReceiver::ReadLastImage()
+        {
+            int32_t flushFence = 0;
+            int64_t timestamp = 0;
+            OHOS::Rect damage = {};
+            OHOS::sptr<OHOS::SurfaceBuffer> buffer;
+            OHOS::sptr<OHOS::SurfaceBuffer> bufferBefore;
+            sptr<Surface> listenerConsumerSerface = iraContext_->GetReceiverBufferConsumer();
+            SurfaceError surfaceError = listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
+            while (surfaceError == SURFACE_ERROR_OK) {
+                bufferBefore = buffer;
+                surfaceError = listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
+            }
+            iraContext_->currentBuffer_ = bufferBefore;
             return iraContext_->GetCurrentBuffer();
         }
         sptr<Surface> ImageReceiver::GetReceiverSurface()
         {
             return iraContext_->GetReceiverBufferProducer();
         }
+
         void ImageReceiver::ReleaseReceiver()
         {
             ImageReceiver::~ImageReceiver();

@@ -15,21 +15,26 @@
 
 #include <gtest/gtest.h>
 #include <fstream>
+#include <fcntl.h>
 #include "directory_ex.h"
 #include "hilog/log.h"
-#include "log_tags.h"
-#include "media_errors.h"
-#include "incremental_pixel_map.h"
-#include "pixel_map.h"
 #include "image_packer.h"
 #include "image_source.h"
 #include "image_type.h"
 #include "image_utils.h"
+#include "incremental_pixel_map.h"
+#include "log_tags.h"
+#include "media_errors.h"
+#include "pixel_map.h"
+#include "image_receiver.h"
 #include "image_source_util.h"
+#include "graphic_common.h"
+#include "image_receiver_manager.h"
 
 using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::ImageSourceUtil;
 
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceJpegTest"
@@ -58,14 +63,12 @@ const std::string GPS_LONGITUDE = "GPSLongitude";
 const std::string GPS_LATITUDE_REF = "GPSLatitudeRef";
 const std::string GPS_LONGITUDE_REF = "GPSLongitudeRef";
 
-int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap);
-bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize);
-
 class ImageSourceJpegTest : public testing::Test {
 public:
     ImageSourceJpegTest() {};
     ~ImageSourceJpegTest() {};
 };
+
 /**
  * @tc.name: TC028
  * @tc.desc: Create ImageSource(stream)
@@ -85,6 +88,7 @@ HWTEST_F(ImageSourceJpegTest, TC028, TestSize.Level3)
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
 }
+
 /**
  * @tc.name: TC029
  * @tc.desc: Create ImageSource(path)
@@ -104,6 +108,7 @@ HWTEST_F(ImageSourceJpegTest, TC029, TestSize.Level3)
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
 }
+
 /**
  * @tc.name: TC030
  * @tc.desc: Create ImageSource(data)
@@ -128,6 +133,7 @@ HWTEST_F(ImageSourceJpegTest, TC030, TestSize.Level3)
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
 }
+
 /**
  * @tc.name: TC032
  * @tc.desc: Test GetImageInfo
@@ -152,6 +158,7 @@ HWTEST_F(ImageSourceJpegTest, TC032, TestSize.Level3)
     ret = imageSource->GetImageInfo(imageInfo);
     ASSERT_EQ(ret, SUCCESS);
 }
+
 /**
  * @tc.name: TC033
  * @tc.desc: Test GetImagePropertyInt(index, key, value)
@@ -176,6 +183,7 @@ HWTEST_F(ImageSourceJpegTest, TC033, TestSize.Level3)
 
     ASSERT_EQ(ret, SUCCESS);
 }
+
 /**
  * @tc.name: TC034
  * @tc.desc: Test GetImagePropertyString
@@ -200,6 +208,7 @@ HWTEST_F(ImageSourceJpegTest, TC034, TestSize.Level3)
 
     ASSERT_EQ(ret, SUCCESS);
 }
+
 /**
  * @tc.name: TC035
  * @tc.desc: Test CreatePixelMap
@@ -226,6 +235,7 @@ HWTEST_F(ImageSourceJpegTest, TC035, TestSize.Level3)
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
 }
+
 /**
  * @tc.name: TC036
  * @tc.desc: Test Area decoding,configure area
@@ -265,6 +275,7 @@ HWTEST_F(ImageSourceJpegTest, TC036, TestSize.Level3)
     EXPECT_EQ(200, pixelMap->GetWidth());
     EXPECT_EQ(400, pixelMap->GetHeight());
 }
+
 /**
  * @tc.name: TC037
  * @tc.desc: Test CreatePixelMap
@@ -282,6 +293,7 @@ HWTEST_F(ImageSourceJpegTest, TC037, TestSize.Level3)
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
 }
+
 /**
  * @tc.name: TC038
  * @tc.desc: Test jpeg decode
@@ -299,7 +311,7 @@ HWTEST_F(ImageSourceJpegTest, TC038, TestSize.Level3)
     std::unique_ptr<ImageSource> imageSource = ImageSource::CreateImageSource(IMAGE_INPUT_JPEG_PATH, opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
-    
+
     /**
      * @tc.steps: step2. decode image source to pixel map by default decode options.
      * @tc.expected: step2. decode image source to pixel map success.
@@ -310,6 +322,7 @@ HWTEST_F(ImageSourceJpegTest, TC038, TestSize.Level3)
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
 }
+
 /**
  * @tc.name: TC055
  * @tc.desc: Test StartPacking
@@ -362,6 +375,7 @@ GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC055 start";
 
     GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC055 end";
 }
+
 /**
  * @tc.name: TC056
  * @tc.desc: Test StartPacking
@@ -409,9 +423,9 @@ HWTEST_F(ImageSourceJpegTest, TC056, TestSize.Level3)
      */
     int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_JPEG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
-    
     GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC056 end";
 }
+
 /**
  * @tc.name: TC057
  * @tc.desc: Test StartPacking
@@ -450,6 +464,7 @@ HWTEST_F(ImageSourceJpegTest, TC057, TestSize.Level3)
 
     GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC057 end";
 }
+
 /**
  * @tc.name: TC059
  * @tc.desc: Test AddImage ImageSource
@@ -478,6 +493,7 @@ HWTEST_F(ImageSourceJpegTest, TC059, TestSize.Level3)
     ASSERT_NE(pixelMap.get(), nullptr);
     GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC059 end";
 }
+
 /**
  * @tc.name: TC061
  * @tc.desc: Test GetSupportedFormats
@@ -501,6 +517,7 @@ HWTEST_F(ImageSourceJpegTest, TC061, TestSize.Level3)
     ASSERT_EQ(ret, SUCCESS);
     GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC061 end";
 }
+
 /**
  * @tc.name: JpegImageDecode001
  * @tc.desc: Decode jpeg image from file source stream
@@ -1016,4 +1033,49 @@ HWTEST_F(ImageSourceJpegTest, JpegImageHwDecode001, TestSize.Level3)
      */
     int64_t packSize = OHOS::ImageSourceUtil::PackImage(IMAGE_OUTPUT_HW_JPEG_FILE_PATH, std::move(pixelMap));
     ASSERT_NE(packSize, 0);
+}
+HWTEST_F(ImageSourceJpegTest, JpegImageReceiver001, TestSize.Level3)
+{
+    OHOS::sptr<OHOS::SurfaceBuffer> buffer;
+    std::shared_ptr<ImageReceiver> imageReceiver;
+    int32_t releaseFence;
+    imageReceiver = ImageReceiver::CreateImageReceiver(8 * 1024, 8, 4, 8);
+    class ReceiverSurfaceListener : public SurfaceBufferAvaliableListener
+    {
+    public:
+        void OnSurfaceBufferAvaliable() override
+        {
+            InitializationOptions opts;
+            opts.size.width = 8 * 1024;
+            opts.size.height = 8;
+            opts.pixelFormat = OHOS::Media::PixelFormat::BGRA_8888;
+            opts.alphaType = OHOS::Media::AlphaType::IMAGE_ALPHA_TYPE_UNKNOWN;
+            opts.scaleMode = OHOS::Media::ScaleMode::CENTER_CROP;
+            opts.editable = true;
+            HiLog::Debug(LABEL_TEST, "ReceiverSurfaceListener");
+            ImageReceiverManager& imageReceiverManager = ImageReceiverManager::getInstance();
+            std::shared_ptr<ImageReceiver> imageReceiver1 = imageReceiverManager.getImageReceiverByKeyId("1");
+            OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer1 = imageReceiver1->ReadLastImage();
+            int fd = open("/data/receiver/Receiver_buffer7.jpg", O_RDWR | O_CREAT);
+            imageReceiver1->SaveBufferAsImage(fd, surfaceBuffer1, opts);
+        }
+    };
+    std::shared_ptr<ReceiverSurfaceListener> iReceiverSurfaceListener = std::make_shared<ReceiverSurfaceListener>();
+    imageReceiver->RegisterBufferAvaliableListener(
+        (std::shared_ptr<SurfaceBufferAvaliableListener>)iReceiverSurfaceListener);
+
+    std::string receiveKey = imageReceiver->iraContext_->GetReceiverKey();
+    HiLog::Debug(LABEL_TEST, "ReceiverKey = %{public}s", receiveKey.c_str());
+    OHOS::sptr<OHOS::Surface> receiverSurface = ImageReceiver::getSurfaceById(receiveKey);
+    receiverSurface->RequestBufferWithFence(buffer, releaseFence, requestConfig);
+    HiLog::Debug(LABEL_TEST, "RequestBufferWithFence");
+    int32_t *p = (int32_t *)buffer->GetVirAddr();
+    if (p != nullptr)
+    {
+        for (int32_t i = 0; i < requestConfig.width * requestConfig.height; i++) {
+            p[i] = i;
+        }
+    }
+    receiverSurface->FlushBuffer(buffer, -1, flushConfig);
+    HiLog::Debug(LABEL_TEST, "FlushBuffer");
 }

@@ -30,6 +30,7 @@
 using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::ImageSourceUtil;
 
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceWebpTest"
@@ -47,9 +48,6 @@ static const std::string IMAGE_OUTPUT_JPEG_MULTI_INC1_PATH = "/data/test/test_we
 static const std::string IMAGE_OUTPUT_JPEG_MULTI_ONETIME1_PATH = "/data/test/test_webp_onetime1.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_MULTI_INC2_PATH = "/data/test/test_webp_inc2.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_MULTI_ONETIME2_PATH = "/data/test/test_webp_onetime2.jpg";
-
-int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap);
-bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize);
 
 class ImageSourceWebpTest : public testing::Test {
 public:

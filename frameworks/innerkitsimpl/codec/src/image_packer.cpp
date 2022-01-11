@@ -111,6 +111,23 @@ uint32_t ImagePacker::StartPacking(const std::string &filePath, const PackOption
     return StartPackingImpl(option);
 }
 
+uint32_t ImagePacker::StartPacking(const int &fd, const PackOption &option)
+{
+    if (!IsPackOptionValid(option)) {
+        HiLog::Error(LABEL, "fd startPacking option invalid %{public}s, %{public}u.", option.format.c_str(),
+                     option.quality);
+        return ERR_IMAGE_INVALID_PARAMETER;
+    }
+    FilePackerStream *stream = new (std::nothrow) FilePackerStream(fd);
+    if (stream == nullptr) {
+        HiLog::Error(LABEL, "make file packer stream failed.");
+        return ERR_IMAGE_DATA_ABNORMAL;
+    }
+    FreeOldPackerStream();
+    packerStream_ = std::unique_ptr<FilePackerStream>(stream);
+    return StartPackingImpl(option);
+}
+
 uint32_t ImagePacker::StartPacking(std::ostream &outputStream, const PackOption &option)
 {
     if (!IsPackOptionValid(option)) {

@@ -75,12 +75,17 @@ ohos_copy("image_declaration") {
 ohos_shared_library("image") {
   public_configs = [ ":image_external_config" ]
   sources = [
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_napi_utils.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_packer_napi.cpp",
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_receiver_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_source_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/native_module_ohos_image.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/pixel_map_napi.cpp",
   ]
+
+  cflags = [ "-DIMAGE_DEBUG_FLAG" ]
+
   deps = [
     ":image_native",
     "//foundation/ace/napi:ace_napi",
@@ -117,6 +122,7 @@ ohos_shared_library("image_native") {
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/converter/src/post_proc.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/converter/src/scan_line_filter.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/receiver/src/image_receiver.cpp",
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/receiver/src/image_receiver_manager.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/stream/src/buffer_packer_stream.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/stream/src/buffer_source_stream.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/stream/src/file_packer_stream.cpp",
@@ -194,12 +200,17 @@ ohos_static_library("image_static_napi") {
   public_configs = [ ":image_external_config" ]
 
   sources = [
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_napi_utils.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_packer_napi.cpp",
+    "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_receiver_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/image_source_napi.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/native_module_ohos_image.cpp",
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/pixel_map_napi.cpp",
   ]
+
+  cflags = [ "-DIMAGE_DEBUG_FLAG" ]
+
   deps = [
     ":image_native",
     "//foundation/ace/napi:ace_napi",
@@ -228,6 +239,7 @@ ohos_static_library("image_static") {
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/converter/src/post_proc.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/converter/src/scan_line_filter.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/receiver/src/image_receiver.cpp",
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/receiver/src/image_receiver_manager.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/stream/src/buffer_packer_stream.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/stream/src/buffer_source_stream.cpp",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/stream/src/file_packer_stream.cpp",

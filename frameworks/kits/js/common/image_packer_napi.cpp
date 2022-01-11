@@ -373,7 +373,7 @@ napi_value ImagePackerNapi::GetSupportedFormats(napi_env env, napi_callback_info
 
     std::unique_ptr<ImagePackerAsyncContext> context = std::make_unique<ImagePackerAsyncContext>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&context->constructor_));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, context->constructor_),
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
     std::set<std::string> formats;

@@ -20,69 +20,95 @@
 #include <list>
 #include "hilog/log.h"
 
-
 namespace OHOS {
-    namespace Media {
-        class ImageReceiverContext {
-        public:
-            ImageReceiverContext() {
-            };
-            ~ImageReceiverContext()
-            {
-                currentBuffer_ = nullptr;
-            };
-            OHOS::sptr<OHOS::SurfaceBuffer> currentBuffer_;
-            static std::shared_ptr<ImageReceiverContext> CreateImageReceiverContext();
-            void SetReceiverBufferConsumer(sptr<Surface> &consumer)
-            {
-                receiverConsumerSurface_ = consumer;
-            }
-            sptr<Surface> GetReceiverBufferConsumer()
-            {
-                return receiverConsumerSurface_;
-            }
-            void SetReceiverBufferProducer(sptr<Surface> &producer)
-            {
-                receiverProducerSurface_ = producer;
-            }
-            sptr<Surface> GetReceiverBufferProducer()
-            {
-                return receiverProducerSurface_;
-            }
-            void SetWidth(int32_t width)
-            {
-                width_ = width;
-            }
-            int32_t GetWidth() const
-            {
-                return width_;
-            }
-            void SetHeight(int32_t height)
-            {
-                height_ = height;
-            }
-            int32_t GetrHeight() const
-            {
-                return height_;
-            }
-            OHOS::sptr<OHOS::SurfaceBuffer> GetCurrentBuffer() const
-            {
-                return currentBuffer_;
-            }
-            void SetCurrentBuffer(OHOS::sptr<OHOS::SurfaceBuffer> currentBuffer)
-            {
-                currentBuffer_ = currentBuffer;
-            }
+namespace Media {
+class ImageReceiverContext {
+public:
+    ImageReceiverContext() {
+    };
+    ~ImageReceiverContext()
+    {
+        currentBuffer_ = nullptr;
+    };
+    OHOS::sptr<OHOS::SurfaceBuffer> currentBuffer_;
+    static std::shared_ptr<ImageReceiverContext> CreateImageReceiverContext();
+    void SetReceiverBufferConsumer(sptr<Surface> &consumer)
+    {
+        receiverConsumerSurface_ = consumer;
+    }
+    sptr<Surface> GetReceiverBufferConsumer()
+    {
+        return receiverConsumerSurface_;
+    }
+    void SetReceiverBufferProducer(sptr<Surface> &producer)
+    {
+        receiverProducerSurface_ = producer;
+    }
+    sptr<Surface> GetReceiverBufferProducer()
+    {
+        return receiverProducerSurface_;
+    }
+    void SetWidth(int32_t width)
+    {
+        width_ = width;
+    }
+    int32_t GetWidth() const
+    {
+        return width_;
+    }
+    void SetHeight(int32_t height)
+    {
+        height_ = height;
+    }
+    int32_t GetHeight() const
+    {
+        return height_;
+    }
+    void SetFormat(int32_t format)
+    {
+        format_ = format;
+    }
+    int32_t GetFormat() const
+    {
+        return format_;
+    }
+    void SetCapicity(int32_t capicity)
+    {
+        capicity_ = capicity;
+    }
+    int32_t GetCapicity() const
+    {
+        return capicity_;
+    }
+    void SetReceiverKey(std::string receiverKey)
+    {
+        receiverKey_ = receiverKey;
+    }
+    std::string GetReceiverKey() const
+    {
+        return receiverKey_;
+    }
+    OHOS::sptr<OHOS::SurfaceBuffer> GetCurrentBuffer() const
+    {
+        return currentBuffer_;
+    }
+    void SetCurrentBuffer(OHOS::sptr<OHOS::SurfaceBuffer> currentBuffer)
+    {
+        currentBuffer_ = currentBuffer;
+    }
 
-        private:
-            static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
-                LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageReceiverContext"};
-            OHOS::sptr<Surface> receiverConsumerSurface_;
-            OHOS::sptr<Surface> receiverProducerSurface_;
-            int32_t width_;
-            int32_t height_;
-        };
-    } // namespace Media
+private:
+    static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
+        LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageReceiverContext"};
+    OHOS::sptr<Surface> receiverConsumerSurface_;
+    OHOS::sptr<Surface> receiverProducerSurface_;
+    int32_t width_;
+    int32_t height_;
+    int32_t format_;
+    int32_t capicity_;
+    std::string receiverKey_;
+};
+} // namespace Media
 } // namespace OHOS
 
 #endif // IMAGE_RECEIVER_PRIVATE_H

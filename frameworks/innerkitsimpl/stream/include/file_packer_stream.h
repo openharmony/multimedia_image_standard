@@ -27,6 +27,7 @@ namespace Media {
 class FilePackerStream : public PackerStream {
 public:
     explicit FilePackerStream(const std::string &filePath);
+    explicit FilePackerStream(const int fd);
     ~FilePackerStream() override;
     bool Write(const uint8_t *buffer, uint32_t size) override;
     void Flush() override;

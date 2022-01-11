@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include "image_source_util.h"
 #include <fstream>
 #include <string>
 #include "directory_ex.h"
@@ -24,6 +23,7 @@
 #include "log_tags.h"
 #include "media_errors.h"
 #include "pixel_map.h"
+#include "image_source_util.h"
 
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
@@ -83,6 +83,7 @@ int64_t PackImage(std::unique_ptr<ImageSource> imageSource)
     HiLog::Debug(LABEL_TEST, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
     return packedSize;
 }
+
 bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t bufferSize)
 {
     std::string realPath;

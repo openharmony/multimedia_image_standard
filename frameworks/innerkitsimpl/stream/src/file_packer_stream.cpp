@@ -46,7 +46,14 @@ FilePackerStream::FilePackerStream(const std::string &filePath)
         return;
     }
 }
-
+FilePackerStream::FilePackerStream(const int fd)
+{
+    file_ = fdopen(fd, "wb");
+    if (file_ == nullptr) {
+        HiLog::Error(LABEL, "fopen file failed, error:%{public}d", errno);
+        return;
+    }
+}
 FilePackerStream::~FilePackerStream()
 {
     if (file_ != nullptr) {

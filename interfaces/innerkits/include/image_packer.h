@@ -63,6 +63,7 @@ public:
     static uint32_t GetSupportedFormats(std::set<std::string> &formats);
     uint32_t StartPacking(uint8_t *data, uint32_t maxSize, const PackOption &option);
     uint32_t StartPacking(const std::string &filePath, const PackOption &option);
+    uint32_t StartPacking(const int &fd, const PackOption &option);
     uint32_t StartPacking(std::ostream &outputStream, const PackOption &option);
     uint32_t AddImage(PixelMap &pixelMap);
     uint32_t AddImage(ImageSource &source);

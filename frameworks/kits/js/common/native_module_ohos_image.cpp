@@ -33,6 +33,10 @@ static napi_value Export(napi_env env, napi_value exports)
     PixelMapNapi::Init(env, exports);
     HiLog::Error(LABEL, "ImageSourceNapi CALL");
     ImageSourceNapi::Init(env, exports);
+    HiLog::Error(LABEL, "ImageReceiverNapi CALL");
+    ImageReceiverNapi::Init(env, exports);
+    HiLog::Error(LABEL, "ImageNapi CALL");
+    ImageNapi::Init(env, exports);
     return exports;
 }
 
@@ -56,6 +60,5 @@ extern "C" __attribute__((constructor)) void ImageRegisterModule(void)
 {
     napi_module_register(&g_module);
 }
-
 } // namespace Media
 } // namespace OHOS

@@ -17,7 +17,8 @@
 
 namespace OHOS {
 namespace Media {
-    
+const size_t NUM0 = 0;
+const size_t NUM1 = 1;
 bool ImageNapiUtils::GetBufferByName(napi_env env, napi_value root, const char* name, void **res, size_t* len)
 {
     napi_value tempValue = nullptr;
@@ -64,9 +65,23 @@ bool ImageNapiUtils::GetBoolByName(napi_env env, napi_value root, const char* na
 
 bool ImageNapiUtils::GetNodeByName(napi_env env, napi_value root, const char* name, napi_value *res)
 {
-
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_named_property(env, root, name, res)), false);
 
+    return true;
+}
+
+bool ImageNapiUtils::GetUtf8String(napi_env env, napi_value root, std::string &res)
+{
+    size_t bufferSize = NUM0;
+    IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_string_utf8(env, root, nullptr,
+        NUM0, &bufferSize)) && bufferSize > NUM0, false);
+
+    size_t resultSize = NUM0;
+    bufferSize = bufferSize + NUM1;
+    std::vector<char> buffer(bufferSize);
+    IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_string_utf8(env, root, &(buffer[NUM0]),
+        bufferSize, &resultSize)) && resultSize > NUM0, false);
+    res.assign(buffer.begin(), buffer.end());
     return true;
 }
 

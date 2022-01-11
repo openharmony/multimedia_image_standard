@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 #include <fstream>
 #include <gtest/gtest.h>
 #include "directory_ex.h"
