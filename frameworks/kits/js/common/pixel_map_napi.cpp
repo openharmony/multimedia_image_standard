@@ -332,6 +332,22 @@ std::shared_ptr<PixelMap> PixelMapNapi::GetPixelMap(napi_env env, napi_value pix
     return nullptr;
 }
 
+std::shared_ptr<PixelMap>* PixelMapNapi::GetPixelMap()
+{
+    return &nativePixelMap_;
+}
+
+extern "C" __attribute__((visibility("default"))) void* OHOS_MEDIA_GetPixelMap(napi_env env, napi_value value)
+{
+    PixelMapNapi *pixmapNapi = nullptr;
+    napi_unwrap(env, value, reinterpret_cast<void**>(&pixmapNapi));
+    if (pixmapNapi == nullptr) {
+        HiLog::Error(LABEL, "pixmapNapi unwrapped is nullptr");
+        return nullptr;
+    }
+    return reinterpret_cast<void*>(pixmapNapi->GetPixelMap());
+}
+
 napi_value PixelMapNapi::Constructor(napi_env env, napi_callback_info info)
 {
     napi_value undefineVar = nullptr;
