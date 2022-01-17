@@ -38,7 +38,6 @@ namespace Media {
 static const std::string CLASS_NAME = "ImageReceiver";
 shared_ptr<ImageReceiver> ImageReceiverNapi::staticInstance_ = nullptr;
 napi_ref ImageReceiverNapi::sConstructor_ = nullptr;
-unique_ptr<ImageReceiverAsyncContext> ImageReceiverNapi::gContext_ = nullptr;
 using SurfaceListener = SurfaceBufferAvaliableListener;
 
 const int ARGS0 = 0;
@@ -62,7 +61,7 @@ ImageReceiverNapi::~ImageReceiverNapi()
     }
 }
 
-static void CommonCallbackRoutine(napi_env env, Context &context, const napi_value &valueParam)
+static void CommonCallbackRoutine(napi_env env, Context &context, const napi_value &valueParam, bool isRelease = true)
 {
     IMAGE_FUNCTION_IN();
     napi_value result[2] = {0};
@@ -86,13 +85,19 @@ static void CommonCallbackRoutine(napi_env env, Context &context, const napi_val
         napi_create_uint32(env, context->status, &result[0]);
         napi_get_reference_value(env, context->callbackRef, &callback);
         napi_call_function(env, nullptr, callback, PARAM2, result, &retVal);
-        napi_delete_reference(env, context->callbackRef);
     }
 
-    napi_delete_async_work(env, context->work);
+    if (isRelease) {
+        if (context->callbackRef != nullptr) {
+            napi_delete_reference(env, context->callbackRef);
+            context->callbackRef = nullptr;
+        }
 
-    delete context;
-    context = nullptr;
+        napi_delete_async_work(env, context->work);
+
+        delete context;
+        context = nullptr;
+    }
     IMAGE_FUNCTION_OUT();
 }
 
@@ -320,15 +325,15 @@ napi_value ImageReceiverNapi::JSCommonProcess(ImageReceiverCommonArgs &args)
     }
 
     if (args.async == CallType::ASYNC) {
-        napi_value _resource = nullptr;
-        napi_create_string_utf8((args.env), (args.name.c_str()), NAPI_AUTO_LENGTH, &_resource);
-        (ic.status) = napi_create_async_work(args.env, nullptr, _resource,
-                                             ([](napi_env env, void *data) {}),
-                                             (reinterpret_cast<napi_async_complete_callback>(args.callBack)),
-                                             static_cast<void *>((ic.context).get()), &(ic.context->work));
         if (args.asyncLater) {
             args.nonAsyncBack(args, ic);
         } else {
+            napi_value _resource = nullptr;
+            napi_create_string_utf8((args.env), (args.name.c_str()), NAPI_AUTO_LENGTH, &_resource);
+            (ic.status) = napi_create_async_work(args.env, nullptr, _resource,
+                                                 ([](napi_env env, void *data) {}),
+                                                 (reinterpret_cast<napi_async_complete_callback>(args.callBack)),
+                                                 static_cast<void *>((ic.context).get()), &(ic.context->work));
             napi_queue_async_work((args.env), (ic.context->work));
             ic.context.release();
         }
@@ -441,6 +446,27 @@ napi_value ImageReceiverNapi::JsGetFormat(napi_env env, napi_callback_info info)
 }
 
 #ifdef IMAGE_DEBUG_FLAG
+static void TestRequestBuffer(OHOS::sptr<OHOS::Surface> &receiverSurface,
+                              OHOS::BufferRequestConfig requestConfig,
+                              OHOS::BufferFlushConfig flushConfig)
+{
+    OHOS::sptr<OHOS::SurfaceBuffer> buffer;
+    int32_t releaseFence;
+    requestConfig.width = receiverSurface->GetDefaultWidth();
+    requestConfig.height = receiverSurface->GetDefaultHeight();
+    receiverSurface->RequestBuffer(buffer, releaseFence, requestConfig);
+    IMAGE_ERR("RequestBuffer");
+    int32_t *p = (int32_t *)buffer->GetVirAddr();
+    IMAGE_ERR("RequestBuffer %{public}p", p);
+    if (p != nullptr) {
+        for (int32_t i = 0; i < requestConfig.width * requestConfig.height; i++) {
+            p[i] = i;
+        }
+    }
+    receiverSurface->FlushBuffer(buffer, -1, flushConfig);
+    IMAGE_ERR("FlushBuffer");
+}
+
 static void DoTest(std::shared_ptr<ImageReceiver> imageReceiver)
 {
     OHOS::BufferRequestConfig requestConfig = {
@@ -459,21 +485,17 @@ static void DoTest(std::shared_ptr<ImageReceiver> imageReceiver)
         },
     };
 
-    OHOS::sptr<OHOS::SurfaceBuffer> buffer;
-    int32_t releaseFence;
     std::string receiveKey = imageReceiver->iraContext_->GetReceiverKey();
     IMAGE_ERR("ReceiverKey = %{public}s", receiveKey.c_str());
     OHOS::sptr<OHOS::Surface> receiverSurface = ImageReceiver::getSurfaceById(receiveKey);
-    receiverSurface->RequestBuffer(buffer, releaseFence, requestConfig);
-    IMAGE_ERR("RequestBuffer");
-    int32_t *p = (int32_t *)buffer->GetVirAddr();
-    if (p != nullptr) {
-        for (int32_t i = 0; i < requestConfig.width * requestConfig.height; i++) {
-            p[i] = i;
-        }
-    }
-    receiverSurface->FlushBuffer(buffer, -1, flushConfig);
-    IMAGE_ERR("FlushBuffer");
+    IMAGE_ERR("getDefaultWidth = %{public}d", receiverSurface->GetDefaultWidth());
+    IMAGE_ERR("getDefaultHeight = %{public}d", receiverSurface->GetDefaultHeight());
+    IMAGE_ERR("TestRequestBuffer 1 ...");
+    TestRequestBuffer(receiverSurface, requestConfig, flushConfig);
+    IMAGE_ERR("TestRequestBuffer 2 ...");
+    TestRequestBuffer(receiverSurface, requestConfig, flushConfig);
+    IMAGE_ERR("TestRequestBuffer 3 ...");
+    TestRequestBuffer(receiverSurface, requestConfig, flushConfig);
 }
 
 napi_value ImageReceiverNapi::JsTest(napi_env env, napi_callback_info info)
@@ -486,6 +508,7 @@ napi_value ImageReceiverNapi::JsTest(napi_env env, napi_callback_info info)
     args.argc = ARGS0;
 
     args.nonAsyncBack = [](ImageReceiverCommonArgs &args, ImageReceiverInnerContext &ic) -> bool {
+        ic.context->constructor_->isCallBackTest = true;
         DoTest(ic.context->receiver_);
         return true;
     };
@@ -531,6 +554,33 @@ napi_value ImageReceiverNapi::JsGetReceivingSurfaceId(napi_env env, napi_callbac
     return JSCommonProcess(args);
 }
 
+#ifdef IMAGE_DEBUG_FLAG
+static void DoCallBackTest(OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer1)
+{
+    if (surfaceBuffer1 == nullptr) {
+        IMAGE_ERR("surfaceBuffer1 is null");
+        return;
+    }
+
+    ImageReceiverManager& imageReceiverManager = ImageReceiverManager::getInstance();
+    shared_ptr<ImageReceiver> imageReceiver1 = imageReceiverManager.getImageReceiverByKeyId("1");
+    IMAGE_ERR("DoCallBackTest format %{public}d", imageReceiver1->iraContext_->GetFormat());
+
+    InitializationOptions opts;
+    opts.size.width = surfaceBuffer1->GetWidth();
+    opts.size.height = surfaceBuffer1->GetHeight();
+    opts.pixelFormat = OHOS::Media::PixelFormat::BGRA_8888;
+    opts.alphaType = OHOS::Media::AlphaType::IMAGE_ALPHA_TYPE_UNKNOWN;
+    opts.scaleMode = OHOS::Media::ScaleMode::CENTER_CROP;
+    opts.editable = true;
+    IMAGE_ERR("DoCallBackTest Width %{public}d", opts.size.width);
+    IMAGE_ERR("DoCallBackTest Height %{public}d", opts.size.height);
+#ifdef SAVE_IMAGE_FLAG
+    int fd = open("/data/receiver/test.jpg", O_RDWR | O_CREAT);
+    imageReceiver1->SaveBufferAsImage(fd, surfaceBuffer1, opts);
+#endif
+}
+#endif
 napi_value ImageReceiverNapi::JsReadLatestImage(napi_env env, napi_callback_info info)
 {
     IMAGE_FUNCTION_IN();
@@ -553,7 +603,14 @@ napi_value ImageReceiverNapi::JsReadLatestImage(napi_env env, napi_callback_info
             IMAGE_ERR("Native instance is nullptr");
             context->status = ERR_IMAGE_INIT_ABNORMAL;
         } else {
-            result = ImageNapi::Create(env, native->ReadLastImage());
+            auto surfacebuffer = native->ReadLastImage();
+#ifdef IMAGE_DEBUG_FLAG
+            if (context->constructor_->isCallBackTest) {
+                context->constructor_->isCallBackTest = false;
+                DoCallBackTest(surfacebuffer);
+            }
+#endif
+            result = ImageNapi::Create(env, surfacebuffer);
             if (result == nullptr) {
                 IMAGE_ERR("ImageNapi Create failed");
                 context->status = ERR_IMAGE_INIT_ABNORMAL;
@@ -592,7 +649,14 @@ napi_value ImageReceiverNapi::JsReadNextImage(napi_env env, napi_callback_info i
             IMAGE_ERR("Native instance is nullptr");
             context->status = ERR_IMAGE_INIT_ABNORMAL;
         } else {
-            result = ImageNapi::Create(env, native->ReadNextImage());
+            auto surfacebuffer = native->ReadNextImage();
+#ifdef IMAGE_DEBUG_FLAG
+            if (context->constructor_->isCallBackTest) {
+                context->constructor_->isCallBackTest = false;
+                DoCallBackTest(surfacebuffer);
+            }
+#endif
+            result = ImageNapi::Create(env, surfacebuffer);
             if (result == nullptr) {
                 IMAGE_ERR("ImageNapi Create failed");
                 context->status = ERR_IMAGE_INIT_ABNORMAL;
@@ -633,26 +697,37 @@ static bool JsOnQueryArgs(ImageReceiverCommonArgs &args, ImageReceiverInnerConte
     return true;
 }
 
-void ImageReceiverNapi::DoCallBack()
+void ImageReceiverNapi::DoCallBack(shared_ptr<ImageReceiverAsyncContext> context,
+                                   string name, CompleteCallback callBack)
 {
     IMAGE_FUNCTION_IN();
     napi_status status;
-    if (gContext_ == nullptr) {
+    if (context == nullptr) {
         IMAGE_ERR("gContext is empty");
         return;
     }
 
-    if (gContext_->env == nullptr) {
+    if (context->env == nullptr) {
         IMAGE_ERR("env is empty");
         return;
     }
 
-    if (gContext_->work == nullptr) {
-        IMAGE_ERR("work is empty");
+    if (callBack == nullptr) {
+        IMAGE_ERR("callBack is empty");
+        return;
+    }
+    napi_value _resource = nullptr;
+    napi_create_string_utf8(context->env, name.c_str(), NAPI_AUTO_LENGTH, &_resource);
+    status = napi_create_async_work(context->env, nullptr, _resource,
+                                    ([](napi_env env, void *data) {}),
+                                    reinterpret_cast<napi_async_complete_callback>(callBack),
+                                    static_cast<void *>(context.get()), &(context->work));
+    if (status != napi_ok) {
+        IMAGE_ERR("fail to create async work %{public}d", status);
         return;
     }
 
-    status = napi_queue_async_work(gContext_->env, gContext_->work);
+    status = napi_queue_async_work(context->env, context->work);
     if (status != napi_ok) {
         IMAGE_ERR("fail to queue async work %{public}d", status);
     }
@@ -682,8 +757,10 @@ napi_value ImageReceiverNapi::JsOn(napi_env env, napi_callback_info info)
             return false;
         }
         shared_ptr<ImageReceiverAvaliableListener> listener = make_shared<ImageReceiverAvaliableListener>();
-        gContext_ = std::move(ic.context);
-        gContext_->env = args.env;
+        listener->context = std::move(ic.context);
+        listener->context->env = args.env;
+        listener->name = args.name;
+        listener->callBack = args.callBack;
 
         IMAGE_ERR("listener is %{public}p", listener.get());
 
@@ -697,11 +774,10 @@ napi_value ImageReceiverNapi::JsOn(napi_env env, napi_callback_info info)
         IMAGE_LINE_IN();
         napi_value result = nullptr;
         napi_get_undefined(env, &result);
-        Context c = gContext_.release();
-        c->status = SUCCESS;
+        context->status = SUCCESS;
 
         IMAGE_LINE_OUT();
-        CommonCallbackRoutine(env, c, result);
+        CommonCallbackRoutine(env, context, result, false);
     };
 
     return JSCommonProcess(args);

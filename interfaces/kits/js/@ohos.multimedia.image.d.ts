@@ -154,6 +154,164 @@ declare namespace image {
      */
     UNPREMUL = 3
   }
+  
+  /**
+   * Enum for image formats.
+   * @since 8
+   */
+  enum ImageFormat {
+    /**
+     * YCBCR422 semi-planar format.
+     * @since 8
+     */
+    YCBCR_422_SP = 1000,
+
+    /**
+     * JPEG encoding format.
+     * @since 8
+     */
+    JPEG = 2000
+  }
+
+  enum ComponentType {
+    YUV_Y = 1,
+    YUV_U = 2,
+    YUV_V = 3,
+	JPEG = 4, 
+  }
+  
+  /**
+   * Creates an ImageReceiver instance.
+   * @param width The default width in pixels of the Images that this receiver will produce.
+   * @param height The default height in pixels of the Images that this receiver will produce.
+   * @param format The format of the Image that this receiver will produce. This must be one of the
+   *            {@link ImageFormat} constants. Note that not all formats are supported, like ImageFormat.NV21.
+   * @param capacity The maximum number of images the user will want to access simultaneously.
+   */
+  function createImageReceiver(width: number, height: number, format: number, capacity: number): ImageReceiver;
+
+  /**
+   * Describes image color components.
+   * @Since 8
+   */
+  interface Component {
+    /**
+     * Component type.
+     * @Since 8
+     */
+    readonly componentType: ComponentType;
+    /**
+     * Row stride.
+     * @Since 8
+     */
+    readonly rowStride: number;
+    /**
+     * Pixel stride.
+     * @Since 8
+     */
+    readonly pixelStride: number;
+    /**
+     * Component buffer.
+     * @Since 8
+     */
+    readonly byteBuffer: ArrayBuffer;
+  }
+
+  /**
+   * Provides basic image operations, including obtaining image information, and reading and writing image data.
+   * @Since 8
+   */
+  interface Image {
+    /**
+     * Sets or gets the image area to crop, default is size.
+     * @since 8
+     */
+    clipRect: Region;
+
+    /**
+     * Image size.
+     * @since 8
+     */
+    readonly size: number;
+
+    /**
+     * Image format.
+     * @since 8
+     */
+    readonly format: number;
+
+    /**
+     * Get component buffer from image.
+     * @since 8
+     */
+    getComponent(componentType: ComponentType, callback: AsyncCallback<Component>): void;
+    getComponent(componentType: ComponentType): Promise<Component>;
+
+    /**
+     * Release current image to receive another.
+     * @since 8
+     */
+    release(callback: AsyncCallback<void>): void;
+    release(): Promise<void>;
+  }
+
+  /**
+   * Image receiver object.
+   * @Since 8
+   */
+  interface ImageReceiver {
+    /**
+     * Image size.
+     * @Since 8
+     */
+    readonly size: Size;
+
+    /**
+     * Image capacity.
+     * @Since 8
+     */
+    readonly capacity: number;
+
+    /**
+     * Image format.
+     * @Since 8
+     */
+    readonly format: ImageFormat;
+
+    /**
+     * get an id which indicates a surface and can be used to set to Camera or other component can receive a surface
+     * @Since 8
+     */
+    getReceivingSurfaceId(callback: AsyncCallback<string>): void;
+    getReceivingSurfaceId(): Promise<string>;
+
+    /**
+     * Get lasted image from receiver
+     * @since 8
+     */
+    readLatestImage(callback: AsyncCallback<Image>): void;
+    readLatestImage(): Promise<Image>;
+
+    /**
+     * Get next image from receiver
+     * @since 8
+     */
+    readNextImage(callback: AsyncCallback<Image>): void;
+    readNextImage(): Promise<Image>;
+
+    /**
+     * Subscribe callback when receiving an image
+     * @since 8
+     */
+    on(type: 'imageArrival', callback: AsyncCallback<void>): void;
+
+    /**
+     * Release instance.
+     * @since 8
+     */
+    release(callback: AsyncCallback<void>): void;
+    release(): Promise<void>;
+  }
 
   /**
    * Describes the size of an image.

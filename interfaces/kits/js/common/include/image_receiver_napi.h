@@ -35,14 +35,20 @@ namespace OHOS {
 namespace Media {
 struct ImageReceiverCommonArgs;
 struct ImageReceiverAsyncContext;
+using Context = ImageReceiverAsyncContext* ;
+using CompleteCallback = void (*)(napi_env env, napi_status status, Context context);
 class ImageReceiverNapi {
 public:
     ImageReceiverNapi();
     ~ImageReceiverNapi();
     static napi_value Init(napi_env env, napi_value exports);
-    static void DoCallBack();
+    static void DoCallBack(std::shared_ptr<ImageReceiverAsyncContext> context,
+                           std::string name,
+                           CompleteCallback callBack);
     void NativeRelease();
-
+#ifdef IMAGE_DEBUG_FLAG
+    bool isCallBackTest = false;
+#endif
 private:
     static napi_value Constructor(napi_env env, napi_callback_info info);
     static void Destructor(napi_env env, void *nativeObject, void *finalize);
@@ -59,12 +65,11 @@ private:
 
     static bool GetNativeFromEnv(napi_env env, napi_callback_info info, std::shared_ptr<ImageReceiver> &native);
     static napi_value JSCommonProcess(ImageReceiverCommonArgs &args);
-
+#ifdef IMAGE_DEBUG_FLAG
     static napi_value JsTest(napi_env env, napi_callback_info info);
-
+#endif
     static napi_ref sConstructor_;
     static std::shared_ptr<ImageReceiver> staticInstance_;
-    static std::unique_ptr<ImageReceiverAsyncContext> gContext_;
 
     napi_env env_ = nullptr;
     napi_ref wrapper_ = nullptr;
@@ -90,8 +95,6 @@ struct ImageReceiverInnerContext {
     std::unique_ptr<ImageReceiverAsyncContext> context = nullptr;
 };
 
-using Context = ImageReceiverAsyncContext* ;
-using CompleteCallback = void (*)(napi_env env, napi_status status, Context context);
 using CommonFunc = bool (*)(ImageReceiverCommonArgs &args, ImageReceiverInnerContext &ic);
 
 enum class CallType : uint32_t {
@@ -114,10 +117,18 @@ struct ImageReceiverCommonArgs {
 
 class ImageReceiverAvaliableListener : public SurfaceBufferAvaliableListener {
 public:
+    ~ImageReceiverAvaliableListener()
+    {
+        context = nullptr;
+        callBack = nullptr;
+    }
     void OnSurfaceBufferAvaliable() override
     {
-        ImageReceiverNapi::DoCallBack();
+        ImageReceiverNapi::DoCallBack(context, name, callBack);
     }
+    std::shared_ptr<ImageReceiverAsyncContext> context = nullptr;
+    std::string name;
+    CompleteCallback callBack = nullptr;
 };
 } // namespace Media
 } // namespace OHOS

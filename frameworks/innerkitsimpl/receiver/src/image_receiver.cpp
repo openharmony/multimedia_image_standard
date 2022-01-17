@@ -29,6 +29,7 @@ namespace OHOS {
             MODE_PREVIEW = 0,
             MODE_PHOTO
         };
+
         int64_t PackImage(int &fd, std::unique_ptr<PixelMap> pixelMap)
         {
             HiLog::Debug(LABEL, "PackImage");
@@ -85,6 +86,7 @@ namespace OHOS {
             }
             return errorCode;
         }
+
         int32_t ImageReceiver::SaveBufferAsImage(int &fd,
                                                  OHOS::sptr<OHOS::SurfaceBuffer> buffer,
                                                  InitializationOptions initializationOpts)
@@ -143,14 +145,19 @@ namespace OHOS {
             iva->receiverConsumerSurface_ = Surface::CreateSurfaceAsConsumer();
             if (iva->receiverConsumerSurface_ == nullptr) {
                 HiLog::Debug(LABEL, "SurfaceAsConsumer == nullptr");
+                return iva;
             }
+
             iva->receiverConsumerSurface_->SetDefaultWidthAndHeight(width, height);
             iva->receiverConsumerSurface_->SetQueueSize(capicity);
             auto p = iva->receiverConsumerSurface_->GetProducer();
             iva->receiverProducerSurface_ = Surface::CreateSurfaceAsProducer(p);
             if (iva->receiverProducerSurface_ == nullptr) {
                 HiLog::Debug(LABEL, "SurfaceAsProducer == nullptr");
+                return iva;
             }
+
+            iva->receiverProducerSurface_->SetDefaultWidthAndHeight(width, height);
             iva->iraContext_->SetReceiverBufferConsumer(iva->receiverConsumerSurface_);
             iva->iraContext_->SetReceiverBufferProducer(iva->receiverProducerSurface_);
             iva->iraContext_->SetWidth(width);
@@ -182,6 +189,7 @@ namespace OHOS {
             }
             return iraContext_->GetCurrentBuffer();
         }
+
         OHOS::sptr<OHOS::SurfaceBuffer> ImageReceiver::ReadLastImage()
         {
             int32_t flushFence = 0;
@@ -198,6 +206,7 @@ namespace OHOS {
             iraContext_->currentBuffer_ = bufferBefore;
             return iraContext_->GetCurrentBuffer();
         }
+
         sptr<Surface> ImageReceiver::GetReceiverSurface()
         {
             return iraContext_->GetReceiverBufferProducer();
