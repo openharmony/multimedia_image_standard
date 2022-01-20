@@ -113,6 +113,7 @@ public:
     static bool GetNodeByName(napi_env env, napi_value root, const char* name, napi_value *res);
     static bool GetUtf8String(napi_env env, napi_value root, std::string &res);
     static napi_valuetype getType(napi_env env, napi_value root);
+    static bool CreateArrayBuffer(napi_env env, void* src, size_t srcLen, napi_value *res);
 };
 } // namespace Media
 } // namespace OHOS

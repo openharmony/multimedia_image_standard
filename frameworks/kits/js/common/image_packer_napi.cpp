@@ -153,8 +153,9 @@ STATIC_COMPLETE_FUNC(Packing)
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
     auto context = static_cast<ImagePackerAsyncContext*>(data);
-    status = napi_create_arraybuffer(env, context->packedSize, &(context->resultBuffer), &result);
-    if (!IMG_IS_OK(status)) {
+
+    if (!ImageNapiUtils::CreateArrayBuffer(env, context->resultBuffer,
+                                           context->packedSize, &result)) {
         context->status = ERROR;
         HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
         napi_get_undefined(env, &result);
