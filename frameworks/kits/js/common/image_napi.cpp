@@ -423,8 +423,7 @@ void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
     void *buffer = context->constructor_->sSurfaceBuffer_->GetVirAddr();
 
     napi_value array;
-    status = napi_create_arraybuffer(env, bufferSize, &buffer, &array);
-    if (!IMG_IS_OK(status)) {
+    if (!ImageNapiUtils::CreateArrayBuffer(env, buffer, bufferSize, &array)) {
         context->status = ERROR;
         HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
         napi_get_undefined(env, &result);

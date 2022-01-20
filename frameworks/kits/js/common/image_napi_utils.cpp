@@ -14,6 +14,7 @@
  */
 
 #include "image_napi_utils.h"
+#include <securec.h>
 
 namespace OHOS {
 namespace Media {
@@ -82,6 +83,23 @@ bool ImageNapiUtils::GetUtf8String(napi_env env, napi_value root, std::string &r
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_string_utf8(env, root, &(buffer[NUM0]),
         bufferSize, &resultSize)) && resultSize > NUM0, false);
     res.assign(buffer.begin(), buffer.end());
+    return true;
+}
+
+bool ImageNapiUtils::CreateArrayBuffer(napi_env env, void* src, size_t srcLen, napi_value *res)
+{
+    if (src == nullptr || srcLen == 0) {
+        return false;
+    }
+
+    void *nativePtr = nullptr;
+    if (napi_create_arraybuffer(env, srcLen, &nativePtr, res) != napi_ok || nativePtr == nullptr) {
+        return false;
+    }
+
+    if (memcpy_s(nativePtr, srcLen, src, srcLen) != 0) {
+        return false;
+    }
     return true;
 }
 
