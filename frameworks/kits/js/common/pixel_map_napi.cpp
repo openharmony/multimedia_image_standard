@@ -380,11 +380,6 @@ napi_value PixelMapNapi::Constructor(napi_env env, napi_callback_info info)
 
 void PixelMapNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
 {
-    PixelMapNapi *pixelMapNapi = reinterpret_cast<PixelMapNapi*>(nativeObject);
-
-    if (IMG_NOT_NULL(pixelMapNapi)) {
-        pixelMapNapi->~PixelMapNapi();
-    }
 }
 
 STATIC_EXEC_FUNC(CreatePixelMap)

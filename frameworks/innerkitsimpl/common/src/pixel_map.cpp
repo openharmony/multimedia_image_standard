@@ -1242,6 +1242,10 @@ bool PixelMap::Marshalling(Parcel &parcel) const
     }
     if (allocatorType_ == AllocatorType::SHARE_MEM_ALLOC) {
 #if !defined(_WIN32) && !defined(_APPLE)
+        if (!parcel.WriteInt32(bufferSize)) {
+            return false;
+        }
+
         int *fd = static_cast<int *>(context_);
         if (*fd < 0) {
             HiLog::Error(LABEL, "write pixel map failed, fd < 0.");
