@@ -765,6 +765,30 @@ declare namespace image {
     packing(source: ImageSource, option: PackingOption): Promise<ArrayBuffer>;
 
     /**
+     * Compresses or packs an image and uses a callback to return the result.
+     * @since 8
+     * @SysCap SystemCapability.Multimedia.Image
+     * @devices phone, tablet, tv, wearable, car
+     * @import import image from '@ohos.multimedia.image'
+     * @param source PixelMap to be processed.
+     * @param option Option for image packing.
+     * @param callback Callback used to return the packed data.
+     */
+     packing(source: PixelMap, option: PackingOption, callback: AsyncCallback<ArrayBuffer>): void;
+
+     /**
+      * Compresses or packs an image and uses a promise to return the result.
+      * @since 8
+      * @SysCap SystemCapability.Multimedia.Image
+      * @devices phone, tablet, tv, wearable, car
+      * @import import image from '@ohos.multimedia.image'
+      * @param source PixelMap to be processed.
+      * @param option Option for image packing.
+      * @return A Promise instance used to return the compressed or packed data.
+      */
+     packing(source: PixelMap, option: PackingOption): Promise<ArrayBuffer>;
+
+    /**
      * Releases an ImagePacker instance and uses a callback to return the result.
      * @since 6
      * @SysCap SystemCapability.Multimedia.Image
