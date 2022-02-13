@@ -114,8 +114,8 @@ napi_valuetype ImageNapiUtils::getType(napi_env env, napi_value root)
 
 void ImageNapiUtils::HicheckerReport()
 {
-    unit32_t pid = getpid();
-    unit32_t tid = gettid();
+    uint32_t pid = getpid();
+    uint32_t tid = gettid();
     std::string cautionMsg = "Trigger: pid = " + std::to_string(pid) + ", tid = " + std::to_string(tid);
     HiviewDFX::HiChecker::NotifySlowProcess(cautionMsg);
 }
