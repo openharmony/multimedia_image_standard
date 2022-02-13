@@ -98,9 +98,9 @@ ohos_shared_library("image") {
 
   external_deps = [
     "bytrace_standard:bytrace_core",
+    "hichecker_native:libhichecker",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "hichecker_native:libhichecker",
   ]
   relative_install_dir = "module/multimedia"
   subsystem_name = "multimedia"

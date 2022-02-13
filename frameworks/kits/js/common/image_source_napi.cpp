@@ -15,11 +15,9 @@
 
 #include "image_source_napi.h"
 #include <fcntl.h>
-#include <unistd.h>
 #include "hilog/log.h"
 #include "image_napi_utils.h"
 #include "media_errors.h"
-#include "hichecker.h"
 
 using OHOS::HiviewDFX::HiLog;
 namespace {
@@ -610,14 +608,6 @@ static void CreatePixelMapComplete(napi_env env, napi_status status, void *data)
     ImageSourceCallbackRoutine(env, context, result);
 }
 
-static void HicheckerReport()
-{
-    unit32_t pid = getpid();
-    unit32_t tid = gettid();
-    std::string cautionMsg = "Trigger: pid = " + std::to_string(pid) + ", tid = " + std::to_string(tid);
-    HiviewDFX::HiChecker::NotifySlowProcess(cautionMsg);
-}
-
 napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info)
 {
     napi_value result = nullptr;
@@ -678,7 +668,7 @@ napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info
         napi_get_undefined(env, &result);
     }
 
-    HicheckerReport();
+    ImageNapiUtils::HicheckerReport();
     IMG_CREATE_CREATE_ASYNC_WORK(env, status, "CreatePixelMap", CreatePixelMapExecute,
         CreatePixelMapComplete, asyncContext, asyncContext->work);
 
