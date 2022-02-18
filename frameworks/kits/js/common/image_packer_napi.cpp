@@ -201,24 +201,6 @@ STATIC_EXEC_FUNC(PackingFromPixelMap)
     HiLog::Debug(LABEL, "PackingFromPixelMapExec exit");
 }
 
-STATIC_COMPLETE_FUNC(PackingFromPixelMap)
-{
-    HiLog::Debug(LABEL, "PackingFromPixelMapComplete enter");
-    napi_value result = nullptr;
-    napi_get_undefined(env, &result);
-    auto context = static_cast<ImagePackerAsyncContext*>(data);
-    status = napi_create_arraybuffer(env, context->packedSize, &(context->resultBuffer), &result);
-    if (!IMG_IS_OK(status)) {
-        context->status = ERROR;
-        HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
-        napi_get_undefined(env, &result);
-    } else {
-        context->status = SUCCESS;
-    }
-    HiLog::Debug(LABEL, "PackingFromPixelMapComplete exit");
-    CommonCallbackRoutine(env, context, result);
-}
-
 napi_value ImagePackerNapi::Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor props[] = {
@@ -459,7 +441,7 @@ napi_value ImagePackerNapi::PackingFromPixelMap(napi_env env, napi_callback_info
     }
 
     IMG_CREATE_CREATE_ASYNC_WORK(env, status, "PackingFromPixelMap",
-        PackingFromPixelMapExec, PackingFromPixelMapComplete, asyncContext, asyncContext->work);
+        PackingFromPixelMapExec, PackingComplete, asyncContext, asyncContext->work);
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status),
         nullptr, HiLog::Error(LABEL, "fail to create async work"));
