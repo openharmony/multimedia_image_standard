@@ -324,12 +324,17 @@ std::shared_ptr<PixelMap> PixelMapNapi::GetPixelMap(napi_env env, napi_value pix
     std::unique_ptr<PixelMapNapi> pixelMapNapi = std::make_unique<PixelMapNapi>();
 
     napi_status status = napi_unwrap(env, pixelmap, reinterpret_cast<void**>(&pixelMapNapi));
-
-    if (IMG_IS_OK(status)) {
-        return pixelMapNapi->nativePixelMap_;
+    if (!IMG_IS_OK(status)) {
+        HiLog::Error(LABEL, "GetPixelMap napi unwrap failed");
+        return nullptr;
     }
 
-    return nullptr;
+    if (pixelMapNapi == nullptr) {
+        HiLog::Error(LABEL, "GetPixelMap pixmapNapi is nullptr");
+        return nullptr;
+    }
+
+    return pixelMapNapi->nativePixelMap_;
 }
 
 std::shared_ptr<PixelMap>* PixelMapNapi::GetPixelMap()
