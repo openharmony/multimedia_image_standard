@@ -375,7 +375,7 @@ static int32_t ParserPackingArguments(napi_env env, napi_value argv)
     }
 
     HiLog::Error(LABEL, "Inalued type!");
-    return TypePixelMap;
+    return TypeImageSource;
 }
 
 napi_value ImagePackerNapi::Packing(napi_env env, napi_callback_info info)
