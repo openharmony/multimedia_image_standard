@@ -599,7 +599,7 @@ static void CreatePixelMapExecute(napi_env env, void *data)
             context->rPixelMap = incPixelMap;
         }
     } else {
-         HiLog::Info(LABEL, "Get Incremental PixelMap!!!");
+        HiLog::Info(LABEL, "Get Incremental PixelMap!!!");
     }
     if (context->rPixelMap == nullptr) {
         context->rPixelMap = context->rImageSource->CreatePixelMap(context->decodeOpts, errorCode);
@@ -911,7 +911,7 @@ napi_value ImageSourceNapi::GetImageProperty(napi_env env, napi_callback_info in
 static void UpdateDataExecute(napi_env env, void *data)
 {
     auto context = static_cast<ImageSourceAsyncContext*>(data);
-    uint8_t * buffer = static_cast<uint8_t *>(context->updataBuffer);
+    uint8_t *buffer = static_cast<uint8_t*>(context->updataBuffer);
     if (context->updataBufferOffset < context->updataBufferSize) {
         buffer = buffer + context->updataBufferOffset;
     }
@@ -927,7 +927,7 @@ static void UpdateDataExecute(napi_env env, void *data)
         if (incPixelMap != nullptr) {
             uint8_t decodeProgress = 0;
             uint32_t err = incPixelMap->PromoteDecoding(decodeProgress);
-            if(!(err == SUCCESS || (err == ERR_IMAGE_SOURCE_DATA_INCOMPLETE && !context->isCompleted))) {
+            if (!(err == SUCCESS || (err == ERR_IMAGE_SOURCE_DATA_INCOMPLETE && !context->isCompleted))) {
                 HiLog::Error(LABEL, "UpdateData PromoteDecoding error");
                 context->isSuccess = false;
             }
@@ -951,7 +951,8 @@ static void UpdateDataComplete(napi_env env, napi_status status, void *data)
     ImageSourceCallbackRoutine(env, context, result);
 }
 
-static bool isNapiTypedArray(napi_env env, napi_value val) {
+static bool isNapiTypedArray(napi_env env, napi_value val)
+{
     bool res = false;
     napi_is_typedarray(env, val, &res);
     HiLog::Debug(LABEL, "isNapiTypedArray %{public}d", res);

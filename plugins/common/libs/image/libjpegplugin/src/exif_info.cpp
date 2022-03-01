@@ -32,7 +32,6 @@ EXIFInfo::EXIFInfo() : imageFileDirectory_(0), exifData_(nullptr)
 EXIFInfo::~EXIFInfo()
 {
     if (exifData_ != nullptr) {
-        exif_data_unref(exifData_);
         exifData_ = nullptr;
     }
 }
@@ -54,7 +53,7 @@ void EXIFInfo::SetExifTagValues(const std::string &tag, const std::string &value
 
 bool EXIFInfo::ModifyExifData(const std::string &tag, const std::string &value, const std::string &path)
 {
-    if（imageFileDirectory_ == 0） {
+    if (imageFileDirectory_ == 0) {
         return false;
     }
     return true;
@@ -86,10 +85,10 @@ long EXIFInfo::GetFileSize(FILE *fp)
     
     /* Jump to the end of the file. */
     fseek(fp, 0L, SEEK_END);
-    
+
     /* Get the end position. */
     size = ftell(fp);
-    
+
     /* Jump back to the original position. */
     fseek(fp, position, SEEK_SET);
 

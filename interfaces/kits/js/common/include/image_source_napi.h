@@ -33,7 +33,8 @@ public:
 
     static napi_value Init(napi_env env, napi_value exports);
     std::shared_ptr<ImageSource> nativeImgSrc = nullptr;
-    std::shared_ptr<IncrementalPixelMap> GetIncrementalPixelMap() {
+    std::shared_ptr<IncrementalPixelMap> GetIncrementalPixelMap()
+    {
         return navIncPixelMap_;
     }
 private:
