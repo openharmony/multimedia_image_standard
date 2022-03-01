@@ -26,6 +26,7 @@
 #include "log_tags.h"
 #include "plugin_class_base.h"
 #include "plugin_server.h"
+#include "exif_info.h"
 
 namespace OHOS {
 namespace ImagePlugin {
@@ -52,6 +53,8 @@ public:
     uint32_t PromoteIncrementalDecode(uint32_t index, ProgDecodeContext &context) override;
     uint32_t GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value) override;
     uint32_t GetImagePropertyString(uint32_t index, const std::string &key, std::string &value) override;
+    uint32_t ModifyImageProperty(uint32_t index, const std::string &key, const std::string &value,
+        const std::string &path) override;
 private:
     DISALLOW_COPY_AND_MOVE(JpegDecoder);
     int ExifPrintMethod();
@@ -65,6 +68,7 @@ private:
     void CreateDecoder();
     bool IsMarker(uint8_t rawPrefix, uint8_t rawMarkderCode, uint8_t markerCode);
     bool FindMarker(InputDataStream &stream, uint8_t marker);
+    int getExifTagFromKey(const std::string &key, const std::string &value);
 
     static MultimediaPlugin::PluginServer &pluginServer_;
     jpeg_decompress_struct decodeInfo_;
@@ -75,6 +79,7 @@ private:
     uint32_t streamPosition_ = 0;  // may be changed by other decoders, record it and restore if needed.
     PlPixelFormat outputFormat_ = PlPixelFormat::UNKNOWN;
     PixelDecodeOptions opts_;
+    EXIFInfo exifInfo_;
 };
 } // namespace ImagePlugin
 } // namespace OHOS

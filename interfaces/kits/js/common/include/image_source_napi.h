@@ -22,6 +22,7 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "pixel_map_napi.h"
+#include "incremental_pixel_map.h"
 
 namespace OHOS {
 namespace Media {
@@ -32,6 +33,10 @@ public:
 
     static napi_value Init(napi_env env, napi_value exports);
     std::shared_ptr<ImageSource> nativeImgSrc = nullptr;
+    std::shared_ptr<IncrementalPixelMap> GetIncrementalPixelMap()
+    {
+        return navIncPixelMap_;
+    }
 private:
     static napi_value Constructor(napi_env env, napi_callback_info info);
     static void Destructor(napi_env env, void *nativeObject, void *finalize);
@@ -47,12 +52,15 @@ private:
     // methods
     static napi_value GetImageInfo(napi_env env, napi_callback_info info);
     static napi_value CreatePixelMap(napi_env env, napi_callback_info info);
+    static napi_value ModifyImageProperty(napi_env env, napi_callback_info info);
     static napi_value GetImageProperty(napi_env env, napi_callback_info info);
     static napi_value UpdateData(napi_env env, napi_callback_info info);
     static napi_value Release(napi_env env, napi_callback_info info);
 
     static napi_ref sConstructor_;
     static std::shared_ptr<ImageSource> sImgSrc_;
+    static std::shared_ptr<IncrementalPixelMap> sIncPixelMap_;
+    std::shared_ptr<IncrementalPixelMap> navIncPixelMap_ = nullptr;
 
     napi_env env_ = nullptr;
     napi_ref wrapper_ = nullptr;

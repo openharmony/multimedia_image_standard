@@ -532,6 +532,24 @@ uint32_t ImageSource::GetImageInfo(uint32_t index, ImageInfo &imageInfo)
     return SUCCESS;
 }
 
+uint32_t ImageSource::ModifyImageProperty(uint32_t index, const std::string &key,
+    const std::string &value, const std::string &path)
+{
+    std::unique_lock<std::mutex> guard(decodingMutex_);
+    uint32_t ret;
+    auto iter = GetValidImageStatus(0, ret);
+    if (iter == imageStatusMap_.end()) {
+        IMAGE_LOGE("[ImageSource]get valid image status fail on modify image property, ret:%{public}u.", ret);
+        return ret;
+    }
+    ret = mainDecoder_->ModifyImageProperty(index, key, value, path);
+    if (ret != SUCCESS) {
+        IMAGE_LOGE("[ImageSource] GetImagePropertyInt fail, ret:%{public}u", ret);
+        return ret;
+    }
+    return SUCCESS;
+}
+
 uint32_t ImageSource::GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value)
 {
     std::unique_lock<std::mutex> guard(decodingMutex_);
