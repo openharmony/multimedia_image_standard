@@ -14,7 +14,6 @@
  */
 #ifndef EXIF_INFO_H
 #define EXIF_INFO_H
-#include <libexif/exif-data.h>
 #include <string>
 #include "hilog/log.h"
 #include "log_tags.h"
@@ -36,7 +35,7 @@ public:
      */
     int ParseExifData(const unsigned char *buf, unsigned len);
     int ParseExifData(const std::string &data);
-    bool ModifyExifData(const ExifTag &tag, const std::string &value, const std::string &path);
+    bool ModifyExifData(const std::string &tag, const std::string &value, const std::string &path);
 
 public:
     std::string bitsPerSample_; // Number of bits in each pixel of an image.
@@ -50,17 +49,16 @@ public:
     std::string dateTimeOriginal_;  // Original date and time.
 
 private:
-    // void SetExifTagValues(const std::string &name, const std::string &value);
-    void SetExifTagValues(const ExifTag &tag, const std::string &value);
-    ExifIfd GetImageFileDirectory(const ExifTag &tag);
-    ExifEntry* InitExifTag(ExifData *exif, ExifIfd ifd, ExifTag tag);
-    ExifEntry* CreateExifTag(ExifData *exif, ExifIfd ifd, ExifTag tag, size_t len, ExifFormat format);
+    void SetExifTagValues(const std::string &tag, const std::string &value);
+    int GetImageFileDirectory(const std::string &tag);
+    void* InitExifTag(std::string *exif, int ifd, std::string tag);
+    void* CreateExifTag(std::string *exif, int ifd, std::string tag, size_t len, std::string format);
     long GetFileSize(FILE *fp);
     void ReleaseSource(unsigned char *buf, FILE *file);
 
 private:
-    ExifIfd imageFileDirectory_;
-    ExifData* exifData_;
+    int imageFileDirectory_;
+    std::string* exifData_;
 };
 } // namespace ImagePlugin
 } // namespace OHOS

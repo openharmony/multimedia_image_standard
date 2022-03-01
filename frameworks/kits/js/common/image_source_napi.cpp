@@ -34,6 +34,7 @@ namespace OHOS {
 namespace Media {
 napi_ref ImageSourceNapi::sConstructor_ = nullptr;
 std::shared_ptr<ImageSource> ImageSourceNapi::sImgSrc_ = nullptr;
+std::shared_ptr<IncrementalPixelMap> ImageSourceNapi::sIncPixelMap_ = nullptr;
 static const std::string CLASS_NAME = "ImageSource";
 
 struct ImageSourceAsyncContext {
@@ -201,6 +202,8 @@ napi_value ImageSourceNapi::Constructor(napi_env env, napi_callback_info info)
         if (pImgSrcNapi != nullptr) {
             pImgSrcNapi->env_ = env;
             pImgSrcNapi->nativeImgSrc = sImgSrc_;
+            pImgSrcNapi->navIncPixelMap_ = sIncPixelMap_;
+            sIncPixelMap_ = nullptr;
 
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(pImgSrcNapi.get()),
                                ImageSourceNapi::Destructor, nullptr, &(pImgSrcNapi->wrapper_));
@@ -494,6 +497,8 @@ napi_value ImageSourceNapi::CreateIncrementalSource(napi_env env, napi_callback_
     IncrementalSourceOptions incOpts;
     incOpts.incrementalMode = IncrementalMode::INCREMENTAL_DATA;
     std::unique_ptr<ImageSource> imageSource = ImageSource::CreateIncrementalImageSource(incOpts, errorCode);
+    DecodeOptions decodeOpts;
+    std::unique_ptr<IncrementalPixelMap> incPixelMap = imageSource->CreateIncrementalPixelMap(0, decodeOpts, errorCode);
     HiLog::Debug(LABEL, "CreateIncrementalImageSource end");
     if (errorCode != SUCCESS || imageSource == nullptr) {
         HiLog::Error(LABEL, "CreateIncrementalImageSource error");
@@ -504,6 +509,7 @@ napi_value ImageSourceNapi::CreateIncrementalSource(napi_env env, napi_callback_
     status = napi_get_reference_value(env, sConstructor_, &constructor);
     if (IMG_IS_OK(status)) {
         sImgSrc_ = std::move(imageSource);
+        sIncPixelMap_ = std::move(incPixelMap);
         status = napi_new_instance(env, constructor, NUM_0, nullptr, &result);
     }
     if (!IMG_IS_OK(status)) {
@@ -586,8 +592,18 @@ static void CreatePixelMapExecute(napi_env env, void *data)
         HiLog::Error(LABEL, "empty context rImageSource");
     }
 
-    context->rPixelMap = context->rImageSource->CreatePixelMap(context->decodeOpts, errorCode);
-
+    if (context->constructor_ != nullptr) {
+        auto incPixelMap = context->constructor_->GetIncrementalPixelMap();
+        if (incPixelMap != nullptr) {
+            HiLog::Info(LABEL, "Get Incremental PixelMap!!!");
+            context->rPixelMap = incPixelMap;
+        }
+    } else {
+         HiLog::Info(LABEL, "Get Incremental PixelMap!!!");
+    }
+    if (context->rPixelMap == nullptr) {
+        context->rPixelMap = context->rImageSource->CreatePixelMap(context->decodeOpts, errorCode);
+    }
     if (context->rPixelMap == nullptr) {
         HiLog::Error(LABEL, "empty context rPixelMap");
     }
@@ -635,7 +651,7 @@ napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info
         nullptr, HiLog::Error(LABEL, "fail to unwrap context"));
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, imageSourceNapi->nativeImgSrc),
         nullptr, HiLog::Error(LABEL, "fail to unwrap nativeImgSrc"));
-
+    asyncContext->constructor_ = imageSourceNapi.get();
     asyncContext->rImageSource = imageSourceNapi->nativeImgSrc;
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rImageSource),
         nullptr, HiLog::Error(LABEL, "empty native rImageSource"));
@@ -895,8 +911,31 @@ napi_value ImageSourceNapi::GetImageProperty(napi_env env, napi_callback_info in
 static void UpdateDataExecute(napi_env env, void *data)
 {
     auto context = static_cast<ImageSourceAsyncContext*>(data);
-    context->isSuccess = context->rImageSource->UpdateData(static_cast<uint8_t *>(context->updataBuffer),
-        context->updataBufferSize, context->isCompleted);
+    uint8_t * buffer = static_cast<uint8_t *>(context->updataBuffer);
+    if (context->updataBufferOffset < context->updataBufferSize) {
+        buffer = buffer + context->updataBufferOffset;
+    }
+
+    uint32_t lastSize = context->updataBufferSize - context->updataBufferOffset;
+    uint32_t size = context->updataLength < lastSize ? context->updataLength : lastSize;
+
+    uint32_t res = context->rImageSource->UpdateData(buffer, size,
+                                                     context->isCompleted);
+    context->isSuccess = res == 0;
+    if (context->isSuccess && context->constructor_ != nullptr) {
+        auto incPixelMap = context->constructor_->GetIncrementalPixelMap();
+        if (incPixelMap != nullptr) {
+            uint8_t decodeProgress = 0;
+            uint32_t err = incPixelMap->PromoteDecoding(decodeProgress);
+            if(!(err == SUCCESS || (err == ERR_IMAGE_SOURCE_DATA_INCOMPLETE && !context->isCompleted))) {
+                HiLog::Error(LABEL, "UpdateData PromoteDecoding error");
+                context->isSuccess = false;
+            }
+            if (context->isCompleted) {
+                incPixelMap->DetachFromDecoding();
+            }
+        }
+    }
 }
 
 static void UpdateDataComplete(napi_env env, napi_status status, void *data)
@@ -910,6 +949,13 @@ static void UpdateDataComplete(napi_env env, napi_status status, void *data)
     napi_get_boolean(env, context->isSuccess, &result);
     HiLog::Debug(LABEL, "UpdateDataComplete OUT");
     ImageSourceCallbackRoutine(env, context, result);
+}
+
+static bool isNapiTypedArray(napi_env env, napi_value val) {
+    bool res = false;
+    napi_is_typedarray(env, val, &res);
+    HiLog::Debug(LABEL, "isNapiTypedArray %{public}d", res);
+    return res;
 }
 
 napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
@@ -938,11 +984,15 @@ napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rImageSource),
         nullptr, HiLog::Error(LABEL, "empty native rImageSource"));
-
-    if (argCount > NUM_0 && ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_string) {
-        size_t bufferSize = static_cast<size_t>(asyncContext->updataBufferSize);
-        status = napi_get_arraybuffer_info(env, argValue[NUM_0],
-            &(asyncContext->updataBuffer), &bufferSize);
+    HiLog::Error(LABEL, "UpdateData argCount %{public}d ", argCount);
+    if (argCount > NUM_0 && isNapiTypedArray(env, argValue[NUM_0])) {
+        HiLog::Error(LABEL, "UpdateData napi_get_arraybuffer_info ");
+        napi_typedarray_type type;
+        napi_value arraybuffer;
+        size_t offset;
+        status = napi_get_typedarray_info(env, argValue[NUM_0], &type,
+            &(asyncContext->updataBufferSize), &(asyncContext->updataBuffer),
+            &arraybuffer, &offset);
     }
 
     if (argCount >= NUM_2 && ImageNapiUtils::getType(env, argValue[NUM_1]) == napi_boolean) {
@@ -950,11 +1000,13 @@ napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
     }
 
     if (argCount >= NUM_3 && ImageNapiUtils::getType(env, argValue[NUM_2]) == napi_number) {
+        asyncContext->updataBufferOffset = 0;
         status = napi_get_value_uint32(env, argValue[NUM_2], &(asyncContext->updataBufferOffset));
         HiLog::Debug(LABEL, "asyncContext->updataBufferOffset is [%{public}u]", asyncContext->updataBufferOffset);
     }
 
     if (argCount >= NUM_4 && ImageNapiUtils::getType(env, argValue[NUM_3]) == napi_number) {
+        asyncContext->updataLength = 0;
         status = napi_get_value_uint32(env, argValue[NUM_3], &(asyncContext->updataLength));
         HiLog::Debug(LABEL, "asyncContext->updataLength is [%{public}u]", asyncContext->updataLength);
     }
