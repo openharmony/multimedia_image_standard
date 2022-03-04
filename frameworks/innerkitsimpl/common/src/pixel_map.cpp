@@ -1082,27 +1082,33 @@ bool PixelMap::WriteImageData(Parcel &parcel, size_t size) const
     int result = AshmemSetProt(fd, PROT_READ | PROT_WRITE);
     HiLog::Info(LABEL, "AshmemSetProt:[%{public}d].", result);
     if (result < 0) {
+        ::close(fd);
         return false;
     }
     void *ptr = ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
     if (ptr == MAP_FAILED) {
+        ::close(fd);
         return false;
     }
     HiLog::Info(LABEL, "mmap success");
 
     if (memcpy_s(ptr, size, data, size) != EOK) {
         ::munmap(ptr, size);
+        ::close(fd);
         HiLog::Error(LABEL, "WriteImageData memcpy_s error");
         return false;
     }
 
     if (!WriteFileDescriptor(parcel, fd)) {
         ::munmap(ptr, size);
+        ::close(fd);
         HiLog::Error(LABEL, "WriteImageData WriteFileDescriptor error");
         return false;
     }
     HiLog::Debug(LABEL, "WriteImageData WriteFileDescriptor success");
+    ::munmap(ptr, size);
+    ::close(fd);
     HiLog::Debug(LABEL, "WriteImageData End");
 #endif
     return true;
