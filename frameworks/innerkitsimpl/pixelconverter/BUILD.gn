@@ -143,4 +143,6 @@ ohos_static_library("pixelconvertadapter_static") {
 
     external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
   }
+  subsystem_name = "multimedia"
+  part_name = "multimedia_image_standard"
 }
