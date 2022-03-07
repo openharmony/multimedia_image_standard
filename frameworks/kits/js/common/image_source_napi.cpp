@@ -36,6 +36,7 @@ napi_ref ImageSourceNapi::sConstructor_ = nullptr;
 std::shared_ptr<ImageSource> ImageSourceNapi::sImgSrc_ = nullptr;
 std::shared_ptr<IncrementalPixelMap> ImageSourceNapi::sIncPixelMap_ = nullptr;
 static const std::string CLASS_NAME = "ImageSource";
+std::string ImageSourceNapi::filePath_ = "";
 
 struct ImageSourceAsyncContext {
     napi_env env;
@@ -432,6 +433,7 @@ napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info i
         asyncContext->pathName = buffer;
 
         HiLog::Debug(LABEL, "pathName is [%{public}s]", asyncContext->pathName.c_str());
+        filePath_ = asyncContext->pathName;
         imageSource = ImageSource::CreateImageSource(asyncContext->pathName, opts, errorCode);
     } else if (argCount == NUM_1 && ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_number) {
         napi_get_value_int32(env, argValue[NUM_0], &asyncContext->fdIndex);
@@ -834,6 +836,7 @@ static std::unique_ptr<ImageSourceAsyncContext> UnwrapContextForModify(napi_env 
             napi_create_reference(env, argValue[argCount - 1], refCount, &context->callbackRef);
         }
     }
+    context->pathName = ImageSourceNapi::filePath_;
     return context;
 }
 
