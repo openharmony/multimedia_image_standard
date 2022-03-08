@@ -65,8 +65,7 @@ int EXIFInfo::ParseExifData(const unsigned char *buf, unsigned len)
         return PARSE_EXIF_DATA_ERROR;
     }
     exif_data_foreach_content(exifData_,
-        [](ExifContent *ec, void *userData)
-        {
+        [](ExifContent *ec, void *userData) {
             ExifIfd ifd = exif_content_get_ifd(ec);
             ((EXIFInfo*)userData)->imageFileDirectory_ = ifd;
             if (ifd == EXIF_IFD_COUNT) {
@@ -74,8 +73,7 @@ int EXIFInfo::ParseExifData(const unsigned char *buf, unsigned len)
                 return;
             }
             exif_content_foreach_entry(ec,
-                [](ExifEntry *ee, void* userData)
-                {
+                [](ExifEntry *ee, void* userData) {
                     char tagValueChar[1024];
                     exif_entry_get_value(ee, tagValueChar, sizeof(tagValueChar));
                     std::string tagValueStr(&tagValueChar[0], &tagValueChar[strlen(tagValueChar)]);
