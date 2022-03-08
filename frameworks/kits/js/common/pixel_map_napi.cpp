@@ -821,6 +821,7 @@ napi_value PixelMapNapi::GetBytesNumberPerRow(napi_env env, napi_callback_info i
     } else {
         HiLog::Error(LABEL, "native pixelmap is nullptr!");
     }
+    pixelMapNapi.release();
     return result;
 }
 
@@ -851,6 +852,7 @@ napi_value PixelMapNapi::GetPixelBytesNumber(napi_env env, napi_callback_info in
     } else {
         HiLog::Error(LABEL, "native pixelmap is nullptr!");
     }
+    pixelMapNapi.release();
     return result;
 }
 
