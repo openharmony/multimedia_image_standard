@@ -259,7 +259,7 @@ bool EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, cons
             ExifRational longRational;
             longRational.numerator = atoi(longVec[0].c_str());
             longRational.denominator = atoi(longVec[1].c_str());
-            entry = CreateExifTag(ptrExifData, EXIF_IFD_GPS, EXIF_TAG_GPS_LONGTITUDE,
+            entry = CreateExifTag(ptrExifData, EXIF_IFD_GPS, EXIF_TAG_GPS_LONGITUDE,
                 sizeof(longRational), EXIF_FORMAT_RATIONAL);
             exif_set_rational(entry->data, order, longRational);
             break;
