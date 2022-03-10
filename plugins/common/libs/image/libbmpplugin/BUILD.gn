@@ -60,14 +60,14 @@ ohos_shared_library("bmpplugin") {
       "${asdk_dir}/static_library/${target_os}_${target_cpu}/include/external/skia/include/core",
       "${asdk_dir}/static_library/${target_os}_${target_cpu}/include/external/skia/include/config/mac",
       "${asdk_dir}/static_library/${target_os}_${target_cpu}/include/external/skia/include/config",
-      "//utils/native/base/include",
+      "//third_party/bounds_checking_function/include",
     ]
     deps = [
       "//foundation/graphic/ide/libs/skia:skia",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils_static",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager_static",
-      "//utils/native/base:utilsecurec",
+      "//third_party/bounds_checking_function:libsec_static",
     ]
   } else {
     include_dirs += [ "//utils/native/base/include" ]
