@@ -387,7 +387,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
     }
 
     if (!GET_NODE_BY_NAME(root, "desiredRegion", tmpValue)) {
-        HiLog::Debug(LABEL, "no rotateDegrees");
+        HiLog::Debug(LABEL, "no desiredRegion");
     } else {
         if (!ParseRegion(env, tmpValue, &(opts->desiredRegion))) {
             HiLog::Debug(LABEL, "ParseRegion error");
@@ -396,7 +396,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
 
     tmpNumber = 0;
     if (!GET_UINT32_BY_NAME(root, "desiredPixelFormat", tmpNumber)) {
-        HiLog::Debug(LABEL, "no rotateDegrees");
+        HiLog::Debug(LABEL, "no desiredPixelFormat");
     } else {
         opts->desiredPixelFormat = ParsePixlForamt(tmpNumber);
     }

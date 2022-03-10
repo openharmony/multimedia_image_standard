@@ -1044,7 +1044,6 @@ void PixelMap::ReleaseMemory(AllocatorType allocType, void *addr, void *context,
         }
         if (fd != nullptr) {
             ::close(*fd);
-            delete fd;
         }
 #endif
     } else if (allocType == AllocatorType::HEAP_ALLOC) {
@@ -1338,6 +1337,9 @@ PixelMap *PixelMap::Unmarshalling(Parcel &parcel)
     uint32_t ret = pixelMap->SetImageInfo(imgInfo);
     if (ret != SUCCESS) {
         ReleaseMemory(allocType, base, context, bufferSize);
+        if (context != nullptr) {
+            delete static_cast<int32_t *>(context);
+        }
         HiLog::Error(LABEL, "create pixel map from parcel failed, set image info error.");
         return nullptr;
     }
