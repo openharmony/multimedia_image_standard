@@ -31,6 +31,7 @@ config("image_external_config") {
     "//foundation/multimedia/utils/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    "//foundation/multimedia/image_standard/interfaces/kits/native/include",
     "//utils/jni/jnikit/include",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
     "//foundation/graphic/standard/interfaces/innerkits/surface",
@@ -54,7 +55,6 @@ config("image_external_config") {
     include_dirs += [
       "//utils/native/base/include",
       "//third_party/libpng",
-      "//third_party/libjpeg-turbo",
       "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
     ]
   }
@@ -181,10 +181,7 @@ ohos_shared_library("image_native") {
 
     if (DUAL_ADAPTER) {
     } else {
-      deps += [
-        "//third_party/libjpeg-turbo:libjpeg-turbo",
-        "//third_party/libpng:libpng",
-      ]
+      deps += [ "//third_party/libpng:libpng" ]
     }
     external_deps = [
       "bytrace_standard:bytrace_core",
@@ -299,10 +296,7 @@ ohos_static_library("image_static") {
 
     if (DUAL_ADAPTER) {
     } else {
-      deps += [
-        "//third_party/libjpeg-turbo:libjpeg-turbo",
-        "//third_party/libpng:libpng",
-      ]
+      deps += [ "//third_party/libpng:libpng" ]
     }
   }
   subsystem_name = "multimedia"
