@@ -370,8 +370,8 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
         HiLog::Debug(LABEL, "no sampleSize");
     }
 
-    if (!GET_UINT32_BY_NAME(root, "rotateDegrees", opts->rotateNewDegrees)) {
-        HiLog::Debug(LABEL, "no rotateDegrees");
+    if (!GET_UINT32_BY_NAME(root, "rotate", opts->rotateNewDegrees)) {
+        HiLog::Debug(LABEL, "no rotate");
     }
 
     if (!GET_BOOL_BY_NAME(root, "editable", opts->editable)) {
