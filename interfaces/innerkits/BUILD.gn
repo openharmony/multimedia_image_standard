@@ -54,7 +54,6 @@ config("image_external_config") {
     ]
   } else {
     include_dirs += [
-      "//third_party/bounds_checking_function/include",
       "//utils/native/base/include",
       "//third_party/libpng",
       "//third_party/libjpeg-turbo",
