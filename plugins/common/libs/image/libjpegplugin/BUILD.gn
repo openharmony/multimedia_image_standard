@@ -16,6 +16,7 @@ import("//foundation/multimedia/image_standard/ide/image_decode_config.gni")
 
 ohos_shared_library("jpegplugin") {
   sources = [
+    "//foundation/multimedia/image_standard/plugins/common/libs/image/libjpegplugin/src/exif_info.cpp",
     "//foundation/multimedia/image_standard/plugins/common/libs/image/libjpegplugin/src/jpeg_decoder.cpp",
     "//foundation/multimedia/image_standard/plugins/common/libs/image/libjpegplugin/src/jpeg_utils.cpp",
     "//foundation/multimedia/image_standard/plugins/common/libs/image/libjpegplugin/src/plugin_export.cpp",
@@ -34,6 +35,7 @@ ohos_shared_library("jpegplugin") {
     "//third_party/flutter/skia",
     "//third_party/flutter/skia/include/core",
     "//third_party/flutter/skia/third_party/libjpeg-turbo",
+    "//third_party/libexif",
   ]
 
   if (use_mingw_win) {
@@ -48,6 +50,7 @@ ohos_shared_library("jpegplugin") {
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_static",
       "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager_static",
+      "//third_party/libexif:libexif",
     ]
   } else if (use_clang_mac) {
     defines = image_decode_mac_defines
@@ -60,6 +63,7 @@ ohos_shared_library("jpegplugin") {
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_static",
       "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager_static",
+      "//third_party/libexif:libexif",
     ]
   } else {
     defines = [ "DUAL_ADAPTER" ]
@@ -71,12 +75,16 @@ ohos_shared_library("jpegplugin") {
       "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg",
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
+      "//third_party/libexif:libexif",
       "//utils/native/base:utils",
     ]
 
     if (DUAL_ADAPTER) {
     } else {
-      deps += [ "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg" ]
+      deps += [
+        "//foundation/ace/ace_engine/build/external_config/flutter/libjpeg:ace_libjpeg",
+        "//third_party/libexif:libexif",
+      ]
       include_dirs += [ "//third_party/flutter/skia/third_party/libjpeg-turbo" ]
     }
 

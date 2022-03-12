@@ -16,6 +16,7 @@
 
 #include "jerror.h"
 #include "media_errors.h"
+#include "string_ex.h"
 #ifndef _WIN32
 #include "securec.h"
 #else
@@ -49,12 +50,13 @@ constexpr uint8_t JPG_MARKER_APP0 = 0XE0;
 constexpr uint8_t JPG_MARKER_APPN = 0XEF;
 const std::string BITS_PER_SAMPLE = "BitsPerSample";
 const std::string ORIENTATION = "Orientation";
-const std::string IMAGE_HEIGHT = "ImageHeight";
+const std::string IMAGE_LENGTH = "ImageLength";
 const std::string IMAGE_WIDTH = "ImageWidth";
 const std::string GPS_LATITUDE = "GPSLatitude";
 const std::string GPS_LONGITUDE = "GPSLongitude";
 const std::string GPS_LATITUDE_REF = "GPSLatitudeRef";
 const std::string GPS_LONGITUDE_REF = "GPSLongitudeRef";
+const std::string DATE_TIME_ORIGINAL = "DateTimeOriginal";
 } // namespace
 
 PluginServer &JpegDecoder::pluginServer_ = DelayedRefSingleton<PluginServer>::GetInstance();
@@ -104,6 +106,30 @@ void JpegDecoder::SetSource(InputDataStream &sourceStream)
 {
     srcMgr_.inputStream = &sourceStream;
     state_ = JpegDecodingState::SOURCE_INITED;
+    HiLog::Error(LABEL, "SetSource ExifPrintMethod");
+    ExifPrintMethod();
+}
+
+int JpegDecoder::ExifPrintMethod()
+{
+    HiLog::Debug(LABEL, "ExifPrintMethod enter");
+    srcMgr_.inputStream->Seek(0);
+    unsigned long fsize = 0;
+    fsize = static_cast<unsigned long>(srcMgr_.inputStream->GetStreamSize());
+    unsigned char *buf = new unsigned char[fsize];
+    uint32_t readSize = 0;
+    srcMgr_.inputStream->Read(fsize, buf, fsize, readSize);
+    HiLog::Debug(LABEL, "parsing EXIF: fsize %{public}lu", fsize);
+    HiLog::Debug(LABEL, "parsing EXIF: readSize %{public}u", readSize);
+
+    int code = exifInfo_.ParseExifData(buf, fsize);
+    delete[] buf;
+    if (code) {
+        HiLog::Error(LABEL, "Error parsing EXIF: code %{public}d", code);
+        return ERR_MEDIA_VALUE_INVALID;
+    }
+
+    return Media::SUCCESS;
 }
 
 uint32_t JpegDecoder::GetImageSize(uint32_t index, PlSize &size)
@@ -548,7 +574,78 @@ uint32_t JpegDecoder::GetImagePropertyInt(uint32_t index, const std::string &key
 uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &key, std::string &value)
 {
     HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, key:%{public}s", key.c_str());
+    if (IsSameTextStr(key, BITS_PER_SAMPLE)) {
+        value = exifInfo_.bitsPerSample_;
+    } else if (IsSameTextStr(key, ORIENTATION)) {
+        value = exifInfo_.orientation_;
+    } else if (IsSameTextStr(key, IMAGE_LENGTH)) {
+        value = exifInfo_.imageLength_;
+    } else if (IsSameTextStr(key, IMAGE_WIDTH)) {
+        value = exifInfo_.imageWidth_;
+    } else if (IsSameTextStr(key, GPS_LATITUDE)) {
+        value = exifInfo_.gpsLatitude_;
+    } else if (IsSameTextStr(key, GPS_LONGITUDE)) {
+        value = exifInfo_.gpsLongitude_;
+    } else if (IsSameTextStr(key, GPS_LATITUDE_REF)) {
+        value = exifInfo_.gpsLatitudeRef_;
+    } else if (IsSameTextStr(key, GPS_LONGITUDE_REF)) {
+        value = exifInfo_.gpsLongitudeRef_;
+    } else if (IsSameTextStr(key, DATE_TIME_ORIGINAL)) {
+        value = exifInfo_.dateTimeOriginal_;
+    } else {
+        return Media::ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
+    }
+    HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, value:%{public}s", value.c_str());
+    return Media::SUCCESS;
+}
 
+ExifTag JpegDecoder::getExifTagFromKey(const std::string &key, const std::string &value)
+{
+    if (IsSameTextStr(key, BITS_PER_SAMPLE)) {
+        exifInfo_.bitsPerSample_ = value;
+        return EXIF_TAG_BITS_PER_SAMPLE;
+    } else if (IsSameTextStr(key, ORIENTATION)) {
+        exifInfo_.orientation_ = value;
+        return EXIF_TAG_ORIENTATION;
+    } else if (IsSameTextStr(key, IMAGE_LENGTH)) {
+        exifInfo_.imageLength_ = value;
+        return EXIF_TAG_IMAGE_LENGTH;
+    } else if (IsSameTextStr(key, IMAGE_WIDTH)) {
+        exifInfo_.imageWidth_ = value;
+        return EXIF_TAG_IMAGE_WIDTH;
+    } else if (IsSameTextStr(key, GPS_LATITUDE)) {
+        exifInfo_.gpsLatitude_ = value;
+        return EXIF_TAG_GPS_LATITUDE;
+    } else if (IsSameTextStr(key, GPS_LONGITUDE)) {
+        exifInfo_.gpsLongitude_ = value;
+        return EXIF_TAG_GPS_LONGITUDE;
+    } else if (IsSameTextStr(key, GPS_LATITUDE_REF)) {
+        exifInfo_.gpsLatitudeRef_ = value;
+        return EXIF_TAG_GPS_LATITUDE_REF;
+    } else if (IsSameTextStr(key, GPS_LONGITUDE_REF)) {
+        exifInfo_.gpsLongitudeRef_ = value;
+        return EXIF_TAG_GPS_LONGITUDE_REF;
+    } else if (IsSameTextStr(key, DATE_TIME_ORIGINAL)) {
+        exifInfo_.dateTimeOriginal_ = value;
+        return EXIF_TAG_DATE_TIME_ORIGINAL;
+    } else {
+        return EXIF_TAG_PRINT_IMAGE_MATCHING;
+    }
+}
+
+uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key,
+    const std::string &value, const std::string &path)
+{
+    HiLog::Error(LABEL, "[ModifyImageProperty] enter jped plugin, key:%{public}s, value:%{public}s",
+        key.c_str(), value.c_str());
+    ExifTag tag = getExifTagFromKey(key, value);
+    if (tag == EXIF_TAG_PRINT_IMAGE_MATCHING) {
+        return Media::ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
+    }
+
+    if (!exifInfo_.ModifyExifData(tag, value, path)) {
+        return ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
+    }
     return Media::SUCCESS;
 }
 } // namespace ImagePlugin
