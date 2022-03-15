@@ -32,7 +32,7 @@ namespace {
 
 namespace OHOS {
 namespace Media {
-napi_ref ImageSourceNapi::sConstructor_ = nullptr;
+thread_local napi_ref ImageSourceNapi::sConstructor_ = nullptr;
 std::shared_ptr<ImageSource> ImageSourceNapi::sImgSrc_ = nullptr;
 std::shared_ptr<IncrementalPixelMap> ImageSourceNapi::sIncPixelMap_ = nullptr;
 static const std::string CLASS_NAME = "ImageSource";
@@ -170,6 +170,19 @@ napi_value ImageSourceNapi::Init(napi_env env, napi_value exports)
     status = napi_create_reference(env, constructor, NUM_1, &sConstructor_);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "create reference fail");
+        return nullptr;
+    }
+
+    napi_value global = nullptr;
+    status = napi_get_global(env, &global);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Init:get global fail");
+        return nullptr;
+    }
+
+    status = napi_set_named_property(env, global, CLASS_NAME.c_str(), constructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Init:set global named property fail");
         return nullptr;
     }
 
@@ -391,7 +404,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
     if (!GET_NODE_BY_NAME(root, "desiredRegion", tmpValue)) {
         HiLog::Debug(LABEL, "no desiredRegion");
     } else {
-        if (!ParseRegion(env, tmpValue, &(opts->desiredRegion))) {
+        if (!ParseRegion(env, tmpValue, &(opts->CropRect))) {
             HiLog::Debug(LABEL, "ParseRegion error");
         }
     }

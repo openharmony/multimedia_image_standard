@@ -37,7 +37,7 @@ namespace OHOS {
 namespace Media {
 static const std::string CLASS_NAME = "ImageReceiver";
 shared_ptr<ImageReceiver> ImageReceiverNapi::staticInstance_ = nullptr;
-napi_ref ImageReceiverNapi::sConstructor_ = nullptr;
+thread_local napi_ref ImageReceiverNapi::sConstructor_ = nullptr;
 using SurfaceListener = SurfaceBufferAvaliableListener;
 
 const int ARGS0 = 0;
