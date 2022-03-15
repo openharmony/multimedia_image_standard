@@ -35,7 +35,7 @@ namespace Media {
 static const std::string CLASS_NAME_IMAGEPACKER = "ImagePacker";
 std::shared_ptr<ImagePacker> ImagePackerNapi::sImgPck_ = nullptr;
 std::shared_ptr<ImageSource> ImagePackerNapi::sImgSource_ = nullptr;
-napi_ref ImagePackerNapi::sConstructor_ = nullptr;
+thread_local napi_ref ImagePackerNapi::sConstructor_ = nullptr;
 
 const int ARGS_THREE = 3;
 const int PARAM0 = 0;
@@ -352,7 +352,7 @@ static int32_t ParserPackingArguments(napi_env env, napi_value argv)
 
     napi_get_global(env, &global);
 
-    ret = napi_get_named_property(env, global, "ImageSourceNapi", &constructor);
+    ret = napi_get_named_property(env, global, "ImageSource", &constructor);
     if (ret != napi_ok) {
         HiLog::Error(LABEL, "Get ImageSourceNapi property failed!");
     }
@@ -363,7 +363,7 @@ static int32_t ParserPackingArguments(napi_env env, napi_value argv)
         return TYPE_IMAGE_SOURCE;
     }
 
-    ret = napi_get_named_property(env, global, "PixelMapNapi", &constructor);
+    ret = napi_get_named_property(env, global, "PixelMap", &constructor);
     if (ret != napi_ok) {
         HiLog::Error(LABEL, "Get PixelMapNapi property failed!");
     }

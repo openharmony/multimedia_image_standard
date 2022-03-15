@@ -50,7 +50,7 @@ private:
     static napi_value Release(napi_env env, napi_callback_info info);
     static napi_value GetSupportedFormats(napi_env env, napi_callback_info info);
 
-    static napi_ref sConstructor_;
+    static thread_local napi_ref sConstructor_;
     static std::shared_ptr<ImageSource> sImgSource_;
     static std::shared_ptr<ImagePacker> sImgPck_;
 

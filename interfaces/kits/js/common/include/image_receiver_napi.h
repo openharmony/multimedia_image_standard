@@ -68,7 +68,7 @@ private:
 #ifdef IMAGE_DEBUG_FLAG
     static napi_value JsTest(napi_env env, napi_callback_info info);
 #endif
-    static napi_ref sConstructor_;
+    static thread_local napi_ref sConstructor_;
     static std::shared_ptr<ImageReceiver> staticInstance_;
 
     napi_env env_ = nullptr;

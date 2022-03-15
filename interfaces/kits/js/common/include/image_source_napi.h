@@ -59,7 +59,7 @@ private:
     static napi_value UpdateData(napi_env env, napi_callback_info info);
     static napi_value Release(napi_env env, napi_callback_info info);
 
-    static napi_ref sConstructor_;
+    static thread_local napi_ref sConstructor_;
     static std::shared_ptr<ImageSource> sImgSrc_;
     static std::shared_ptr<IncrementalPixelMap> sIncPixelMap_;
     std::shared_ptr<IncrementalPixelMap> navIncPixelMap_ = nullptr;

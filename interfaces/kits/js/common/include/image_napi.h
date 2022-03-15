@@ -56,7 +56,7 @@ private:
     static std::unique_ptr<ImageAsyncContext> UnwarpContext(napi_env env, napi_callback_info info);
     static void JsGetComponentCallBack(napi_env env, napi_status status, ImageAsyncContext* context);
 
-    static napi_ref sConstructor_;
+    static thread_local napi_ref sConstructor_;
     static sptr<SurfaceBuffer> staticInstance_;
     static std::shared_ptr<ImageReceiver> staticImageReceiverInstance_;
 

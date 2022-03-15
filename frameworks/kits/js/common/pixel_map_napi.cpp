@@ -33,7 +33,7 @@ namespace OHOS {
 namespace Media {
 
 static const std::string CLASS_NAME = "PixelMap";
-napi_ref PixelMapNapi::sConstructor_ = nullptr;
+thread_local napi_ref PixelMapNapi::sConstructor_ = nullptr;
 std::shared_ptr<PixelMap> PixelMapNapi::sPixelMap_ = nullptr;
 
 struct PositionArea {
@@ -282,6 +282,19 @@ napi_value PixelMapNapi::Init(napi_env env, napi_value exports)
         napi_create_reference(env, constructor, 1, &sConstructor_)),
         nullptr,
         HiLog::Error(LABEL, "create reference fail")
+    );
+
+    napi_value global = nullptr;
+    IMG_NAPI_CHECK_RET_D(IMG_IS_OK(
+        napi_get_global(env, &global)),
+        nullptr,
+        HiLog::Error(LABEL, "Init:get global fail")
+    );
+
+    IMG_NAPI_CHECK_RET_D(IMG_IS_OK(
+        napi_set_named_property(env, global, CLASS_NAME.c_str(), constructor)),
+        nullptr,
+        HiLog::Error(LABEL, "Init:set global named property fail")
     );
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(

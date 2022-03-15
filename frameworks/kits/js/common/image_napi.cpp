@@ -35,7 +35,7 @@ namespace Media {
 static const std::string CLASS_NAME = "ImageNapi";
 std::shared_ptr<ImageReceiver> ImageNapi::staticImageReceiverInstance_ = nullptr;
 sptr<SurfaceBuffer> ImageNapi::staticInstance_ = nullptr;
-napi_ref ImageNapi::sConstructor_ = nullptr;
+thread_local napi_ref ImageNapi::sConstructor_ = nullptr;
 
 const int ARGS0 = 0;
 const int ARGS1 = 1;
