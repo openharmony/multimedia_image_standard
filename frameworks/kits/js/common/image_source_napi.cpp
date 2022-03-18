@@ -607,10 +607,12 @@ static void CreatePixelMapExecute(napi_env env, void *data)
     auto context = static_cast<ImageSourceAsyncContext*>(data);
     if (context == nullptr) {
         HiLog::Error(LABEL, "empty context");
+        return;
     }
 
     if (context->rImageSource == nullptr) {
         HiLog::Error(LABEL, "empty context rImageSource");
+        return;
     }
 
     if (context->constructor_ != nullptr) {
@@ -625,14 +627,12 @@ static void CreatePixelMapExecute(napi_env env, void *data)
     if (context->rPixelMap == nullptr) {
         context->rPixelMap = context->rImageSource->CreatePixelMap(context->decodeOpts, errorCode);
     }
-    if (context->rPixelMap == nullptr) {
-        HiLog::Error(LABEL, "empty context rPixelMap");
-    }
-    HiLog::Error(LABEL, "CreatePixelMap out");
+
     if (IMG_NOT_NULL(context->rPixelMap)) {
         context->status = SUCCESS;
     } else {
         context->status = ERROR;
+        HiLog::Error(LABEL, "empty context rPixelMap");
     }
     HiLog::Debug(LABEL, "CreatePixelMapExecute OUT");
 }

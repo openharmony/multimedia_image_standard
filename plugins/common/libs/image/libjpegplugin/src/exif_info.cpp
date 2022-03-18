@@ -208,6 +208,9 @@ bool EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, cons
                 ReleaseSource(fileBuf, newFile);
                 return false;
             }
+            if (entry == nullptr) {
+                return false;
+            }
             if (bitsVec.size() != 0) {
                 for (size_t i = 0; i < bitsVec.size(); i++) {
                     exif_set_short(entry->data + i * CONSTANT_2, order, (ExifShort)atoi(bitsVec[i].c_str()));
@@ -217,16 +220,25 @@ bool EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, cons
         }
         case EXIF_TAG_ORIENTATION: {
             entry = InitExifTag(ptrExifData, EXIF_IFD_0, EXIF_TAG_ORIENTATION);
+            if (entry == nullptr) {
+                return false;
+            }
             exif_set_short(entry->data, order, (ExifShort)atoi(value.c_str()));
             break;
         }
         case EXIF_TAG_IMAGE_LENGTH: {
             entry = InitExifTag(ptrExifData, EXIF_IFD_1, EXIF_TAG_IMAGE_LENGTH);
+            if (entry == nullptr) {
+                return false;
+            }
             exif_set_short(entry->data, order, (ExifShort)atoi(value.c_str()));
             break;
         }
         case EXIF_TAG_IMAGE_WIDTH: {
             entry = InitExifTag(ptrExifData, EXIF_IFD_1, EXIF_TAG_IMAGE_WIDTH);
+            if (entry == nullptr) {
+                return false;
+            }
             exif_set_short(entry->data, order, (ExifShort)atoi(value.c_str()));
             break;
         }
@@ -244,6 +256,9 @@ bool EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, cons
             latRational.denominator = atoi(latVec[1].c_str());
             entry = CreateExifTag(ptrExifData, EXIF_IFD_GPS, EXIF_TAG_GPS_LATITUDE,
                 sizeof(latRational), EXIF_FORMAT_RATIONAL);
+            if (entry == nullptr) {
+                return false;
+            }
             exif_set_rational(entry->data, order, latRational);
             break;
         }
@@ -261,12 +276,18 @@ bool EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, cons
             longRational.denominator = atoi(longVec[1].c_str());
             entry = CreateExifTag(ptrExifData, EXIF_IFD_GPS, EXIF_TAG_GPS_LONGITUDE,
                 sizeof(longRational), EXIF_FORMAT_RATIONAL);
+            if (entry == nullptr) {
+                return false;
+            }
             exif_set_rational(entry->data, order, longRational);
             break;
         }
         case EXIF_TAG_GPS_LATITUDE_REF: {
             entry = CreateExifTag(ptrExifData, EXIF_IFD_GPS, EXIF_TAG_GPS_LATITUDE_REF,
                 value.length(), EXIF_FORMAT_ASCII);
+            if (entry == nullptr) {
+                return false;
+            }
             if (memcpy_s(entry->data, value.length(), value.c_str(), value.length()) != 0) {
                 HiLog::Error(LABEL, "LATITUDE ref memcpy error");
             }
@@ -275,6 +296,9 @@ bool EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, cons
         case EXIF_TAG_GPS_LONGITUDE_REF: {
             entry = CreateExifTag(ptrExifData, EXIF_IFD_GPS, EXIF_TAG_GPS_LONGITUDE_REF,
                 value.length(), EXIF_FORMAT_ASCII);
+            if (entry == nullptr) {
+                return false;
+            }
             if (memcpy_s(entry->data, value.length(), value.c_str(), value.length()) != 0) {
                 HiLog::Error(LABEL, "LONGITUDE ref memcpy error");
             }
