@@ -107,24 +107,25 @@ static bool parseInitializationOptions(napi_env env, napi_value root, Initializa
     napi_value tmpValue = nullptr;
 
     if (!GET_BOOL_BY_NAME(root, "editable", opts->editable)) {
-        return false;
+        HiLog::Info(LABEL, "no editable in initialization options");
+        opts->editable = true;
     }
 
     if (!GET_UINT32_BY_NAME(root, "alphaType", tmpNumber)) {
-        return false;
+        HiLog::Info(LABEL, "no alphaType in initialization options");
     }
     opts->alphaType = ParseAlphaType(tmpNumber);
 
     tmpNumber = 0;
     if (!GET_UINT32_BY_NAME(root, "pixelFormat", tmpNumber)) {
-        return false;
+        HiLog::Info(LABEL, "no pixelFormat in initialization options");
     }
     opts->pixelFormat = ParsePixlForamt(tmpNumber);
     
 
     tmpNumber = 0;
     if (!GET_UINT32_BY_NAME(root, "scaleMode", tmpNumber)) {
-        return false;
+        HiLog::Info(LABEL, "no scaleMode in initialization options");
     }
     opts->scaleMode = ParseScaleMode(tmpNumber);
     

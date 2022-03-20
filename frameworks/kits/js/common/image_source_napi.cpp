@@ -36,6 +36,7 @@ thread_local napi_ref ImageSourceNapi::sConstructor_ = nullptr;
 std::shared_ptr<ImageSource> ImageSourceNapi::sImgSrc_ = nullptr;
 std::shared_ptr<IncrementalPixelMap> ImageSourceNapi::sIncPixelMap_ = nullptr;
 static const std::string CLASS_NAME = "ImageSource";
+static const std::string FILE_URL_PREFIX = "file://";
 std::string ImageSourceNapi::filePath_ = "";
 
 struct ImageSourceAsyncContext {
@@ -62,7 +63,7 @@ struct ImageSourceAsyncContext {
     bool isSuccess = false;
     size_t pathNameLength;
     SourceOptions opts;
-    uint32_t index;
+    uint32_t index = 0;
     ImageInfo imageInfo;
     DecodeOptions decodeOpts;
     std::shared_ptr<ImageSource> rImageSource;
@@ -281,42 +282,46 @@ STATIC_COMPLETE_FUNC(GetImageInfo)
 {
     HiLog::Debug(LABEL, "[ImageSource]GetImageInfoComplete IN");
     napi_value result = nullptr;
-    napi_create_object(env, &result);
-
     auto context = static_cast<ImageSourceAsyncContext*>(data);
+    if (context->status == SUCCESS) {
+        napi_create_object(env, &result);
 
-    napi_value size = nullptr;
-    napi_create_object(env, &size);
+        napi_value size = nullptr;
+        napi_create_object(env, &size);
 
-    napi_value sizeWith = nullptr;
-    napi_create_int32(env, context->imageInfo.size.width, &sizeWith);
-    napi_set_named_property(env, size, "width", sizeWith);
+        napi_value sizeWith = nullptr;
+        napi_create_int32(env, context->imageInfo.size.width, &sizeWith);
+        napi_set_named_property(env, size, "width", sizeWith);
 
-    napi_value sizeHeight = nullptr;
-    napi_create_int32(env, context->imageInfo.size.height, &sizeHeight);
-    napi_set_named_property(env, size, "height", sizeHeight);
+        napi_value sizeHeight = nullptr;
+        napi_create_int32(env, context->imageInfo.size.height, &sizeHeight);
+        napi_set_named_property(env, size, "height", sizeHeight);
 
-    napi_set_named_property(env, result, "size", size);
+        napi_set_named_property(env, result, "size", size);
 
-    napi_value pixelFormatValue = nullptr;
-    napi_create_int32(env, static_cast<int32_t>(context->imageInfo.pixelFormat), &pixelFormatValue);
-    napi_set_named_property(env, result, "pixelFormat", pixelFormatValue);
+        napi_value pixelFormatValue = nullptr;
+        napi_create_int32(env, static_cast<int32_t>(context->imageInfo.pixelFormat), &pixelFormatValue);
+        napi_set_named_property(env, result, "pixelFormat", pixelFormatValue);
 
-    napi_value colorSpaceValue = nullptr;
-    napi_create_int32(env, static_cast<int32_t>(context->imageInfo.colorSpace), &colorSpaceValue);
-    napi_set_named_property(env, result, "colorSpace", colorSpaceValue);
+        napi_value colorSpaceValue = nullptr;
+        napi_create_int32(env, static_cast<int32_t>(context->imageInfo.colorSpace), &colorSpaceValue);
+        napi_set_named_property(env, result, "colorSpace", colorSpaceValue);
 
-    napi_value alphaTypeValue = nullptr;
-    napi_create_int32(env, static_cast<int32_t>(context->imageInfo.alphaType), &alphaTypeValue);
-    napi_set_named_property(env, result, "alphaType", alphaTypeValue);
+        napi_value alphaTypeValue = nullptr;
+        napi_create_int32(env, static_cast<int32_t>(context->imageInfo.alphaType), &alphaTypeValue);
+        napi_set_named_property(env, result, "alphaType", alphaTypeValue);
 
-    if (!IMG_IS_OK(status)) {
-        context->status = ERROR;
-        HiLog::Error(LABEL, "napi_create_int32 failed!");
-        napi_get_undefined(env, &result);
+        if (!IMG_IS_OK(status)) {
+            context->status = ERROR;
+            HiLog::Error(LABEL, "napi_create_int32 failed!");
+            napi_get_undefined(env, &result);
+        } else {
+            context->status = SUCCESS;
+        }
     } else {
-        context->status = SUCCESS;
+        napi_get_undefined(env, &result);
     }
+
     HiLog::Debug(LABEL, "[ImageSource]GetImageInfoComplete OUT");
     ImageSourceCallbackRoutine(env, context, result);
 }
@@ -418,6 +423,15 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
     return true;
 }
 
+static std::string FileUrlToRawPath(const std::string &path)
+{
+    if (path.size() > FILE_URL_PREFIX.size() &&
+        (path.compare(0, FILE_URL_PREFIX.size(), FILE_URL_PREFIX) == 0)) {
+        return path.substr(FILE_URL_PREFIX.size());
+    }
+    return path;
+}
+
 napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info info)
 {
     napi_value result = nullptr;
@@ -446,6 +460,7 @@ napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info i
         IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), nullptr, HiLog::Error(LABEL, "fail to get pathName"));
 
         asyncContext->pathName = buffer;
+        asyncContext->pathName = FileUrlToRawPath(asyncContext->pathName);
 
         HiLog::Debug(LABEL, "pathName is [%{public}s]", asyncContext->pathName.c_str());
         filePath_ = asyncContext->pathName;
@@ -586,8 +601,9 @@ napi_value ImageSourceNapi::GetImageInfo(napi_env env, napi_callback_info info)
     IMG_CREATE_CREATE_ASYNC_WORK(env, status, "GetImageInfo",
         [](napi_env env, void *data) {
             auto context = static_cast<ImageSourceAsyncContext*>(data);
-            context->rImageSource->GetImageInfo(NUM_0, context->imageInfo);
-            context->status = SUCCESS;
+
+            int index = (context->index >= NUM_0) ? context->index : NUM_0;
+            context->status = context->rImageSource->GetImageInfo(index, context->imageInfo);
 
         }, GetImageInfoComplete, asyncContext, asyncContext->work);
 
@@ -619,7 +635,8 @@ static void CreatePixelMapExecute(napi_env env, void *data)
         HiLog::Info(LABEL, "Get Incremental PixelMap!!!");
     }
     if (context->rPixelMap == nullptr) {
-        context->rPixelMap = context->rImageSource->CreatePixelMap(context->decodeOpts, errorCode);
+        int index = (context->index >= NUM_0) ? context->index : NUM_0;
+        context->rPixelMap = context->rImageSource->CreatePixelMap(index, context->decodeOpts, errorCode);
     }
     if (context->rPixelMap == nullptr) {
         HiLog::Error(LABEL, "empty context rPixelMap");
