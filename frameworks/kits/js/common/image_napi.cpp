@@ -190,6 +190,7 @@ napi_value ImageNapi::Create(napi_env env, sptr<SurfaceBuffer> surfaceBuffer,
     IMAGE_FUNCTION_IN();
     if (surfaceBuffer == nullptr) {
         IMAGE_ERR("surfaceBuffer is nullptr");
+        return result;
     }
 
     napi_get_undefined(env, &result);
