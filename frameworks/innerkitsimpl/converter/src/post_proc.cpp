@@ -300,19 +300,7 @@ uint32_t PostProc::PixelConvertProc(ImageInfo &dstImageInfo, PixelMap &pixelMap,
     if (pixelBytes == 0) {
         return ERR_IMAGE_CROP;
     }
-//    uint32_t rowBytes = pixelBytes * dstImageInfo.size.width;
 
-    // copy src buffer to new buffer
-/*
-    auto srcData = pixelMap.GetPixels();
-    Position dstPosition;
-    if (!PixelConvertAdapter::WritePixelsConvert(reinterpret_cast<const void *>(srcData), rowBytes, srcImageInfo,
-        resultData, dstPosition, pixelMap.GetRowBytes(), dstImageInfo)) {
-        IMAGE_LOGE("pixel convert in adapter failed.");
-        ReleaseBuffer(decodeOpts_.allocatorType, fd, bufferSize, &resultData);
-        return ERR_IMAGE_CROP;
-    }
-*/
     ret = pixelMap.SetImageInfo(dstImageInfo);
     if (ret != SUCCESS) {
         ReleaseBuffer(decodeOpts_.allocatorType, fd, bufferSize, &resultData);
