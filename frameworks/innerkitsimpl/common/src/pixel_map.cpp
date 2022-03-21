@@ -797,8 +797,7 @@ bool PixelMap::CheckPixelsInput(const uint8_t *dst, const uint64_t &bufferSize, 
     }
     uint32_t regionStride = static_cast<uint32_t>(region.width) * 4;  // bytes count, need multiply by 4
     if (stride < regionStride) {
-        HiLog::Error(LABEL, "CheckPixelsInput left(%{public}d) + width(%{public}d) is > pixelmap width(%{public}d).",
-                     region.left, region.width, GetWidth());
+        HiLog::Error(LABEL, "CheckPixelsInput stride(%{public}d) < width*4 (%{public}d).", stride, regionStride);
         return false;
     }
     uint64_t lastLinePos = offset + static_cast<uint64_t>(region.height - 1) * stride;  // "1" is except the last line.
