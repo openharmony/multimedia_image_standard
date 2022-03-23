@@ -366,6 +366,16 @@ static bool ParseRegion(napi_env env, napi_value root, Rect* region)
     return true;
 }
 
+static bool IsSupportPixelFormat(int32_t val)
+{
+    if (val >= static_cast<int32_t>(PixelFormat::UNKNOWN) &&
+        val <= static_cast<int32_t>(PixelFormat::BGRA_8888)) {
+        return true;
+    }
+
+    return false;
+}
+
 static PixelFormat ParsePixlForamt(int32_t val)
 {
     if (val <= static_cast<int32_t>(PixelFormat::CMYK)) {
@@ -391,7 +401,13 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
     if (!GET_UINT32_BY_NAME(root, "rotate", opts->rotateNewDegrees)) {
         HiLog::Debug(LABEL, "no rotate");
     } else {
-        opts->rotateDegrees = (float)opts->rotateNewDegrees;
+        if (opts->rotateNewDegrees >= 0 &&
+            opts->rotateNewDegrees <= 360) { // 360 is the maximum rotation angle.
+            opts->rotateDegrees = (float)opts->rotateNewDegrees;
+        } else {
+            HiLog::Debug(LABEL, "Invalid rotate %{public}d", opts->rotateNewDegrees);
+            return false;
+        }
     }
 
     if (!GET_BOOL_BY_NAME(root, "editable", opts->editable)) {
@@ -418,7 +434,12 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
     if (!GET_UINT32_BY_NAME(root, "desiredPixelFormat", tmpNumber)) {
         HiLog::Debug(LABEL, "no desiredPixelFormat");
     } else {
-        opts->desiredPixelFormat = ParsePixlForamt(tmpNumber);
+        if (IsSupportPixelFormat(tmpNumber)) {
+            opts->desiredPixelFormat = ParsePixlForamt(tmpNumber);
+        } else {
+            HiLog::Debug(LABEL, "Invalid desiredPixelFormat %{public}d", tmpNumber);
+            return false;
+        }
     }
     return true;
 }
