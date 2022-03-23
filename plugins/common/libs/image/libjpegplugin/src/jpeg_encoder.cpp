@@ -263,7 +263,7 @@ void JpegEncoder::Deinterweave(uint8_t *uvPlane, uint8_t *uPlane, uint8_t *vPlan
     if (pixelFormat != PixelFormat::NV12) {
         std::swap(indexZero, indexOne);
     }
-    
+
     for (uint32_t row = 0; row < rowNum; row++) {
         uint32_t offset = ((curRow >> SHIFT_MASK) + row) * width;
         uint8_t *uv = uvPlane + offset;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -119,11 +119,11 @@ namespace OHOS {
         {
             if (buffer != nullptr) {
                 if (iraContext_ != nullptr) {
-                    auto listenerConsumerSerface = iraContext_->GetReceiverBufferConsumer();
-                    if (listenerConsumerSerface != nullptr) {
-                        listenerConsumerSerface->ReleaseBuffer(buffer, -1);
+                    auto listenerConsumerSurface = iraContext_->GetReceiverBufferConsumer();
+                    if (listenerConsumerSurface != nullptr) {
+                        listenerConsumerSurface->ReleaseBuffer(buffer, -1);
                     } else {
-                        HiLog::Debug(LABEL, "listenerConsumerSerface == nullptr");
+                        HiLog::Debug(LABEL, "listenerConsumerSurface == nullptr");
                     }
                 } else {
                         HiLog::Debug(LABEL, "iraContext_ == nullptr");
@@ -197,8 +197,8 @@ namespace OHOS {
             int64_t timestamp = 0;
             OHOS::Rect damage = {};
             OHOS::sptr<OHOS::SurfaceBuffer> buffer;
-            sptr<Surface> listenerConsumerSerface = iraContext_->GetReceiverBufferConsumer();
-            SurfaceError surfaceError = listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
+            sptr<Surface> listenerConsumerSurface = iraContext_->GetReceiverBufferConsumer();
+            SurfaceError surfaceError = listenerConsumerSurface->AcquireBuffer(buffer, flushFence, timestamp, damage);
             if (surfaceError == SURFACE_ERROR_OK) {
                 iraContext_->currentBuffer_ = buffer;
             } else {
@@ -214,11 +214,11 @@ namespace OHOS {
             OHOS::Rect damage = {};
             OHOS::sptr<OHOS::SurfaceBuffer> buffer;
             OHOS::sptr<OHOS::SurfaceBuffer> bufferBefore;
-            sptr<Surface> listenerConsumerSerface = iraContext_->GetReceiverBufferConsumer();
-            SurfaceError surfaceError = listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
+            sptr<Surface> listenerConsumerSurface = iraContext_->GetReceiverBufferConsumer();
+            SurfaceError surfaceError = listenerConsumerSurface->AcquireBuffer(buffer, flushFence, timestamp, damage);
             while (surfaceError == SURFACE_ERROR_OK) {
                 bufferBefore = buffer;
-                surfaceError = listenerConsumerSerface->AcquireBuffer(buffer, flushFence, timestamp, damage);
+                surfaceError = listenerConsumerSurface->AcquireBuffer(buffer, flushFence, timestamp, damage);
             }
             iraContext_->currentBuffer_ = bufferBefore;
             return iraContext_->GetCurrentBuffer();

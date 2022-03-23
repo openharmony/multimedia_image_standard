@@ -94,7 +94,7 @@ private:
 private:
     RWLockable &rwLockable_;
 };
-}
+} // namespace Utils
 } // namespace OHOS
 #endif /* UTILS_RWLOCK_H_ */
 

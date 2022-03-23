@@ -564,6 +564,9 @@ static void DoCallBackTest(OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer1)
 
     ImageReceiverManager& imageReceiverManager = ImageReceiverManager::getInstance();
     shared_ptr<ImageReceiver> imageReceiver1 = imageReceiverManager.getImageReceiverByKeyId("1");
+    if (imageReceiver1 == nullptr || imageReceiver1->iraContext_ == nullptr) {
+        return;
+    }
     IMAGE_ERR("DoCallBackTest format %{public}d", imageReceiver1->iraContext_->GetFormat());
 
     InitializationOptions opts;

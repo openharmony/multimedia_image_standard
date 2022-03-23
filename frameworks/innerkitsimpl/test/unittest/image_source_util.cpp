@@ -114,5 +114,5 @@ bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t buffe
     fclose(fp);
     return true;
 }
-}
-} // namespace
+} // namespace ImageSourceUtil
+} // namespace OHOS

@@ -505,6 +505,9 @@ napi_value ImageSourceNapi::CreateImageSourceComplete(napi_env env, napi_status 
 
     HiLog::Debug(LABEL, "CreateImageSourceComplete IN");
     auto context = static_cast<ImageSourceAsyncContext*>(data);
+    if (context == nullptr) {
+        return result;
+    }
 
     status = napi_get_reference_value(env, sConstructor_, &constructor);
 
@@ -707,7 +710,7 @@ napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info
             napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
         }
     } else {
-        HiLog::Error(LABEL, "argCount missmatch");
+        HiLog::Error(LABEL, "argCount mismatch");
         return result;
     }
     if (asyncContext->callbackRef == nullptr) {

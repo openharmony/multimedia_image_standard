@@ -121,18 +121,17 @@ static bool parseInitializationOptions(napi_env env, napi_value root, Initializa
         HiLog::Info(LABEL, "no pixelFormat in initialization options");
     }
     opts->pixelFormat = ParsePixlForamt(tmpNumber);
-    
 
     tmpNumber = 0;
     if (!GET_UINT32_BY_NAME(root, "scaleMode", tmpNumber)) {
         HiLog::Info(LABEL, "no scaleMode in initialization options");
     }
     opts->scaleMode = ParseScaleMode(tmpNumber);
-    
+
     if (!GET_NODE_BY_NAME(root, "size", tmpValue)) {
         return false;
     }
-    
+
     if (!parseSize(env, tmpValue, &(opts->size))) {
         return false;
     }

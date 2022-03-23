@@ -41,7 +41,7 @@ static constexpr int32_t RGB888_BYTE = 3;
 
 static inline bool CheckOutOfRange(const Point &pt, const Size &size)
 {
-    if (pt.x >= 0 && pt.x < size.width && pt.y >= 0 && pt.y < size.height) {
+    if ((pt.x >= 0) && (pt.x < size.width) && (pt.y >= 0) && (pt.y < size.height)) {
         return false;
     }
     return true;

@@ -86,7 +86,7 @@ namespace InnerFormat {
         "image/x-pentax-pef",
         "image/x-samsung-srw",
     };
-}
+} // namespace InnerFormat
 
 PluginServer &ImageSource::pluginServer_ = ImageUtils::GetPluginServer();
 ImageSource::FormatAgentMap ImageSource::formatAgentMap_ = InitClass();

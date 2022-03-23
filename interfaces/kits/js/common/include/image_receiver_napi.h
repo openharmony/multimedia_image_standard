@@ -102,7 +102,7 @@ enum class CallType : uint32_t {
     GETTER = 1,
     ASYNC = 2,
 };
-    
+
 struct ImageReceiverCommonArgs {
     napi_env env;
     napi_callback_info info;

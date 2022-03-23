@@ -25,7 +25,7 @@ const size_t NUM1 = 1;
 bool ImageNapiUtils::GetBufferByName(napi_env env, napi_value root, const char* name, void **res, size_t* len)
 {
     napi_value tempValue = nullptr;
-    
+
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_named_property(env, root, name, &tempValue)), false);
 
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_arraybuffer_info(env, tempValue, res, len)), false);
@@ -36,7 +36,7 @@ bool ImageNapiUtils::GetBufferByName(napi_env env, napi_value root, const char* 
 bool ImageNapiUtils::GetUint32ByName(napi_env env, napi_value root, const char* name, uint32_t *res)
 {
     napi_value tempValue = nullptr;
-    
+
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_named_property(env, root, name, &tempValue)), false);
 
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_uint32(env, tempValue, res)), false);
@@ -47,7 +47,7 @@ bool ImageNapiUtils::GetUint32ByName(napi_env env, napi_value root, const char* 
 bool ImageNapiUtils::GetInt32ByName(napi_env env, napi_value root, const char* name, int32_t *res)
 {
     napi_value tempValue = nullptr;
-    
+
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_named_property(env, root, name, &tempValue)), false);
 
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_int32(env, tempValue, res)), false);
@@ -58,7 +58,7 @@ bool ImageNapiUtils::GetInt32ByName(napi_env env, napi_value root, const char* n
 bool ImageNapiUtils::GetBoolByName(napi_env env, napi_value root, const char* name, bool *res)
 {
     napi_value tempValue = nullptr;
-    
+
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_named_property(env, root, name, &tempValue)), false);
 
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_bool(env, tempValue, res)), false);

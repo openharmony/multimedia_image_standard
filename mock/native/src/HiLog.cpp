@@ -50,5 +50,5 @@ int HiLog::Fatal(const HiLogLabel &label, const char *fmt, ...)
     std::cout << label.tag << ": " << fmt << std::endl;
     return 0;
 }
-}
+} // namespace HiviewDFX
 } // namespace OHOS

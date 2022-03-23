@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -121,7 +121,7 @@ napi_value ImageNapi::Init(napi_env env, napi_value exports)
         nullptr,
         IMAGE_ERR("define class fail")
     );
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(
         napi_create_reference(env, constructor, 1, &sConstructor_)),
         nullptr,
@@ -144,7 +144,7 @@ napi_value ImageNapi::Constructor(napi_env env, napi_callback_info info)
 {
     napi_value undefineVar = nullptr;
     napi_get_undefined(env, &undefineVar);
-    
+
     napi_status status;
     napi_value thisVar = nullptr;
 
@@ -428,7 +428,7 @@ void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
 {
     IMAGE_FUNCTION_IN();
     napi_value result = nullptr;
-    
+
     napi_create_object(env, &result);
 
     uint32_t bufferSize = context->constructor_->sSurfaceBuffer_->GetSize();
