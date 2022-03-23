@@ -99,7 +99,7 @@ bool ImageNapiUtils::CreateArrayBuffer(napi_env env, void* src, size_t srcLen, n
         return false;
     }
 
-    if (memcpy_s(nativePtr, srcLen, src, srcLen) != 0) {
+    if (memcpy_s(nativePtr, srcLen, src, srcLen) != EOK) {
         return false;
     }
     return true;

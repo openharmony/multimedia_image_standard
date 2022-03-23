@@ -337,7 +337,7 @@ static bool parsePackOptions(napi_env env, napi_value root, PackOption* opts)
         } else {
             napi_get_value_int32(env, property, &quality);
             opts->quality = quality;
-            HiLog::Debug(LABEL, "quality is %{public}u.", quality);
+            HiLog::Debug(LABEL, "quality is %{public}d.", quality);
         }
     }
     return true;

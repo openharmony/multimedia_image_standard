@@ -336,8 +336,8 @@ napi_value ImageNapi::JsGetFormat(napi_env env, napi_callback_info info)
         IMAGE_ERR("Image context is nullptr");
         return result;
     }
-    auto surfaceBuffer = context->constructor_->sSurfaceBuffer_;
 
+    auto surfaceBuffer = context->constructor_->sSurfaceBuffer_;
     if (surfaceBuffer == nullptr) {
         IMAGE_ERR("Image surface buffer is nullptr");
         return result;

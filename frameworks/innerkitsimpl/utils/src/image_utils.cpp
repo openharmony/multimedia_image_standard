@@ -58,6 +58,11 @@ bool ImageUtils::GetFileSize(const string &pathName, size_t &size)
 bool ImageUtils::GetFileSize(const int fd, size_t &size)
 {
     struct stat statbuf;
+
+    if (fd < 0) {
+        return false;
+    }
+
     int ret = fstat(fd, &statbuf);
     if (ret != 0) {
         IMAGE_LOGE("[ImageUtil]get the file size failed, ret:%{public}d.", ret);

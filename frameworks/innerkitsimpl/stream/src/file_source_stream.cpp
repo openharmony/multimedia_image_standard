@@ -60,6 +60,7 @@ unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const string &
     }
     return (unique_ptr<FileSourceStream>(new FileSourceStream(filePtr, size, offset, offset)));
 }
+
 unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const int fd)
 {
     size_t size = 0;

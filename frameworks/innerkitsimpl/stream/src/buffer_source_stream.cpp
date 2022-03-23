@@ -53,7 +53,7 @@ std::unique_ptr<BufferSourceStream> BufferSourceStream::CreateSourceStream(const
         return nullptr;
     }
     errno_t ret = memcpy_s(dataCopy, size, data, size);
-    if (ret != 0) {
+    if (ret != EOK) {
         free(dataCopy);
         dataCopy = nullptr;
         IMAGE_LOGE("[BufferSourceStream]copy the input data fail, ret:%{public}d.", ret);
