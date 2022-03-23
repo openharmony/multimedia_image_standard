@@ -51,7 +51,7 @@ struct ImagePackerAsyncContext {
     napi_deferred deferred;
     napi_ref callbackRef = nullptr;
     ImagePackerNapi *constructor_;
-    bool status;
+    bool status = false;
     std::shared_ptr<ImageSource> rImageSource;
     PackOption packOption;
     std::shared_ptr<ImagePacker> rImagePacker;

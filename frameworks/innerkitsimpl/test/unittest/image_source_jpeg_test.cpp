@@ -200,7 +200,7 @@ HWTEST_F(ImageSourceJpegTest, TC034, TestSize.Level3)
     std::unique_ptr<ImageSource> imageSource = ImageSource::CreateImageSource(IMAGE_INPUT_JPEG_PATH, opts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
-    
+
     uint32_t index = 0;
     std::string value;
     std::string key;
