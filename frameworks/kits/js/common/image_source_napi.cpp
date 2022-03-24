@@ -1048,7 +1048,7 @@ napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->rImageSource),
         nullptr, HiLog::Error(LABEL, "empty native rImageSource"));
-    HiLog::Error(LABEL, "UpdateData argCount %{public}d ", argCount);
+    HiLog::Debug(LABEL, "UpdateData argCount %{public}zu", argCount);
     if (argCount > NUM_0 && isNapiTypedArray(env, argValue[NUM_0])) {
         HiLog::Error(LABEL, "UpdateData napi_get_arraybuffer_info ");
         napi_typedarray_type type;
