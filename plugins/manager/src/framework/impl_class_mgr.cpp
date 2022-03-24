@@ -332,7 +332,7 @@ uint32_t ImplClassMgr::CompareBoolPriority(const AttrData &lhs, const AttrData &
     bool rhsValue = false;
 
     if ((lhs.GetValue(lhsValue) != SUCCESS) || (rhs.GetValue(rhsValue) != SUCCESS)) {
-        HiLog::Error(LABEL, "CompareBoolPriority: failed to get attrubute value.");
+        HiLog::Error(LABEL, "CompareBoolPriority: failed to get attribute value.");
         return ERR_COMP_ERROR;
     }
 
@@ -372,7 +372,7 @@ uint32_t ImplClassMgr::CompareUint32Priority(const AttrData &lhs, const AttrData
 
     if (type == PriorityType::PRIORITY_ORDER_BY_ATTR_ASCENDING) {
         if ((lhs.GetMinValue(lhsValue) != SUCCESS) || (rhs.GetMinValue(rhsValue) != SUCCESS)) {
-            HiLog::Error(LABEL, "CompareUint32Priority: failed to get attrubute min value.");
+            HiLog::Error(LABEL, "CompareUint32Priority: failed to get attribute min value.");
             return ERR_COMP_ERROR;
         }
 
@@ -388,7 +388,7 @@ uint32_t ImplClassMgr::CompareUint32Priority(const AttrData &lhs, const AttrData
     }
 
     if ((lhs.GetMaxValue(lhsValue) != SUCCESS) || (rhs.GetMaxValue(rhsValue) != SUCCESS)) {
-        HiLog::Error(LABEL, "CompareUint32Priority: failed to get attrubute max value.");
+        HiLog::Error(LABEL, "CompareUint32Priority: failed to get attribute max value.");
         return ERR_COMP_ERROR;
     }
 
@@ -410,7 +410,7 @@ uint32_t ImplClassMgr::CompareStringPriority(const AttrData &lhs, const AttrData
 
     if (type == PriorityType::PRIORITY_ORDER_BY_ATTR_ASCENDING) {
         if ((lhs.GetMinValue(lhsValue) != SUCCESS) || (rhs.GetMinValue(rhsValue) != SUCCESS)) {
-            HiLog::Error(LABEL, "CompareStringPriority: failed to get attrubute min value.");
+            HiLog::Error(LABEL, "CompareStringPriority: failed to get attribute min value.");
             return ERR_COMP_ERROR;
         }
 
@@ -426,7 +426,7 @@ uint32_t ImplClassMgr::CompareStringPriority(const AttrData &lhs, const AttrData
     }
 
     if ((lhs.GetMaxValue(lhsValue) != SUCCESS) || (rhs.GetMaxValue(rhsValue) != SUCCESS)) {
-        HiLog::Error(LABEL, "CompareStringPriority: failed to get attrubute max value.");
+        HiLog::Error(LABEL, "CompareStringPriority: failed to get attribute max value.");
 
         return ERR_COMP_ERROR;
     }

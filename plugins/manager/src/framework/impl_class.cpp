@@ -298,7 +298,7 @@ bool ImplClass::AnalysisServices(const json &classInfo)
             serviceType = 0;
         }
 
-        HiLog::Debug(LABEL, "insert class service iid: %{public}hu, serviceType: %{public}hu.", interfaceID, serviceType);
+        HiLog::Debug(LABEL, "insert service iid: %{public}hu, serviceType: %{public}hu.", interfaceID, serviceType);
         services_.insert(MakeServiceFlag(interfaceID, serviceType));
         serviceAdded = true;
     }
