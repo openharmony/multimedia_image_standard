@@ -144,7 +144,7 @@ uint32_t JsonHelper::GetArraySize(const json &jsonObject, const string &key, siz
 const json &JsonHelper::GetJsonElement(const json &jsonObject, const string &key, uint32_t &errorCode)
 {
     if (!jsonObject.is_object()) {
-        HiLog::Error(LABEL, "GetJsonElement: not a object type json for key %{public}s.", key.c_str());
+        HiLog::Error(LABEL, "GetJsonElement: not an object type json for key %{public}s.", key.c_str());
         errorCode = ERR_DATA_TYPE;
         return nullJson_;
     }
