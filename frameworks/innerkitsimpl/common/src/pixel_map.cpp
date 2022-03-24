@@ -772,6 +772,12 @@ bool PixelMap::CheckPixelsInput(const uint8_t *dst, const uint64_t &bufferSize, 
         HiLog::Error(LABEL, "CheckPixelsInput input dst address is null.");
         return false;
     }
+
+    if (bufferSize == 0) {
+        HiLog::Error(LABEL, "CheckPixelsInput input buffer size is 0.");
+        return false;
+    }
+
     if (region.left < 0 || region.top < 0 || stride > numeric_limits<int32_t>::max() ||
         static_cast<uint64_t>(offset) > bufferSize) {
         HiLog::Error(
@@ -798,6 +804,11 @@ bool PixelMap::CheckPixelsInput(const uint8_t *dst, const uint64_t &bufferSize, 
     uint32_t regionStride = static_cast<uint32_t>(region.width) * 4;  // bytes count, need multiply by 4
     if (stride < regionStride) {
         HiLog::Error(LABEL, "CheckPixelsInput stride(%{public}d) < width*4 (%{public}d).", stride, regionStride);
+        return false;
+    }
+
+    if (bufferSize < regionStride) {
+        HiLog::Error(LABEL, "CheckPixelsInput input buffer size is < width * 4.");
         return false;
     }
     uint64_t lastLinePos = offset + static_cast<uint64_t>(region.height - 1) * stride;  // "1" is except the last line.
