@@ -83,7 +83,7 @@ bool IstreamSourceStream::Peek(uint32_t desiredSize, DataStreamBuffer &outData)
 bool IstreamSourceStream::Read(uint32_t desiredSize, uint8_t *outBuffer, uint32_t bufferSize, uint32_t &readSize)
 {
     if (desiredSize == 0 || outBuffer == nullptr || desiredSize > bufferSize) {
-        IMAGE_LOGE("[IstreamSourceStream]input the parameter exception, desiredSize:%{public}d, bufferSize:%{public}d.",
+        IMAGE_LOGE("[IstreamSourceStream]input the parameter exception, desiredSize:%{public}u, bufferSize:%{public}u.",
                    desiredSize, bufferSize);
         return false;
     }
@@ -98,7 +98,7 @@ bool IstreamSourceStream::Read(uint32_t desiredSize, uint8_t *outBuffer, uint32_
 bool IstreamSourceStream::Peek(uint32_t desiredSize, uint8_t *outBuffer, uint32_t bufferSize, uint32_t &readSize)
 {
     if (desiredSize == 0 || outBuffer == nullptr || desiredSize > bufferSize) {
-        IMAGE_LOGE("[IstreamSourceStream]input the parameter exception, desiredSize:%{public}d, bufferSize:%{public}d.",
+        IMAGE_LOGE("[IstreamSourceStream]input the parameter exception, desiredSize:%{public}u, bufferSize:%{public}u.",
                    desiredSize, bufferSize);
         return false;
     }
