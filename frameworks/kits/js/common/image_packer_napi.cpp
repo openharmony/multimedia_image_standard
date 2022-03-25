@@ -112,7 +112,7 @@ static void CommonCallbackRoutine(napi_env env, ImagePackerAsyncContext* &connec
 STATIC_EXEC_FUNC(Packing)
 {
     HiLog::Debug(LABEL, "PackingExec enter");
-    uint64_t bufferSize = 2 * 1024 * 1024;
+    uint64_t bufferSize = 10 * 1024 * 1024; // 10M is the maximum packedSize
     int64_t packedSize = 0;
     auto context = static_cast<ImagePackerAsyncContext*>(data);
     HiLog::Debug(LABEL, "image packer get supported format");
@@ -139,7 +139,7 @@ STATIC_EXEC_FUNC(Packing)
         context->rImagePacker->FinalizePacking(packedSize);
         HiLog::Debug(LABEL, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
 
-        if (packedSize > 0) {
+        if (packedSize > 0 && packedSize < bufferSize) {
             context->packedSize = packedSize;
             context->status = SUCCESS;
         } else {
