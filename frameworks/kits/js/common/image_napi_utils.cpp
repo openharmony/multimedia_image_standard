@@ -73,14 +73,16 @@ bool ImageNapiUtils::GetNodeByName(napi_env env, napi_value root, const char* na
     return true;
 }
 
-bool ImageNapiUtils::GetUtf8String(napi_env env, napi_value root, std::string &res)
+bool ImageNapiUtils::GetUtf8String(napi_env env, napi_value root, std::string &res, bool eof)
 {
     size_t bufferSize = NUM0;
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_string_utf8(env, root, nullptr,
         NUM0, &bufferSize)) && bufferSize > NUM0, false);
 
     size_t resultSize = NUM0;
-    bufferSize = bufferSize + NUM1;
+    if (eof) {
+        bufferSize = bufferSize + NUM1;
+    }
     std::vector<char> buffer(bufferSize);
     IMG_NAPI_CHECK_RET(IMG_IS_OK(napi_get_value_string_utf8(env, root, &(buffer[NUM0]),
         bufferSize, &resultSize)) && resultSize > NUM0, false);
