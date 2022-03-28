@@ -337,7 +337,7 @@ static bool parsePackOptions(napi_env env, napi_value root, PackOption* opts)
             napi_value item;
             napi_get_element(env, tmpValue, i, &item);
             if (!ImageNapiUtils::GetUtf8String(env, item, opts->format, false)) {
-                HiLog::Error(LABEL, "Parse format in item failed %{public}d", i);
+                HiLog::Error(LABEL, "Parse format in item failed %{public}zu", i);
             }
             HiLog::Debug(LABEL, "format is %{public}s.", opts->format.c_str());
         }
@@ -345,7 +345,7 @@ static bool parsePackOptions(napi_env env, napi_value root, PackOption* opts)
         HiLog::Error(LABEL, "Invalid pack option format type");
         return false;
     }
-    HiLog::Debug(LABEL, "parsePackOptions format:[%{public}s], size: %{public}d",
+    HiLog::Debug(LABEL, "parsePackOptions format:[%{public}s], size: %{public}u",
         opts->format.c_str(), opts->format.size());
 
     if (!GET_UINT32_BY_NAME(root, "quality", tmpNumber)) {
