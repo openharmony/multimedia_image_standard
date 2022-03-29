@@ -138,8 +138,8 @@ unique_ptr<PixelMap> PixelMap::Create(const uint32_t *colors, uint32_t colorLeng
         return nullptr;
     }
     uint32_t bufferSize = dstPixelMap->GetByteCount();
-    if (bufferSize == 0) {
-        HiLog::Error(LABEL, "malloc parameter is zero");
+    if (bufferSize == 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
+        HiLog::Error(LABEL, "bufferSize %{public}u fail", bufferSize);
         return nullptr;
     }
     void *dstPixels = malloc(bufferSize);
@@ -209,6 +209,10 @@ unique_ptr<PixelMap> PixelMap::Create(const InitializationOptions &opts)
         return nullptr;
     }
     uint32_t bufferSize = dstPixelMap->GetByteCount();
+    if (bufferSize == 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
+        HiLog::Error(LABEL, "calloc parameter bufferSize:[%{public}u] error.", bufferSize);
+        return nullptr;
+    }
     uint8_t *dstPixels = static_cast<uint8_t *>(calloc(bufferSize, 1));
     if (dstPixels == nullptr) {
         HiLog::Error(LABEL, "allocate memory size %{public}u fail", bufferSize);
@@ -305,6 +309,10 @@ bool PixelMap::SourceCropAndConvert(PixelMap &source, const ImageInfo &srcImageI
                                     const Rect &srcRect, PixelMap &dstPixelMap)
 {
     uint32_t bufferSize = dstPixelMap.GetByteCount();
+    if (bufferSize == 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
+        HiLog::Error(LABEL, "malloc parameter bufferSize:[%{public}u] error.", bufferSize);
+        return false;
+    }
     void *dstPixels = malloc(bufferSize);
     if (dstPixels == nullptr) {
         HiLog::Error(LABEL, "allocate memory size %{public}u fail", bufferSize);
@@ -1149,6 +1157,11 @@ PixelMap *PixelMap::Unmarshalling(Parcel &data)
         const uint8_t *addr = data.ReadBuffer(bufferSize);
         if (addr == nullptr) {
             HiLog::Error(LABEL, "read buffer from parcel failed, read buffer addr is null");
+            return nullptr;
+        }
+
+        if (bufferSize <= 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
+            HiLog::Error(LABEL, "malloc parameter bufferSize:[%{public}d] error.", bufferSize);
             return nullptr;
         }
         base = static_cast<uint8_t *>(malloc(bufferSize));
