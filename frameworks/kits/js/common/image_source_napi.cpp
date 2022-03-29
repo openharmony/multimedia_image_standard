@@ -105,7 +105,7 @@ static void ImageSourceCallbackRoutine(napi_env env, ImageSourceAsyncContext* &c
 
     if (context->status == SUCCESS) {
         result[NUM_1] = valueParam;
-    } else if(context->error != nullptr) {
+    } else if (context->error != nullptr) {
         result[NUM_0] = context->error;
     } else {
         HiLog::Debug(LABEL, "error status, no message");
@@ -654,7 +654,7 @@ static void CreatePixelMapExecute(napi_env env, void *data)
     auto context = static_cast<ImageSourceAsyncContext*>(data);
     if (context == nullptr) {
         HiLog::Error(LABEL, "empty context");
-		return;
+        return;
     }
 
     if (context->error != nullptr) {
@@ -737,8 +737,8 @@ napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info
         HiLog::Debug(LABEL, "CreatePixelMap with no arg");
     } else if (argCount == NUM_1 || argCount == NUM_2) {
         if (ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_object) {
-            if (!ParseDecodeOptions(env, argValue[NUM_0],
-                &(asyncContext->decodeOpts), &(asyncContext->error))) {
+            if (!ParseDecodeOptions(env, argValue[NUM_0], &(asyncContext->decodeOpts),
+                                    &(asyncContext->index), &(asyncContext->error))) {
                 HiLog::Error(LABEL, "DecodeOptions mismatch");
             }
 
