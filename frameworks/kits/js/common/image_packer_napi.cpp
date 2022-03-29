@@ -321,24 +321,29 @@ static bool parsePackOptions(napi_env env, napi_value root, PackOption* opts)
     HiLog::Debug(LABEL, "parsePackOptions format type %{public}d, is array %{public}d",
         formatType, isFormatArray);
 
+    char buffer[SIZE] = {0};
+    size_t res = 0;
     if (napi_string == formatType) {
-        if (!ImageNapiUtils::GetUtf8String(env, tmpValue, opts->format, false)) {
+        if (napi_get_value_string_utf8(env, tmpValue, buffer, SIZE, &res) != napi_ok) {
             HiLog::Error(LABEL, "Parse pack option format failed");
             return false;
         }
+        opts->format = std::string(buffer);
     } else if (isFormatArray) {
         uint32_t len = 0;
         if (napi_get_array_length(env, tmpValue, &len) != napi_ok) {
-            HiLog::Error(LABEL, "TONY Parse pack napi_get_array_length failed");
+            HiLog::Error(LABEL, "Parse pack napi_get_array_length failed");
             return false;
         }
-        HiLog::Debug(LABEL, "TONY Parse pack array_length=%{public}d", len);
+        HiLog::Debug(LABEL, "Parse pack array_length=%{public}u", len);
         for (size_t i = 0; i < len; i++) {
             napi_value item;
             napi_get_element(env, tmpValue, i, &item);
-            if (!ImageNapiUtils::GetUtf8String(env, item, opts->format, false)) {
+            if (napi_get_value_string_utf8(env, item, buffer, SIZE, &res) != napi_ok) {
                 HiLog::Error(LABEL, "Parse format in item failed %{public}zu", i);
+                continue;
             }
+            opts->format = std::string(buffer);
             HiLog::Debug(LABEL, "format is %{public}s.", opts->format.c_str());
         }
     } else {
