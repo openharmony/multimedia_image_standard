@@ -68,6 +68,7 @@ struct ImageSourceAsyncContext {
     DecodeOptions decodeOpts;
     std::shared_ptr<ImageSource> rImageSource;
     std::shared_ptr<PixelMap> rPixelMap;
+    napi_value error = nullptr;
 };
 
 static std::string GetStringArgument(napi_env env, napi_value value)
@@ -104,13 +105,17 @@ static void ImageSourceCallbackRoutine(napi_env env, ImageSourceAsyncContext* &c
 
     if (context->status == SUCCESS) {
         result[NUM_1] = valueParam;
+    } else if (context->error != nullptr) {
+        result[NUM_0] = context->error;
+    } else {
+        HiLog::Debug(LABEL, "error status, no message");
     }
 
     if (context->deferred) {
         if (context->status == SUCCESS) {
             napi_resolve_deferred(env, context->deferred, result[NUM_1]);
         } else {
-            napi_reject_deferred(env, context->deferred, result[0]);
+            napi_reject_deferred(env, context->deferred, result[NUM_0]);
         }
     } else {
         HiLog::Debug(LABEL, "call callback function");
@@ -385,7 +390,7 @@ static PixelFormat ParsePixlForamt(int32_t val)
     return PixelFormat::UNKNOWN;
 }
 
-static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opts, uint32_t* pIndex)
+static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opts, uint32_t* pIndex, napi_value* error)
 {
     uint32_t tmpNumber = 0;
     napi_value tmpValue = nullptr;
@@ -406,6 +411,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
             opts->rotateDegrees = (float)opts->rotateNewDegrees;
         } else {
             HiLog::Debug(LABEL, "Invalid rotate %{public}d", opts->rotateNewDegrees);
+            napi_create_string_utf8(env, "DecodeOptions mismatch", NAPI_AUTO_LENGTH, error);
             return false;
         }
     }
@@ -438,6 +444,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
             opts->desiredPixelFormat = ParsePixlForamt(tmpNumber);
         } else {
             HiLog::Debug(LABEL, "Invalid desiredPixelFormat %{public}d", tmpNumber);
+            napi_create_string_utf8(env, "DecodeOptions mismatch", NAPI_AUTO_LENGTH, error);
             return false;
         }
     }
@@ -650,6 +657,12 @@ static void CreatePixelMapExecute(napi_env env, void *data)
         return;
     }
 
+    if (context->error != nullptr) {
+        HiLog::Error(LABEL, "mismatch args");
+        context->status = ERROR;
+        return;
+    }
+
     if (context->rImageSource == nullptr) {
         HiLog::Error(LABEL, "empty context rImageSource");
         return;
@@ -682,11 +695,13 @@ static void CreatePixelMapComplete(napi_env env, napi_status status, void *data)
 {
     HiLog::Debug(LABEL, "CreatePixelMapComplete IN");
     napi_value result = nullptr;
-    napi_create_object(env, &result);
-
     auto context = static_cast<ImageSourceAsyncContext*>(data);
 
-    result = PixelMapNapi::CreatePixelMap(env, context->rPixelMap);
+    if (context->status == SUCCESS) {
+        result = PixelMapNapi::CreatePixelMap(env, context->rPixelMap);
+    } else {
+        napi_get_undefined(env, &result);
+    }
     HiLog::Debug(LABEL, "CreatePixelMapComplete OUT");
     ImageSourceCallbackRoutine(env, context, result);
 }
@@ -722,10 +737,11 @@ napi_value ImageSourceNapi::CreatePixelMap(napi_env env, napi_callback_info info
         HiLog::Debug(LABEL, "CreatePixelMap with no arg");
     } else if (argCount == NUM_1 || argCount == NUM_2) {
         if (ImageNapiUtils::getType(env, argValue[NUM_0]) == napi_object) {
-            IMG_NAPI_CHECK_RET_D(ParseDecodeOptions(env, argValue[NUM_0],
-                &(asyncContext->decodeOpts),
-                &asyncContext->index),
-                nullptr, HiLog::Error(LABEL, "DecodeOptions mismatch"));
+            if (!ParseDecodeOptions(env, argValue[NUM_0], &(asyncContext->decodeOpts),
+                                    &(asyncContext->index), &(asyncContext->error))) {
+                HiLog::Error(LABEL, "DecodeOptions mismatch");
+            }
+
         }
         if (ImageNapiUtils::getType(env, argValue[argCount - 1]) == napi_function) {
             napi_create_reference(env, argValue[argCount - 1], refCount, &asyncContext->callbackRef);
