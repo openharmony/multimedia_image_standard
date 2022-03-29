@@ -160,34 +160,34 @@ declare namespace image {
 
   /**
    * Enumerates alpha types.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.Core
    */
   enum AlphaType {
     /**
      * Indicates an unknown alpha type.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     UNKNOWN = 0,
 
     /**
      * Indicates that the image has no alpha channel, or all pixels in the image are fully opaque.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     OPAQUE = 1,
 
     /**
      * Indicates that RGB components of each pixel in the image are premultiplied by alpha.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     PREMUL = 2,
 
     /**
      * Indicates that RGB components of each pixel in the image are independent of alpha and are not premultiplied by alpha.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     UNPREMUL = 3
@@ -195,20 +195,20 @@ declare namespace image {
 
   /**
    * Enum for image scale mode.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.Core
    */
   enum ScaleMode {
     /**
      * Indicates the effect that scales an image to fill the target image area and center-crops the part outside the area.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     CENTER_CROP = 1, // Indicates the effect that scales an image to fill the target image area and center-crops the part outside the area.
 
     /**
      * Indicates the effect that fits the image into the target size.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     FIT_TARGET_SIZE = 2,
@@ -492,17 +492,17 @@ declare namespace image {
 
     /**
      * PixelMap expected alpha type.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    alphaType: AlphaType;
+    alphaType?: AlphaType;
 
     /**
      * PixelMap expected scaling effect.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    scaleMode: ScaleMode;
+    scaleMode?: ScaleMode;
   }
 
   /**
@@ -536,6 +536,24 @@ declare namespace image {
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
   function createImageSource(fd: number): ImageSource;
+
+  /**
+   * Creates an ImageSource instance based on the buffer.
+   * @since 9
+   * @syscap SystemCapability.Multimedia.Image.ImageSource
+   * @param buf The buffer of the iamge.
+   * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
+   */
+  function createImageSource(buf: ArrayBuffer): ImageSource;
+
+  /**
+   * Creates an ImageSource instance based on the buffer in incremental.
+   * @since 9
+   * @syscap SystemCapability.Multimedia.Image.ImageSource
+   * @param buf The buffer of the iamge.
+   * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
+   */
+  function CreateIncrementalSource(buf: ArrayBuffer): ImageSource;
 
   /**
    * Creates an ImagePacker instance.
@@ -791,6 +809,52 @@ declare namespace image {
      * @param callback Callback used to return the property value. If the operation fails, the default value is returned.
      */
     getImageProperty(key:string, options: GetImagePropertyOptions, callback: AsyncCallback<string>): void;
+
+    /**
+     * Modify the value of a property in an image with the specified key. This method uses a
+     * promise to return the property value in a string.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageSource
+     * @param key Name of the property whose value is to be modified.
+     * @param value The value to be set to property.
+     * @return A Promise instance used to return the property value.
+     */
+    modifyImageProperty(key:string, value:string): Promise<void>;
+
+    /**
+     * Modify the value of a property in an image with the specified key. This method uses a callback to return the
+     * property value in a string.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageSource
+     * @param key Name of the property whose value is to be obtained.
+     * @param value The value to be set to property.
+     * @param callback Callback to return the operation result.
+     */
+    modifyImageProperty(key:string, value:string, callback: AsyncCallback<void>): void;
+
+    /**
+     * Update the data in the incremental ImageSource.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageSource
+     * @param buf The data to be updated.
+     * @param isFinished If is it finished.
+     * @param value The offset of data.
+	 * @param length The lenght fo buf.	 
+     * @return A Promise instance used to return the property value.
+     */
+    updateData(buf:ArrayBuffer, isFinished:boolean, value:number, length: number): Promise<void>;
+
+    /**
+     * Update the data in the incremental ImageSource.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageSource
+     * @param buf The data to be updated.
+     * @param isFinished If is it finished.
+     * @param value The offset of data.
+	 * @param length The lenght fo buf.	 
+     * @param callback Callback to return the operation result.
+     */
+    updateData(buf:ArrayBuffer, isFinished:boolean, value:number, length: number, callback: AsyncCallback<void>): void;
 
     /**
      * Releases an ImageSource instance and uses a callback to return the result.
