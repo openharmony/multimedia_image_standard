@@ -171,7 +171,7 @@ STATIC_COMPLETE_FUNC(Packing)
 STATIC_EXEC_FUNC(PackingFromPixelMap)
 {
     HiLog::Debug(LABEL, "PackingFromPixelMapExec enter");
-    uint64_t bufferSize = 2 * 1024 * 1024;
+    uint64_t bufferSize = 10 * 1024 * 1024;
     int64_t packedSize = 0;
     auto context = static_cast<ImagePackerAsyncContext*>(data);
     HiLog::Debug(LABEL, "image packer get supported format");
