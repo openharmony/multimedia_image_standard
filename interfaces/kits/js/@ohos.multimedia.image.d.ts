@@ -839,7 +839,7 @@ declare namespace image {
      * @param length The lenght fo buf.
      * @return A Promise instance used to return the property value.
      */
-    updateData(buf: ArrayBuffer, isFinished:boolean, value: number, length: number): Promise<void>;
+    updateData(buf: ArrayBuffer, isFinished: boolean, value: number, length: number): Promise<void>;
 
     /**
      * Update the data in the incremental ImageSource.
@@ -851,7 +851,7 @@ declare namespace image {
      * @param length The lenght fo buf.
      * @param callback Callback to return the operation result.
      */
-    updateData(buf: ArrayBuffer, isFinished:boolean, value: number, length: number, callback: AsyncCallback<void>): void;
+    updateData(buf: ArrayBuffer, isFinished: boolean, value: number, length: number, callback: AsyncCallback<void>): void;
 
     /**
      * Releases an ImageSource instance and uses a callback to return the result.
