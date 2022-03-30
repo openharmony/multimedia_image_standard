@@ -139,20 +139,20 @@ declare namespace image {
 
   /**
    * Enum for image formats.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.Core
    */
    enum ImageFormat {
     /**
      * YCBCR422 semi-planar format.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     YCBCR_422_SP = 1000,
 
     /**
      * JPEG encoding format.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     JPEG = 2000
@@ -200,51 +200,50 @@ declare namespace image {
    */
   enum ScaleMode {
     /**
-     * Indicates the effect that scales an image to fill the target image area and center-crops the part outside the area.
-     * @since 9
-     * @syscap SystemCapability.Multimedia.Image.Core
-     */
-    CENTER_CROP = 1, // Indicates the effect that scales an image to fill the target image area and center-crops the part outside the area.
-
-    /**
      * Indicates the effect that fits the image into the target size.
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    FIT_TARGET_SIZE = 2,
+    FIT_TARGET_SIZE = 0,
+
+    /**
+     * Indicates the effect that scales an image to fill the target image area and center-crops the part outside the area.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    CENTER_CROP = 1,
   }
 
   /**
    * The componet type of image.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageReceiver
-   * @systemapi
    */
   enum ComponentType {
     /**
      * Luma info.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     YUV_Y = 1,
 
     /**
      * Chrominance info.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     YUV_U = 2,
 
     /**
      * Chroma info.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     YUV_V = 3,
 
     /**
      * Jpeg type.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     JPEG = 4, 
@@ -429,35 +428,34 @@ declare namespace image {
 
   /**
    * Describes image color components.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.Core
-   * @systemapi
    */
    interface Component {
     /**
      * Component type.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     readonly componentType: ComponentType;
 
     /**
      * Row stride.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     readonly rowStride: number;
 
     /**
      * Pixel stride.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     readonly pixelStride: number;
 
     /**
      * Component buffer.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     readonly byteBuffer: ArrayBuffer;
@@ -565,7 +563,7 @@ declare namespace image {
 
   /**
    * Creates an ImageReceiver instance.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageReceiver
    * @param width The default width in pixels of the Images that this receiver will produce.
    * @param height The default height in pixels of the Images that this receiver will produce.
@@ -573,7 +571,6 @@ declare namespace image {
    *            {@link ImageFormat} constants. Note that not all formats are supported, like ImageFormat.NV21.
    * @param capacity The maximum number of images the user will want to access simultaneously.
    * @return Returns the ImageReceiver instance if the operation is successful; returns null otherwise.
-   * @systemapi
    */
   function createImageReceiver(width: number, height: number, format: number, capacity: number): ImageReceiver;
 
@@ -839,7 +836,7 @@ declare namespace image {
      * @param buf The data to be updated.
      * @param isFinished If is it finished.
      * @param value The offset of data.
-	 * @param length The lenght fo buf.	 
+     * @param length The lenght fo buf.
      * @return A Promise instance used to return the property value.
      */
     updateData(buf:ArrayBuffer, isFinished:boolean, value:number, length: number): Promise<void>;
@@ -851,7 +848,7 @@ declare namespace image {
      * @param buf The data to be updated.
      * @param isFinished If is it finished.
      * @param value The offset of data.
-	 * @param length The lenght fo buf.	 
+     * @param length The lenght fo buf.
      * @param callback Callback to return the operation result.
      */
     updateData(buf:ArrayBuffer, isFinished:boolean, value:number, length: number, callback: AsyncCallback<void>): void;
@@ -952,35 +949,34 @@ declare namespace image {
 
   /**
    * Provides basic image operations, including obtaining image information, and reading and writing image data.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.Core
-   * @systemapi
    */
   interface Image {
     /**
      * Sets or gets the image area to crop, default is size.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     clipRect: Region;
 
     /**
      * Image size.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     readonly size: Size;
 
     /**
      * Image format.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     readonly format: number;
 
     /**
      * Get component buffer from image and uses a callback to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      * @param componentType The componet type of image.
      * @param callback Callback used to return the component buffer.
@@ -989,7 +985,7 @@ declare namespace image {
 
     /**
      * Get component buffer from image and uses a promise to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      * @param componentType The componet type of image.
      * @return A Promise instance used to return the component buffer.
@@ -998,7 +994,7 @@ declare namespace image {
 
     /**
      * Release current image to receive another and uses a callback to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      * @param callback Callback to return the operation result.
      */
@@ -1006,7 +1002,7 @@ declare namespace image {
 
     /**
      * Release current image to receive another and uses a promise to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      * @return A Promise instance used to return the operation result.
      */
@@ -1015,28 +1011,27 @@ declare namespace image {
 
   /**
    * Image receiver object.
-   * @since 8
+   * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageReceiver
-   * @systemapi
    */
   interface ImageReceiver {
     /**
      * Image size.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     readonly size: Size;
 
     /**
      * Image capacity.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     readonly capacity: number;
 
     /**
      * Image format.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      */
     readonly format: ImageFormat;
@@ -1044,7 +1039,7 @@ declare namespace image {
     /**
      * get an id which indicates a surface and can be used to set to Camera or other component can receive a surface
      * and uses a callback to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @param callback Callback used to return the surface id.
      */
@@ -1053,7 +1048,7 @@ declare namespace image {
     /**
      * get an id which indicates a surface and can be used to set to Camera or other component can receive a surface
      * and uses a promise to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @return A Promise instance used to return the surface id.
      */
@@ -1061,7 +1056,7 @@ declare namespace image {
 
     /**
      * Get lasted image from receiver and uses a callback to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @param callback Callback used to return the latest image.
      */
@@ -1069,7 +1064,7 @@ declare namespace image {
 
     /**
      * Get lasted image from receiver and uses a promise to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @return A Promise instance used to return the latest image.
      */
@@ -1077,7 +1072,7 @@ declare namespace image {
 
     /**
      * Get next image from receiver and uses a callback to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @param callback Callback used to return the next image.
      */
@@ -1085,7 +1080,7 @@ declare namespace image {
 
     /**
      * Get next image from receiver and uses a promise to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @return A Promise instance used to return the next image.
      */
@@ -1093,7 +1088,7 @@ declare namespace image {
 
     /**
      * Subscribe callback when receiving an image
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @param type Callback used to return the next image.
      * @param callback Callback used to return image.
@@ -1102,7 +1097,7 @@ declare namespace image {
 
     /**
      * Release image receiver instance and uses a callback to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @param callback Callback to return the operation result.
      */
@@ -1110,7 +1105,7 @@ declare namespace image {
 
     /**
      * Release image receiver instance and uses a promise to return the result.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @return A Promise instance used to return the operation result.
      */
