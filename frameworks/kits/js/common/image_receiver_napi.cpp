@@ -20,6 +20,7 @@
 #include "image_receiver_context.h"
 #include "image_napi.h"
 #include "image_receiver_manager.h"
+#include <uv.h>
 
 using OHOS::HiviewDFX::HiLog;
 using std::string;
@@ -701,7 +702,6 @@ void ImageReceiverNapi::DoCallBack(shared_ptr<ImageReceiverAsyncContext> context
                                    string name, CompleteCallback callBack)
 {
     IMAGE_FUNCTION_IN();
-    napi_status status;
     if (context == nullptr) {
         IMAGE_ERR("gContext is empty");
         return;
@@ -712,26 +712,53 @@ void ImageReceiverNapi::DoCallBack(shared_ptr<ImageReceiverAsyncContext> context
         return;
     }
 
-    if (callBack == nullptr) {
-        IMAGE_ERR("callBack is empty");
-        return;
-    }
-    napi_value _resource = nullptr;
-    napi_create_string_utf8(context->env, name.c_str(), NAPI_AUTO_LENGTH, &_resource);
-    status = napi_create_async_work(context->env, nullptr, _resource,
-                                    ([](napi_env env, void *data) {}),
-                                    reinterpret_cast<napi_async_complete_callback>(callBack),
-                                    static_cast<void *>(context.get()), &(context->work));
-    if (status != napi_ok) {
-        IMAGE_ERR("fail to create async work %{public}d", status);
+    uv_loop_s *loop = nullptr;
+    napi_get_uv_event_loop(context->env, &loop);
+    if (loop == nullptr) {
+        IMAGE_ERR("napi_get_uv_event_loop failed");
         return;
     }
 
-    status = napi_queue_async_work(context->env, context->work);
-    if (status != napi_ok) {
-        IMAGE_ERR("fail to queue async work %{public}d", status);
+    unique_ptr<uv_work_t> work = make_unique<uv_work_t>();
+    if (work == nullptr) {
+        IMAGE_ERR("DoCallBack: No memory");
+        return;
     }
 
+    work->data = reinterpret_cast<void *>(context.get());
+    int ret = uv_queue_work(loop, work.get(), [] (uv_work_t *work) {}, [] (uv_work_t *work, int status) {
+        IMAGE_LINE_IN();
+        Context context = reinterpret_cast<Context>(work->data);
+        if (context == nullptr) {
+            IMAGE_ERR("contex is empty");
+        } else {
+            napi_value result[PARAM2] = {0};
+            napi_value retVal;
+            napi_value callback = nullptr;
+            if (context->env != nullptr && context->callbackRef != nullptr) {
+                napi_create_uint32(context->env, SUCCESS, &result[0]);
+                napi_get_undefined(context->env, &result[1]);
+                napi_get_reference_value(context->env, context->callbackRef, &callback);
+                if (callback != nullptr) {
+                    napi_call_function(context->env, nullptr, callback, PARAM2, result, &retVal);
+                } else {
+                    IMAGE_ERR("napi_get_reference_value callback is empty");
+                }
+            } else {
+                IMAGE_ERR("env or callbackRef is empty");
+            }
+        }
+        if (work != nullptr) {
+            delete work;
+        }
+        IMAGE_LINE_OUT();
+    });
+
+    if (ret != 0) {
+        IMAGE_ERR("Failed to execute DoCallBack work queue");
+    } else {
+        work.release();
+    }
     IMAGE_FUNCTION_OUT();
 }
 
@@ -760,7 +787,6 @@ napi_value ImageReceiverNapi::JsOn(napi_env env, napi_callback_info info)
         listener->context = std::move(ic.context);
         listener->context->env = args.env;
         listener->name = args.name;
-        listener->callBack = args.callBack;
 
         IMAGE_ERR("listener is %{public}p", listener.get());
 
@@ -768,16 +794,6 @@ napi_value ImageReceiverNapi::JsOn(napi_env env, napi_callback_info info)
 
         IMAGE_LINE_OUT();
         return true;
-    };
-
-    args.callBack = [](napi_env env, napi_status status, Context context) {
-        IMAGE_LINE_IN();
-        napi_value result = nullptr;
-        napi_get_undefined(env, &result);
-        context->status = SUCCESS;
-
-        IMAGE_LINE_OUT();
-        CommonCallbackRoutine(env, context, result, false);
     };
 
     return JSCommonProcess(args);
