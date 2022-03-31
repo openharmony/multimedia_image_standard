@@ -14,13 +14,13 @@
  */
 
 #include "image_receiver_napi.h"
+#include <uv.h>
 #include "media_errors.h"
 #include "hilog/log.h"
 #include "image_napi_utils.h"
 #include "image_receiver_context.h"
 #include "image_napi.h"
 #include "image_receiver_manager.h"
-#include <uv.h>
 
 using OHOS::HiviewDFX::HiLog;
 using std::string;
