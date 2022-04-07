@@ -86,9 +86,10 @@ static std::string GetStringArgument(napi_env env, napi_value value)
         if (status == napi_ok) {
             HiLog::Debug(LABEL, "Get Success");
             strValue = buffer;
+        } else {
+            free(buffer);
+            buffer = nullptr;
         }
-        free(buffer);
-        buffer = nullptr;
     }
     return strValue;
 }

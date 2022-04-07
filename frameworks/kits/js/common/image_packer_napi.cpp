@@ -131,7 +131,6 @@ STATIC_EXEC_FUNC(Packing)
     context->resultBuffer = malloc(bufferSize);
     if (context->resultBuffer == nullptr) {
         HiLog::Error(LABEL, "PackingExec failed, malloc buffer failed");
-
         context->status = ERROR;
     } else {
         context->rImagePacker->StartPacking(static_cast<uint8_t *>(context->resultBuffer),
@@ -140,11 +139,12 @@ STATIC_EXEC_FUNC(Packing)
         context->rImagePacker->FinalizePacking(packedSize);
         HiLog::Debug(LABEL, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
 
-        if (packedSize > 0 && packedSize < bufferSize) {
+        if (packedSize > 0 && (static_cast<uint64_t>(packedSize) < bufferSize)) {
             context->packedSize = packedSize;
             context->status = SUCCESS;
         } else {
             context->status = ERROR;
+            HiLog::Error(LABEL, "Packing failed, packedSize outside size.");
         }
     }
     HiLog::Debug(LABEL, "PackingExec exit");
@@ -172,7 +172,7 @@ STATIC_COMPLETE_FUNC(Packing)
 STATIC_EXEC_FUNC(PackingFromPixelMap)
 {
     HiLog::Debug(LABEL, "PackingFromPixelMapExec enter");
-    uint64_t bufferSize = 10 * 1024 * 1024;
+    uint64_t bufferSize = 10 * 1024 * 1024; // 10M is the maximum packedSize
     int64_t packedSize = 0;
     auto context = static_cast<ImagePackerAsyncContext*>(data);
     HiLog::Debug(LABEL, "image packer get supported format");
@@ -193,11 +193,12 @@ STATIC_EXEC_FUNC(PackingFromPixelMap)
         context->rImagePacker->FinalizePacking(packedSize);
         HiLog::Debug(LABEL, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
 
-        if (packedSize > 0) {
+        if (packedSize > 0 && (static_cast<uint64_t>(packedSize) < bufferSize)) {
             context->packedSize = packedSize;
             context->status = SUCCESS;
         } else {
             context->status = ERROR;
+            HiLog::Error(LABEL, "Packing failed, packedSize outside size.");
         }
     }
     HiLog::Debug(LABEL, "PackingFromPixelMapExec exit");

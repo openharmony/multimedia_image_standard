@@ -1132,11 +1132,17 @@ uint8_t *PixelMap::ReadImageData(Parcel &parcel, int32_t bufferSize)
     int fd = -1;
 
     if (static_cast<unsigned int>(bufferSize) <= MIN_IMAGEDATA_SIZE) {
-        const uint8_t *ptr = parcel.ReadUnpadBuffer(bufferSize);
-        if (bufferSize <= 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
+        if (bufferSize <= 0) {
             HiLog::Error(LABEL, "malloc parameter bufferSize:[%{public}d] error.", bufferSize);
             return nullptr;
         }
+
+        const uint8_t *ptr = parcel.ReadUnpadBuffer(bufferSize);
+        if (addr == nullptr) {
+            HiLog::Error(LABEL, "read buffer from parcel failed, read buffer addr is null");
+            return nullptr;
+        }
+
         base = static_cast<uint8_t *>(malloc(bufferSize));
         if (base == nullptr) {
             HiLog::Error(LABEL, "alloc output pixel memory size:[%{public}d] error.", bufferSize);
@@ -1155,22 +1161,26 @@ uint8_t *PixelMap::ReadImageData(Parcel &parcel, int32_t bufferSize)
             HiLog::Error(LABEL, "read fd :[%{public}d] error", fd);
             return nullptr;
         }
+        if (bufferSize <= 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
+            HiLog::Error(LABEL, "malloc parameter bufferSize:[%{public}d] error.", bufferSize);
+            return nullptr;
+        }
+
         void *ptr = ::mmap(nullptr, bufferSize, PROT_READ, MAP_SHARED, fd, 0);
         if (ptr == MAP_FAILED) {
             // do not close fd here. fd will be closed in FileDescriptor, ::close(fd)
             HiLog::Error(LABEL, "ReadImageData map failed, errno:%{public}s", strerror(errno));
             return nullptr;
         }
-        if (bufferSize <= 0 || bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
-            HiLog::Error(LABEL, "malloc parameter bufferSize:[%{public}d] error.", bufferSize);
-            return nullptr;
-        }
+
         base = static_cast<uint8_t *>(malloc(bufferSize));
         if (base == nullptr) {
+            ::munmap(ptr, bufferSize);
             HiLog::Error(LABEL, "alloc output pixel memory size:[%{public}d] error.", bufferSize);
             return nullptr;
         }
         if (memcpy_s(base, bufferSize, ptr, bufferSize) != 0) {
+            ::munmap(ptr, bufferSize);
             free(base);
             base = nullptr;
             HiLog::Error(LABEL, "memcpy pixel data size:[%{public}d] error.", bufferSize);
