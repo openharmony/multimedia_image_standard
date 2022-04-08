@@ -49,6 +49,7 @@ public:
 #ifdef IMAGE_DEBUG_FLAG
     bool isCallBackTest = false;
 #endif
+
 private:
     static napi_value Constructor(napi_env env, napi_callback_info info);
     static void Destructor(napi_env env, void *nativeObject, void *finalize);

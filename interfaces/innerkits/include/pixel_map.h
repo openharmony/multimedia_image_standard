@@ -119,6 +119,7 @@ public:
 
     NATIVEEXPORT bool Marshalling(Parcel &data) const override;
     NATIVEEXPORT static PixelMap *Unmarshalling(Parcel &data);
+
 private:
     static constexpr size_t MAX_IMAGEDATA_SIZE = 128 * 1024 * 1024; // 128M
     static constexpr size_t MIN_IMAGEDATA_SIZE = 32 * 1024;         // 32k
