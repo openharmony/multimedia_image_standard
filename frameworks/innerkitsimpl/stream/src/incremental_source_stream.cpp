@@ -101,7 +101,7 @@ bool IncrementalSourceStream::Peek(uint32_t desiredSize, uint8_t *outBuffer, uin
     errno_t ret = memcpy_s(outBuffer, bufferSize, sourceData_.data() + dataOffset_, desiredSize);
     if (ret != 0) {
         IMAGE_LOGE("[IncrementalSourceStream]copy data fail, ret:%{public}d, bufferSize:%{public}u, \
-                   offset:%{public}zu, desiredSize:%{public}u, dataSize:%{public}zu.",
+                   offset:%{public}zu, desiredSize:%{public}u, dataSize:%{public}zu.", 
                    ret, bufferSize, dataOffset_, desiredSize, dataSize_);
         return false;
     }
