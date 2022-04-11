@@ -475,7 +475,7 @@ uint32_t PngDecoder::ProcessData(png_structp pngStructPtr, png_infop infoStructP
         size_t readSize = (bufferSize < totalSize) ? bufferSize : totalSize;
         uint32_t ret = IncrementalRead(sourceStream, readSize, streamData);
         if (ret != SUCCESS) {
-            HiLog::Error(LABEL, "ProcessData Read from source stream fail, readSize:%{public}zu,\
+            HiLog::Error(LABEL, "ProcessData Read from source stream fail, readSize:%{public}zu, \
                         bufferSize:%{public}zu, dataSize:%{public}u, totalSize:%{public}zu.",
                          readSize, bufferSize, streamData.dataSize, totalSize);
             return ret;

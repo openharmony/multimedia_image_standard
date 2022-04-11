@@ -121,7 +121,7 @@ bool BufferSourceStream::Peek(uint32_t desiredSize, uint8_t *outBuffer, uint32_t
     }
     errno_t ret = memcpy_s(outBuffer, bufferSize, inputBuffer_ + dataOffset_, desiredSize);
     if (ret != EOK) {
-        IMAGE_LOGE("[BufferSourceStream]copy data fail, ret:%{public}d, bufferSize:%{public}u, offset:%{public}zu,\
+        IMAGE_LOGE("[BufferSourceStream]copy data fail, ret:%{public}d, bufferSize:%{public}u, offset:%{public}zu, \
                    desiredSize:%{public}u.",
                    ret, bufferSize, dataOffset_, desiredSize);
         return false;

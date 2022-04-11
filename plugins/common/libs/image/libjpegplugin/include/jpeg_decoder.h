@@ -55,6 +55,7 @@ public:
     uint32_t GetImagePropertyString(uint32_t index, const std::string &key, std::string &value) override;
     uint32_t ModifyImageProperty(uint32_t index, const std::string &key, const std::string &value,
         const std::string &path) override;
+
 private:
     DISALLOW_COPY_AND_MOVE(JpegDecoder);
     int ExifPrintMethod();
