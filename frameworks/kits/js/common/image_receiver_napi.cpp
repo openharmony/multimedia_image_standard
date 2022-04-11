@@ -757,9 +757,7 @@ void ImageReceiverNapi::DoCallBack(shared_ptr<ImageReceiverAsyncContext> context
                 IMAGE_ERR("env or callbackRef is empty");
             }
         }
-        if (work != nullptr) {
-            delete work;
-        }
+        delete work;
         IMAGE_LINE_OUT();
     });
 
