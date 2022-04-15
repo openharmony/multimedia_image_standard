@@ -55,7 +55,7 @@ private:
     void SetExifTagValues(const ExifTag &tag, const std::string &value);
     ExifEntry* InitExifTag(ExifData *exif, ExifIfd ifd, ExifTag tag);
     ExifEntry* CreateExifTag(ExifData *exif, ExifIfd ifd, ExifTag tag, size_t len, ExifFormat format);
-    long GetFileSize(FILE *fp);
+    unsigned long GetFileSize(FILE *fp);
     void ReleaseSource(unsigned char **ptrBuf, FILE **ptrFile);
     bool CreateExifData(unsigned char *buf, unsigned long length, ExifData **data, bool &isNewExifData);
     unsigned int GetOrginExifDataLength(const bool &isNewExifData, unsigned char *buf);
