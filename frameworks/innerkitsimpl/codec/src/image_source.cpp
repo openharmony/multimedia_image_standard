@@ -19,7 +19,7 @@
 #include <vector>
 #include "buffer_source_stream.h"
 #if !defined(_WIN32) && !defined(_APPLE)
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #endif
 #include "file_source_stream.h"
 #include "image/abs_image_decoder.h"

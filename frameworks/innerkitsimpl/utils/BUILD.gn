@@ -60,7 +60,7 @@ ohos_shared_library("image_utils") {
     ]
 
     external_deps = [
-      "bytrace_standard:bytrace_core",
+      "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
     ]
   }
@@ -108,7 +108,7 @@ ohos_static_library("image_utils_static") {
     ]
 
     external_deps = [
-      "bytrace_standard:bytrace_core",
+      "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
     ]
   }
