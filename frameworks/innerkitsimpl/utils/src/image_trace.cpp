@@ -22,12 +22,12 @@ static constexpr int32_t FORMAT_BUF_SIZE = 128;
 
 ImageTrace::ImageTrace(const std::string &title) : title_(title)
 {
-    StartTrace(BYTRACE_TAG_ZIMAGE, title);
+    StartTrace(HITRACE_TAG_ZIMAGE, title);
 }
 
 ImageTrace::~ImageTrace()
 {
-    FinishTrace(BYTRACE_TAG_ZIMAGE);
+    FinishTrace(HITRACE_TAG_ZIMAGE);
 }
 
 ImageTrace::ImageTrace(const char *fmt, ...)
@@ -46,7 +46,7 @@ ImageTrace::ImageTrace(const char *fmt, ...)
             title_ = "ImageTraceFmt Format Error";
         }
     }
-    StartTrace(BYTRACE_TAG_ZIMAGE, title_);
+    StartTrace(HITRACE_TAG_ZIMAGE, title_);
 }
 } // namespace Media
 } // namespace OHOS
