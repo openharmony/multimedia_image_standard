@@ -501,7 +501,7 @@ napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info i
             delete[] buffer;
             HiLog::Error(LABEL, "fail to get pathName");
             napi_get_undefined(env, &result);
-			return result;
+            return result;
         }
 
         asyncContext->pathName = buffer;
@@ -521,7 +521,7 @@ napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info i
         if (!IMG_IS_OK(status)) {
             HiLog::Error(LABEL, "fail to getarraybuffer");
             napi_get_undefined(env, &result);
-			return result;
+            return result;
         }
 
         fileBuffer_ = asyncContext->sourceBuffer;
@@ -1228,8 +1228,8 @@ napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
     }
 
     if (!IMG_IS_OK(status)) {
-	    HiLog::Error(LABEL, "fail to UpdateData");
-	    napi_get_undefined(env, &result);
+        HiLog::Error(LABEL, "fail to UpdateData");
+        napi_get_undefined(env, &result);
         return result;
     }
 
