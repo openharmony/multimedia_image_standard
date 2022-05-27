@@ -500,7 +500,8 @@ napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info i
         if (!IMG_IS_OK(status)) {
             delete[] buffer;
             HiLog::Error(LABEL, "fail to get pathName");
-            return nullptr;
+            napi_get_undefined(env, &result);
+            return result;
         }
 
         asyncContext->pathName = buffer;
@@ -517,6 +518,12 @@ napi_value ImageSourceNapi::CreateImageSource(napi_env env, napi_callback_info i
     } else if (argCount == NUM_1) {
         status = napi_get_arraybuffer_info(env, argValue[NUM_0],
             &(asyncContext->sourceBuffer), &(asyncContext->sourceBufferSize));
+        if (!IMG_IS_OK(status)) {
+            HiLog::Error(LABEL, "fail to getarraybuffer");
+            napi_get_undefined(env, &result);
+            return result;
+        }
+
         fileBuffer_ = asyncContext->sourceBuffer;
         fileBufferSize_ = asyncContext->sourceBufferSize;
         imageSource = ImageSource::CreateImageSource(static_cast<uint8_t *>(asyncContext->sourceBuffer),
@@ -1218,6 +1225,12 @@ napi_value ImageSourceNapi::UpdateData(napi_env env, napi_callback_info info)
         asyncContext->updataLength = 0;
         status = napi_get_value_uint32(env, argValue[NUM_3], &(asyncContext->updataLength));
         HiLog::Debug(LABEL, "asyncContext->updataLength is [%{public}u]", asyncContext->updataLength);
+    }
+
+    if (!IMG_IS_OK(status)) {
+        HiLog::Error(LABEL, "fail to UpdateData");
+        napi_get_undefined(env, &result);
+        return result;
     }
 
     if (argCount == NUM_5 && ImageNapiUtils::getType(env, argValue[NUM_4]) == napi_function) {
