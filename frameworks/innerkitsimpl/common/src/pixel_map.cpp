@@ -1630,6 +1630,5 @@ uint32_t PixelMap::crop(const Rect &rect)
     };
     return postProc.ConvertProc(rect, dstImageInfo, *this, imageInfo_);
 }
-
 } // namespace Media
 } // namespace OHOS
