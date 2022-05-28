@@ -324,6 +324,7 @@ declare namespace image {
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     size: Size;
+    density: number;
   }
 
   /**
@@ -424,6 +425,8 @@ declare namespace image {
      * @syscap SystemCapability.Multimedia.Image.ImageSource
      */
     desiredPixelFormat?: PixelMapFormat;
+
+    fitDensity?: number;
   }
 
   /**
@@ -503,6 +506,9 @@ declare namespace image {
     scaleMode?: ScaleMode;
   }
 
+  interface SourceOptions {
+    sourceDensity: number;
+  }
   /**
    * Create pixelmap by data buffer.
    * @since 8
@@ -524,7 +530,7 @@ declare namespace image {
    * @param uri Image source URI.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function createImageSource(uri: string): ImageSource;
+  function createImageSource(uri: string, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImageSource instance based on the file descriptor.
@@ -533,7 +539,7 @@ declare namespace image {
    * @param fd ID of a file descriptor.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function createImageSource(fd: number): ImageSource;
+  function createImageSource(fd: number, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImageSource instance based on the buffer.
@@ -542,7 +548,7 @@ declare namespace image {
    * @param buf The buffer of the iamge.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function createImageSource(buf: ArrayBuffer): ImageSource;
+  function createImageSource(buf: ArrayBuffer, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImageSource instance based on the buffer in incremental.
@@ -551,7 +557,7 @@ declare namespace image {
    * @param buf The buffer of the iamge.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function CreateIncrementalSource(buf: ArrayBuffer): ImageSource;
+  function CreateIncrementalSource(buf: ArrayBuffer, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImagePacker instance.
@@ -696,6 +702,10 @@ declare namespace image {
      * @return Total number of bytes.
      */
     getPixelBytesNumber(): number;
+
+
+    getDensity():number;
+    setDensity(density: number);
 
     /**
      * Releases this PixelMap object. This method uses a callback to return the result.

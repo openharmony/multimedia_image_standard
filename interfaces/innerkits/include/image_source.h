@@ -210,6 +210,8 @@ private:
     bool ImageSizeChange(int32_t width, int32_t height, int32_t desiredWidth, int32_t desiredHeight);
     bool ImageConverChange(const Rect &cropRect, ImageInfo &dstImageInfo, ImageInfo &srcImageInfo);
     void Reset();
+    static std::unique_ptr<SourceStream> DecodeBase64(const uint8_t *data, uint32_t size);
+    static std::unique_ptr<SourceStream> DecodeBase64(const std::string &data);
 
     const std::string NINE_PATCH = "ninepatch";
     const std::string SKIA_DECODER = "SKIA_DECODER";

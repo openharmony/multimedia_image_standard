@@ -43,6 +43,7 @@ private:
     void SetYuv420spExtraConfig();
     uint32_t SequenceEncoder(const uint8_t *data);
     uint32_t Yuv420spEncoder(const uint8_t *data);
+    uint32_t RGBAF16Encoder(const uint8_t *data);
     static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "JpegEncoder" };
     jpeg_compress_struct encodeInfo_;
     JpegDstMgr dstMgr_;

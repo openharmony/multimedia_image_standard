@@ -34,6 +34,7 @@
 #include "plugin_server.h"
 #include "post_proc.h"
 #include "source_stream.h"
+#include "include/utils/SkBase64.h"
 
 namespace OHOS {
 namespace Media {
@@ -87,6 +88,11 @@ namespace InnerFormat {
         "image/x-samsung-srw",
     };
 } // namespace InnerFormat
+// BASE64 image prefix type data:image/<type>;base64,<data>
+static const std::string IMAGE_URL_PREFIX = "data:image/";
+static const std::string BASE64_URL_PREFIX = ";base64,";
+static const int INT_2 = 2;
+static const int INT_8 = 8;
 
 PluginServer &ImageSource::pluginServer_ = ImageUtils::GetPluginServer();
 ImageSource::FormatAgentMap ImageSource::formatAgentMap_ = InitClass();
@@ -169,7 +175,11 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(const uint8_t *data, uint
         return nullptr;
     }
 
-    unique_ptr<SourceStream> streamPtr = BufferSourceStream::CreateSourceStream(data, size);
+    unique_ptr<SourceStream> streamPtr = DecodeBase64(data, size);
+    if (streamPtr == nullptr) {
+        streamPtr = BufferSourceStream::CreateSourceStream(data, size);
+    }
+
     if (streamPtr == nullptr) {
         IMAGE_LOGE("[ImageSource]failed to create buffer source stream.");
         errorCode = ERR_IMAGE_SOURCE_DATA;
@@ -197,7 +207,11 @@ unique_ptr<ImageSource> ImageSource::CreateImageSource(const std::string &pathNa
 #endif
     IMAGE_LOGD("[ImageSource]create Imagesource with pathName.");
 
-    unique_ptr<SourceStream> streamPtr = FileSourceStream::CreateSourceStream(pathName);
+    unique_ptr<SourceStream> streamPtr = DecodeBase64(pathName);
+    if (streamPtr == nullptr) {
+        streamPtr = FileSourceStream::CreateSourceStream(pathName);
+    }
+
     if (streamPtr == nullptr) {
         IMAGE_LOGE("[ImageSource]failed to create file source stream.");
         errorCode = ERR_IMAGE_SOURCE_DATA;
@@ -1256,6 +1270,46 @@ bool ImageSource::ImageConverChange(const Rect &cropRect, ImageInfo &dstImageInf
         return false;
     }
     return true;
+}
+unique_ptr<SourceStream> ImageSource::DecodeBase64(const uint8_t *data, uint32_t size)
+{
+    string data1(reinterpret_cast<const char*>(data), size);
+    return DecodeBase64(data1);
+}
+
+unique_ptr<SourceStream> ImageSource::DecodeBase64(const string &data)
+{
+    if (data.size() < IMAGE_URL_PREFIX.size() ||
+       (data.compare(0, IMAGE_URL_PREFIX.size(), IMAGE_URL_PREFIX) != 0)) {
+        IMAGE_LOGD("[ImageSource]Base64 image header mismatch.");
+        return nullptr;
+    }
+
+    size_t encoding = data.find(BASE64_URL_PREFIX, IMAGE_URL_PREFIX.size());
+    if (encoding == data.npos) {
+        IMAGE_LOGE("[ImageSource]Base64 mismatch.");
+        return nullptr;
+    }
+    string b64Data = data.substr(encoding + BASE64_URL_PREFIX.size());
+    size_t rawDataLen = b64Data.size() - count(b64Data.begin(), b64Data.end(), '=');
+    rawDataLen -= (rawDataLen / INT_8) * INT_2;
+
+    SkBase64 base64Decoder;
+    if (base64Decoder.decode(b64Data.data(), b64Data.size()) != SkBase64::kNoError) {
+        IMAGE_LOGE("[ImageSource]base64 image decode failed!");
+        return nullptr;
+    }
+
+    auto base64Data = base64Decoder.getData();
+    const uint8_t* imageData = reinterpret_cast<uint8_t*>(base64Data);
+    IMAGE_LOGD("[ImageSource]Create BufferSource from decoded base64 string.");
+    auto result = BufferSourceStream::CreateSourceStream(imageData, rawDataLen);
+
+    if (base64Data != nullptr) {
+        delete[] base64Data;
+        base64Data = nullptr;
+    }
+    return result;
 }
 } // namespace Media
 } // namespace OHOS

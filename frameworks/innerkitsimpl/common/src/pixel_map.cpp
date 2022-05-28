@@ -43,8 +43,12 @@ using namespace std;
 constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "PixelMap" };
 constexpr int32_t MAX_DIMENSION = INT32_MAX >> 2;
 constexpr uint8_t FOUR_BYTE_SHIFT = 2;
+constexpr int8_t INVALID_ALPHA_INDEX = -1;
+constexpr uint8_t ARGB_ALPHA_INDEX = 0;
 constexpr uint8_t BGRA_ALPHA_INDEX = 3;
+constexpr uint8_t ALPHA_BYTES = 1;
 constexpr uint8_t BGRA_BYTES = 4;
+constexpr uint8_t RGBA_F16_BYTES = 8;
 constexpr uint8_t PER_PIXEL_LEN = 1;
 
 constexpr uint8_t FILL_NUMBER = 3;
@@ -452,6 +456,9 @@ bool PixelMap::GetPixelFormatDetail(const PixelFormat format)
         }
         case PixelFormat::CMYK:
             pixelBytes_ = ARGB_8888_BYTES;
+            break;
+        case PixelFormat::RGBA_F16:
+            pixelBytes_ = BGRA_F16_BYTES;
             break;
         default: {
             HiLog::Error(LABEL, "pixel format:[%{public}d] not supported.", format);
@@ -1375,5 +1382,254 @@ PixelMap *PixelMap::Unmarshalling(Parcel &parcel)
     pixelMap->SetPixelsAddr(base, context, bufferSize, allocType, nullptr);
     return pixelMap;
 }
+
+static const string GetNamedAlphaType(const AlphaType alphaType)
+{
+    switch (alphaType) {
+        case AlphaType::IMAGE_ALPHA_TYPE_UNKNOWN:
+            return "Alpha Type Unknown";
+        case AlphaType::IMAGE_ALPHA_TYPE_OPAQUE:
+            return "Alpha Type Opaque";
+        case AlphaType::IMAGE_ALPHA_TYPE_PREMUL:
+            return "Alpha Type Premul";
+        case AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL:
+            return "Alpha Type Unpremul";
+    }
+    return "Alpha Type Unknown";
+}
+
+static const string GetNamedPixelFormat(const PixelFormat pixelFormat)
+{
+    switch (pixelFormat) {
+        case PixelFormat::UNKNOWN:
+            return "Pixel Format UNKNOWN";
+        case PixelFormat::RGB_565:
+            return "Pixel Format RGB_565";
+        case PixelFormat::RGB_888:
+            return "Pixel Format RGB_888";
+        case PixelFormat::NV21:
+            return "Pixel Format NV21";
+        case PixelFormat::NV12:
+            return "Pixel Format NV12";
+        case PixelFormat::CMYK:
+            return "Pixel Format CMYK";
+        case PixelFormat::ARGB_8888:
+            return "Pixel Format ARGB_8888";
+        case PixelFormat::ALPHA_8:
+            return "Pixel Format ALPHA_8";
+        case PixelFormat::RGBA_8888:
+            return "Pixel Format RGBA_8888";
+        case PixelFormat::BGRA_8888:
+            return "Pixel Format BGRA_8888";
+        case PixelFormat::RGBA_F16:
+            return "Pixel Format RGBA_F16";
+    }
+    return "Pixel Format UNKNOWN";
+}
+
+constexpr uint8_t HALF_LOW_BYTE = 0;
+constexpr uint8_t HALF_HIGH_BYTE = 1;
+
+static float HalfTranslate(const uint8_t* ui)
+{
+    return HalfToFloat(U8ToU16(ui[HALF_HIGH_BYTE], ui[HALF_LOW_BYTE]));
+}
+
+static void HalfTranslate(const float pixel, uint8_t* ui)
+{
+    uint16_t val = FloatToHalf(pixel);
+    ui[HALF_LOW_BYTE] = static_cast<uint8_t>((val >> SHIFT_8_BIT) & UINT8_MAX);
+    ui[HALF_HIGH_BYTE] = static_cast<uint8_t>(val & UINT8_MAX);
+}
+constexpr uint8_t RGBA_F16_R_OFFSET = 0;
+constexpr uint8_t RGBA_F16_G_OFFSET = 2;
+constexpr uint8_t RGBA_F16_B_OFFSET = 4;
+constexpr uint8_t RGBA_F16_A_OFFSET = 6;
+
+static constexpr float FLOAT_ZERO = 0.0f;
+static float ProcessPremulF16Pixel(float mulPixel, float alpha, const float percent)
+{
+    if (alpha == 0) {
+        return FLOAT_ZERO;
+    }
+    float res = mulPixel * percent / alpha;
+    return res > MAX_HALF? MAX_HALF: res;
+}
+
+static void SetF16PixelAlpha(uint8_t *pixel, const float percent, bool isPixelPremul)
+{
+    float A = HalfTranslate(pixel + RGBA_F16_A_OFFSET);
+    if (isPixelPremul) {
+        float R = HalfTranslate(pixel + RGBA_F16_R_OFFSET);
+        float G = HalfTranslate(pixel + RGBA_F16_G_OFFSET);
+        float B = HalfTranslate(pixel + RGBA_F16_B_OFFSET);
+        R = ProcessPremulF16Pixel(R, A, percent);
+        G = ProcessPremulF16Pixel(G, A, percent);
+        B = ProcessPremulF16Pixel(B, A, percent);
+        HalfTranslate(R, pixel + RGBA_F16_R_OFFSET);
+        HalfTranslate(G, pixel + RGBA_F16_G_OFFSET);
+        HalfTranslate(B, pixel + RGBA_F16_B_OFFSET);
+    }
+    A = percent * MAX_HALF;
+    HalfTranslate(A, pixel + RGBA_F16_A_OFFSET);
+}
+
+static constexpr uint8_t U_ZERO = 0;
+static uint8_t ProcessPremulPixel(uint8_t mulPixel, uint8_t alpha, const float percent)
+{
+    // mP = oP * oAlpha / UINT8_MAX
+    // => oP = mP * UINT8_MAX / oAlpha
+    // nP = oP * percent
+    // => nP = mP * UINT8_MAX * percent / oAlpha
+    if (alpha == 0) {
+        return U_ZERO;
+    }
+    float nPixel = mulPixel * percent * UINT8_MAX / alpha;
+    if ((nPixel + HALF_ONE) >= UINT8_MAX) {
+        return UINT8_MAX;
+    }
+    return static_cast<uint8_t>(nPixel + HALF_ONE);
+}
+
+static void SetUintPixelAlpha(uint8_t *pixel, const float percent,
+    uint8_t pixelByte, int8_t alphaIndex, bool isPixelPremul)
+{
+    if (isPixelPremul) {
+        for (int32_t pixelIndex = 0; pixelIndex < pixelByte; pixelIndex++) {
+            if (pixelIndex != alphaIndex) {
+                pixel[pixelIndex] = ProcessPremulPixel(pixel[pixelIndex],
+                    pixel[alphaIndex], percent);
+            }
+        }
+    }
+    pixel[alphaIndex] = static_cast<uint8_t>(UINT8_MAX * percent + HALF_ONE);
+}
+
+static uint32_t DoSetAlpha(const PixelFormat pixelFormat, uint8_t *pixels,
+    uint32_t pixelsSize, uint8_t pixelByte, int8_t alphaIndex,
+    const float percent, bool isPixelPremul)
+{
+    if (alphaIndex == INVALID_ALPHA_INDEX) {
+        HiLog::Error(LABEL, "Invaild alpha index");
+        return ERR_IMAGE_INVALID_PARAMETER;
+    }
+
+    if ((pixelFormat == PixelFormat::ALPHA_8 && pixelByte != ALPHA_BYTES) ||
+        (pixelFormat == PixelFormat::RGBA_F16 && pixelByte != RGBA_F16_BYTES)) {
+        HiLog::Error(LABEL, "Pixel format %{public}s mismatch pixelByte %{public}d",
+            GetNamedPixelFormat(pixelFormat).c_str(), pixelByte);
+        return ERR_IMAGE_INVALID_PARAMETER;
+    }
+    for (uint32_t i = 0; i < pixelsSize;) {
+        uint8_t* pixel = pixels + i;
+        if (pixelFormat == PixelFormat::RGBA_F16) {
+            SetF16PixelAlpha(pixel, percent, isPixelPremul);
+        } else {
+            SetUintPixelAlpha(pixel, percent, pixelByte, alphaIndex, isPixelPremul);
+        }
+        i += pixelByte;
+    }
+    return SUCCESS;
+}
+
+uint32_t PixelMap::SetAlpha(const float percent)
+{
+    auto alphaType = GetAlphaType();
+    if (AlphaType::IMAGE_ALPHA_TYPE_UNKNOWN == alphaType ||
+        AlphaType::IMAGE_ALPHA_TYPE_OPAQUE == alphaType) {
+        HiLog::Error(LABEL,
+            "Could not set alpha on %{public}s",
+            GetNamedAlphaType(alphaType).c_str());
+        return ERR_IMAGE_DATA_UNSUPPORT;
+    }
+
+    if (percent <= 0 || percent > 1) {
+        HiLog::Error(LABEL,
+            "Set alpha input should (0 < input <= 1). Current input %{public}f",
+            percent);
+        return ERR_IMAGE_INVALID_PARAMETER;
+    }
+
+    bool pixelPremul = alphaType == AlphaType::IMAGE_ALPHA_TYPE_PREMUL;
+    int8_t alphaIndex = INVALID_ALPHA_INDEX;
+    auto pixelFormat = GetPixelFormat();
+    switch (pixelFormat) {
+        case PixelFormat::ARGB_8888:
+        case PixelFormat::ALPHA_8: {
+            alphaIndex = ARGB_ALPHA_INDEX;
+            break;
+        }
+        case PixelFormat::RGBA_8888:
+        case PixelFormat::BGRA_8888:
+        case PixelFormat::RGBA_F16: {
+            alphaIndex = BGRA_ALPHA_INDEX;
+            break;
+        }
+        default: {
+            HiLog::Error(LABEL,
+                "Could not set alpha on %{public}s",
+                GetNamedPixelFormat(pixelFormat).c_str());
+            return ERR_IMAGE_DATA_UNSUPPORT;
+        }
+    }
+    return DoSetAlpha(pixelFormat, data_,
+        GetByteCount(), pixelBytes_,
+        alphaIndex, percent, pixelPremul);
+}
+
+void PixelMap::scale(float xAxis, float yAxis)
+{
+    PostProc postProc;
+    if (!postProc.ScalePixelMap(xAxis, yAxis, *this)) {
+        HiLog::Error(LABEL, "scale fail");
+    }
+}
+void PixelMap::translate(float xAxis, float yAxis)
+{
+    PostProc postProc;
+    if (!postProc.TranslatePixelMap(xAxis, yAxis, *this)) {
+        HiLog::Error(LABEL, "translate fail");
+    }
+}
+void PixelMap::rotate(float degrees)
+{
+    PostProc postProc;
+    if (!postProc.RotatePixelMap(degrees, *this)) {
+        HiLog::Error(LABEL, "rotate fail");
+    }
+}
+void PixelMap::flip(bool xAxis, bool yAxis)
+{
+    if (xAxis == false && yAxis == false) {
+        return;
+    }
+    scale(xAxis?-1:1, yAxis?-1:1);
+}
+uint32_t PixelMap::crop(const Rect &rect)
+{
+    PostProc postProc;
+    auto cropValue = PostProc::GetCropValue(rect, imageInfo_.size);
+    if (cropValue == CropValue::NOCROP) {
+        return SUCCESS;
+    }
+
+    if (cropValue == CropValue::INVALID) {
+        HiLog::Error(LABEL, "Invalid crop rect");
+        return ERR_IMAGE_CROP;
+    }
+
+    ImageInfo dstImageInfo = {
+        .size = {
+            .width = rect.width,
+            .height = rect.height,
+        },
+        .pixelFormat = imageInfo_.pixelFormat,
+        .colorSpace = imageInfo_.colorSpace,
+        .alphaType = imageInfo_.alphaType,
+        .baseDensity = imageInfo_.baseDensity,
+    };
+    return postProc.ConvertProc(rect, dstImageInfo, *this, imageInfo_);
+}
+
 } // namespace Media
 } // namespace OHOS

@@ -58,7 +58,19 @@ private:
     static napi_value GetBytesNumberPerRow(napi_env env, napi_callback_info info);
     static napi_value GetPixelBytesNumber(napi_env env, napi_callback_info info);
     static napi_value getPixelBytesCount(napi_env env, napi_callback_info info);
+    static napi_value IsSupportAlpha(napi_env env, napi_callback_info info);
+    static napi_value SetAlphaAble(napi_env env, napi_callback_info info);
+    static napi_value CreateAlphaPixelmap(napi_env env, napi_callback_info info);
+    static napi_value GetDensity(napi_env env, napi_callback_info info);
+    static napi_value SetDensity(napi_env env, napi_callback_info info);
     static napi_value Release(napi_env env, napi_callback_info info);
+    static napi_value SetAlpha(napi_env env, napi_callback_info info);
+
+    static napi_value Scale(napi_env env, napi_callback_info info);
+    static napi_value Translate(napi_env env, napi_callback_info info);
+    static napi_value Rotate(napi_env env, napi_callback_info info);
+    static napi_value Flip(napi_env env, napi_callback_info info);
+    static napi_value Crop(napi_env env, napi_callback_info info);
 
     static thread_local napi_ref sConstructor_;
     static std::shared_ptr<PixelMap> sPixelMap_;
@@ -67,7 +79,6 @@ private:
     napi_ref wrapper_ = nullptr;
     std::shared_ptr<PixelMap> nativePixelMap_;
     int32_t lockCount = 0;
-    bool isRelease = false;
 };
 } // namespace Media
 } // namespace OHOS

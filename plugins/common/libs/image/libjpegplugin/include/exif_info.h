@@ -50,6 +50,10 @@ public:
     std::string gpsLatitudeRef_;
     std::string gpsLongitudeRef_;
     std::string dateTimeOriginal_;  // Original date and time.
+    std::string exposureTime_;
+    std::string fNumber_;
+    std::string isoSpeedRatings_;
+    std::string sceneType_;
 
 private:
     void SetExifTagValues(const ExifTag &tag, const std::string &value);

@@ -14,8 +14,9 @@
  */
 
 #include "jerror.h"
-#include "jpeg_encoder.h"
 #include "media_errors.h"
+#include "pixel_convert.h"
+#include "jpeg_encoder.h"
 
 namespace OHOS {
 namespace ImagePlugin {
@@ -28,6 +29,7 @@ constexpr uint32_t COMPONENT_NUM_RGBA = 4;
 constexpr uint32_t COMPONENT_NUM_BGRA = 4;
 constexpr uint32_t COMPONENT_NUM_RGB = 3;
 constexpr uint32_t COMPONENT_NUM_GRAY = 1;
+constexpr uint32_t PIXEL_SIZE_RGBA_F16 = 8;
 // yuv format
 constexpr uint8_t COMPONENT_NUM_YUV420SP = 3;
 constexpr uint8_t Y_SAMPLE_ROW = 16;
@@ -75,6 +77,7 @@ J_COLOR_SPACE JpegEncoder::GetEncodeFormat(PixelFormat format, int32_t &componen
     J_COLOR_SPACE colorSpace = JCS_UNKNOWN;
     int32_t components = 0;
     switch (format) {
+        case PixelFormat::RGBA_F16:
         case PixelFormat::RGBA_8888: {
             colorSpace = JCS_EXT_RGBA;
             components = COMPONENT_NUM_RGBA;
@@ -145,6 +148,8 @@ uint32_t JpegEncoder::FinalizeEncode()
     PixelFormat pixelFormat = pixelMaps_[0]->GetPixelFormat();
     if (pixelFormat == PixelFormat::NV21 || pixelFormat == PixelFormat::NV12) {
         errorCode = Yuv420spEncoder(data);
+    } else if (pixelFormat == PixelFormat::RGBA_F16) {
+        errorCode = RGBAF16Encoder(data);
     } else {
         errorCode = SequenceEncoder(data);
     }
@@ -275,6 +280,31 @@ void JpegEncoder::Deinterweave(uint8_t *uvPlane, uint8_t *uPlane, uint8_t *vPlan
             uv += INDEX_TWO;
         }
     }
+}
+
+uint32_t JpegEncoder::RGBAF16Encoder(const uint8_t *data)
+{
+    if (setjmp(jerr_.setjmp_buffer)) {
+        HiLog::Error(LABEL, "encode image error.");
+        return ERR_IMAGE_ENCODE_FAILED;
+    }
+    jpeg_start_compress(&encodeInfo_, TRUE);
+    uint8_t *base = const_cast<uint8_t *>(data);
+    uint32_t rowStride = encodeInfo_.image_width * encodeInfo_.input_components;
+    uint32_t orgRowStride = encodeInfo_.image_width * PIXEL_SIZE_RGBA_F16;
+    uint8_t *buffer = nullptr;
+    auto rowBuffer = std::make_unique<uint8_t[]>(rowStride);
+    while (encodeInfo_.next_scanline < encodeInfo_.image_height) {
+        buffer = base + encodeInfo_.next_scanline * orgRowStride;
+        for (uint32_t i = 0; i < rowStride;i++) {
+            float orgPlane = HalfToFloat(U8ToU16(buffer[i*2], buffer[i*2+1]));
+            rowBuffer[i] = static_cast<uint8_t>(orgPlane/MAX_HALF*ALPHA_OPAQUE);
+        }
+        uint8_t *rowBufferPtr = rowBuffer.get();
+        jpeg_write_scanlines(&encodeInfo_, &rowBufferPtr, RW_LINE_NUM);
+    }
+    jpeg_finish_compress(&encodeInfo_);
+    return SUCCESS;
 }
 
 JpegEncoder::~JpegEncoder()

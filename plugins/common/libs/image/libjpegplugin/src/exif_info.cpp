@@ -114,6 +114,14 @@ void EXIFInfo::SetExifTagValues(const ExifTag &tag, const std::string &value)
         gpsLongitudeRef_ = value;
     } else if (tag == EXIF_TAG_DATE_TIME_ORIGINAL) {
         dateTimeOriginal_ = value;
+    } else if (tag == EXIF_TAG_EXPOSURE_TIME) {
+        exposureTime_ = value;
+    } else if (tag == EXIF_TAG_FNUMBER) {
+        fNumber_ = value;
+    } else if (tag == EXIF_TAG_ISO_SPEED_RATINGS) {
+        isoSpeedRatings_ = value;
+    } else if (tag == EXIF_TAG_SCENE_TYPE) {
+        sceneType_ = value;
     } else {
         HiLog::Error(LABEL, "No match tag name!");
     }

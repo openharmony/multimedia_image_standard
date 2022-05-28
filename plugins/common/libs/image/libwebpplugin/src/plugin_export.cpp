@@ -18,6 +18,7 @@
 #include "log_tags.h"
 #include "plugin_utils.h"
 #include "webp_decoder.h"
+#include "webp_encoder.h"
 
 // plugin package name same as metadata.
 namespace {
@@ -27,6 +28,7 @@ namespace {
 // register implement classes of this plugin.
 PLUGIN_EXPORT_REGISTER_CLASS_BEGIN
 PLUGIN_EXPORT_REGISTER_CLASS(OHOS::ImagePlugin::WebpDecoder)
+PLUGIN_EXPORT_REGISTER_CLASS(OHOS::ImagePlugin::WebpEncoder)
 PLUGIN_EXPORT_REGISTER_CLASS_END
 
 using std::string;
