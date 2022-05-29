@@ -1449,7 +1449,7 @@ constexpr uint8_t RGBA_F16_A_OFFSET = 6;
 static constexpr float FLOAT_ZERO = 0.0f;
 static float ProcessPremulF16Pixel(float mulPixel, float alpha, const float percent)
 {
-    if (alpha == 0) {
+    if (alpha < 0.000001 && alpha > -0.000001) {
         return FLOAT_ZERO;
     }
     float res = mulPixel * percent / alpha;

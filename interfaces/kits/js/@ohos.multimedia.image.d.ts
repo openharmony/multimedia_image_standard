@@ -703,7 +703,6 @@ declare namespace image {
      */
     getPixelBytesNumber(): number;
 
-
     getDensity():number;
     setDensity(density: number);
 
