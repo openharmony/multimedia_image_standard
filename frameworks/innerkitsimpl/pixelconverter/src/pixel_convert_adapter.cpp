@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "pixel_convert_adapter.h"
+#include <map>
 #include "include/core/SkBitmap.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkColor.h"
@@ -21,6 +21,7 @@
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkPaint.h"
 #include "include/core/SkPixmap.h"
+#include "pixel_convert_adapter.h"
 #ifdef _WIN32
 #include <iomanip>
 #endif
@@ -28,30 +29,75 @@
 namespace OHOS {
 namespace Media {
 using namespace OHOS::HiviewDFX;
+using namespace std;
 
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "PixelConvertAdapter" };
+static const uint8_t NUM_0 = 0;
+static const uint8_t NUM_1 = 1;
+static const uint8_t NUM_2 = 2;
+static const uint8_t NUM_3 = 3;
+static const uint8_t NUM_4 = 4;
+
+static const map<PixelFormat, SkColorType> PIXEL_FORMAT_MAP = {
+    { PixelFormat::UNKNOWN, SkColorType::kUnknown_SkColorType},
+    { PixelFormat::ARGB_8888, SkColorType::kRGBA_8888_SkColorType},
+    { PixelFormat::ALPHA_8, SkColorType::kAlpha_8_SkColorType},
+    { PixelFormat::RGB_565, SkColorType::kRGB_565_SkColorType},
+    { PixelFormat::RGBA_F16, SkColorType::kRGBA_F16_SkColorType},
+    { PixelFormat::RGBA_8888, SkColorType::kRGBA_8888_SkColorType},
+    { PixelFormat::BGRA_8888, SkColorType::kBGRA_8888_SkColorType}
+};
 
 static SkColorType PixelFormatConvert(const PixelFormat &pixelFormat)
 {
-    SkColorType colorType;
-    switch (pixelFormat) {
-        case PixelFormat::BGRA_8888:
-            colorType = SkColorType::kBGRA_8888_SkColorType;
-            break;
-        case PixelFormat::RGBA_8888:
-            colorType = SkColorType::kRGBA_8888_SkColorType;
-            break;
-        case PixelFormat::RGB_565:
-            colorType = SkColorType::kRGB_565_SkColorType;
-            break;
-        case PixelFormat::ALPHA_8:
-            colorType = SkColorType::kAlpha_8_SkColorType;
-            break;
-        default:
-            colorType = SkColorType::kUnknown_SkColorType;
-            break;
+    auto formatSearch = PIXEL_FORMAT_MAP.find(pixelFormat);
+    return (formatSearch != PIXEL_FORMAT_MAP.end()) ? formatSearch->second : SkColorType::kUnknown_SkColorType;
+}
+
+static void ARGBToRGBA(uint8_t* srcPixels, uint8_t* dstPixels, uint32_t byteCount)
+{
+    if (byteCount % NUM_4 != NUM_0) {
+        HiLog::Error(LABEL, "Pixel count must multiple of 4.");
+        return;
     }
-    return colorType;
+    uint8_t *src = srcPixels;
+    uint8_t *dst = dstPixels;
+    uint8_t A, R, G, B;
+    for (uint32_t i = NUM_0 ; i < byteCount; i += NUM_4) {
+        A = src[NUM_0];
+        R = src[NUM_1];
+        G = src[NUM_2];
+        B = src[NUM_3];
+        dst[NUM_0] = R;
+        dst[NUM_1] = G;
+        dst[NUM_2] = B;
+        dst[NUM_3] = A;
+        src += NUM_4;
+        dst += NUM_4;
+    }
+}
+
+static void RGBAToARGB(uint8_t* srcPixels, uint8_t* dstPixels, uint32_t byteCount)
+{
+    if (byteCount % NUM_4 != NUM_0) {
+        HiLog::Error(LABEL, "Pixel count must multiple of 4.");
+        return;
+    }
+    uint8_t *src = srcPixels;
+    uint8_t *dst = dstPixels;
+    uint8_t A, R, G, B;
+    for (uint32_t i = NUM_0 ; i < byteCount; i += NUM_4) {
+        R = src[NUM_0];
+        G = src[NUM_1];
+        B = src[NUM_2];
+        A = src[NUM_3];
+        dst[NUM_0] = A;
+        dst[NUM_1] = R;
+        dst[NUM_2] = G;
+        dst[NUM_3] = B;
+        src += NUM_4;
+        dst += NUM_4;
+    }
 }
 
 bool PixelConvertAdapter::WritePixelsConvert(const void *srcPixels, uint32_t srcRowBytes, const ImageInfo &srcInfo,
@@ -63,15 +109,21 @@ bool PixelConvertAdapter::WritePixelsConvert(const void *srcPixels, uint32_t src
         HiLog::Error(LABEL, "src or dst pixels invalid.");
         return false;
     }
+
     SkAlphaType srcAlphaType = static_cast<SkAlphaType>(srcInfo.alphaType);
     SkAlphaType dstAlphaType = static_cast<SkAlphaType>(dstInfo.alphaType);
     SkColorType srcColorType = PixelFormatConvert(srcInfo.pixelFormat);
     SkColorType dstColorType = PixelFormatConvert(dstInfo.pixelFormat);
     SkImageInfo srcImageInfo = SkImageInfo::Make(srcInfo.size.width, srcInfo.size.height, srcColorType, srcAlphaType);
     SkImageInfo dstImageInfo = SkImageInfo::Make(dstInfo.size.width, dstInfo.size.height, dstColorType, dstAlphaType);
-
     SkBitmap dstBitmap;
     SkPixmap srcPixmap(srcImageInfo, srcPixels, srcRowBytes);
+
+    if (srcInfo.pixelFormat == PixelFormat::ARGB_8888) {
+        uint8_t* src = static_cast<uint8_t*>(srcPixmap.writable_addr());
+        ARGBToRGBA(src, src, srcRowBytes * srcInfo.size.height);
+    }
+
     if (!dstBitmap.installPixels(dstImageInfo, dstPixels, dstRowBytes)) {
         HiLog::Error(LABEL, "WritePixelsConvert dst bitmap install pixels failed.");
         return false;
@@ -79,6 +131,11 @@ bool PixelConvertAdapter::WritePixelsConvert(const void *srcPixels, uint32_t src
     if (!dstBitmap.writePixels(srcPixmap, dstPos.x, dstPos.y)) {
         HiLog::Error(LABEL, "WritePixelsConvert dst bitmap write pixels by source failed.");
         return false;
+    }
+
+    if (dstInfo.pixelFormat == PixelFormat::ARGB_8888) {
+        uint32_t dstSize = dstRowBytes * dstInfo.size.height;
+        RGBAToARGB(static_cast<uint8_t*>(dstPixels), static_cast<uint8_t*>(dstPixels), dstSize);
     }
 
     return true;

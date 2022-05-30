@@ -58,6 +58,10 @@ const std::string GPS_LONGITUDE = "GPSLongitude";
 const std::string GPS_LATITUDE_REF = "GPSLatitudeRef";
 const std::string GPS_LONGITUDE_REF = "GPSLongitudeRef";
 const std::string DATE_TIME_ORIGINAL = "DateTimeOriginal";
+const std::string EXPOSURE_TIME = "ExposureTime";
+const std::string F_NUMBER = "FNumber";
+const std::string ISO_SPEED_RATINGS = "ISOSpeedRatings";
+const std::string SCENE_TYPE = "SceneType";
 } // namespace
 
 PluginServer &JpegDecoder::pluginServer_ = DelayedRefSingleton<PluginServer>::GetInstance();
@@ -593,6 +597,14 @@ uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &
         value = exifInfo_.gpsLongitudeRef_;
     } else if (IsSameTextStr(key, DATE_TIME_ORIGINAL)) {
         value = exifInfo_.dateTimeOriginal_;
+    } else if (IsSameTextStr(key, EXPOSURE_TIME)) {
+        value = exifInfo_.exposureTime_;
+    } else if (IsSameTextStr(key, F_NUMBER)) {
+        value = exifInfo_.fNumber_;
+    } else if (IsSameTextStr(key, ISO_SPEED_RATINGS)) {
+        value = exifInfo_.isoSpeedRatings_;
+    } else if (IsSameTextStr(key, SCENE_TYPE)) {
+        value = exifInfo_.sceneType_;
     } else {
         return Media::ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
     }
@@ -620,6 +632,14 @@ ExifTag JpegDecoder::getExifTagFromKey(const std::string &key)
         return EXIF_TAG_GPS_LONGITUDE_REF;
     } else if (IsSameTextStr(key, DATE_TIME_ORIGINAL)) {
         return EXIF_TAG_DATE_TIME_ORIGINAL;
+    } else if (IsSameTextStr(key, EXPOSURE_TIME)) {
+        return EXIF_TAG_EXPOSURE_TIME;
+    } else if (IsSameTextStr(key, F_NUMBER)) {
+        return EXIF_TAG_FNUMBER;
+    } else if (IsSameTextStr(key, ISO_SPEED_RATINGS)) {
+        return EXIF_TAG_ISO_SPEED_RATINGS;
+    } else if (IsSameTextStr(key, SCENE_TYPE)) {
+        return EXIF_TAG_SCENE_TYPE;
     } else {
         return EXIF_TAG_PRINT_IMAGE_MATCHING;
     }

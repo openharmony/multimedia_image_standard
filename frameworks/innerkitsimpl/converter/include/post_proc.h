@@ -36,6 +36,7 @@ public:
     bool RotatePixelMap(float rotateDegrees, PixelMap &pixelMap);
     bool ScalePixelMap(const Size &size, PixelMap &pixelMap);
     bool ScalePixelMap(float scaleX, float scaleY, PixelMap &pixelMap);
+    bool TranslatePixelMap(float tX, float tY, PixelMap &pixelMap);
     bool CenterScale(const Size &size, PixelMap &pixelMap);
     static CropValue GetCropValue(const Rect &rect, const Size &size);
 

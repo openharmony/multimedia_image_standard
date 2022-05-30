@@ -84,6 +84,8 @@ uint32_t PostProc::DecodePostProc(const DecodeOptions &opts, PixelMap &pixelMap,
                 IMAGE_LOGE("[PostProc]density scale:transform pixel map failed");
                 return ERR_IMAGE_TRANSFORM;
             }
+            info.baseDensity = opts.fitDensity;
+            pixelMap.SetImageInfo(info);
         }
     }
     return SUCCESS;
@@ -472,6 +474,15 @@ bool PostProc::ScalePixelMap(float scaleX, float scaleY, PixelMap &pixelMap)
     ConvertPixelMapToPixmapInfo(pixelMap, input);
 
     trans.SetScaleParam(scaleX, scaleY);
+    return Transform(trans, input, pixelMap);
+}
+bool PostProc::TranslatePixelMap(float tX, float tY, PixelMap &pixelMap)
+{
+    BasicTransformer trans;
+    PixmapInfo input(false);
+    ConvertPixelMapToPixmapInfo(pixelMap, input);
+
+    trans.SetTranslateParam(tX, tY);
     return Transform(trans, input, pixelMap);
 }
 

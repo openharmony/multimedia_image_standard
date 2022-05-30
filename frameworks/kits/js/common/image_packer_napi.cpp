@@ -457,6 +457,7 @@ static void BuildMsgOnError(napi_env env,
     }
 }
 
+
 napi_value ImagePackerNapi::Packing(napi_env env, napi_callback_info info)
 {
     napi_status status;

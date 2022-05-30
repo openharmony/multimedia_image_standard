@@ -66,13 +66,22 @@ void BasicTransformer::GetDstDimension(const Size &srcSize, Size &dstSize)
 {
     Matrix::OperType operType = matrix_.GetOperType();
     if ((static_cast<uint8_t>(operType) & Matrix::SCALE) == Matrix::SCALE) {
-        dstSize.width = static_cast<int32_t>(srcSize.width * matrix_.GetScaleX() + FHALF);
-        dstSize.height = static_cast<int32_t>(srcSize.height * matrix_.GetScaleY() + FHALF);
+        dstSize.width = static_cast<int32_t>(srcSize.width * fabs(matrix_.GetScaleX()) + FHALF);
+        dstSize.height = static_cast<int32_t>(srcSize.height * fabs(matrix_.GetScaleY()) + FHALF);
     }
 
     if ((static_cast<uint8_t>(operType) & Matrix::ROTATEORSKEW) == Matrix::ROTATEORSKEW) {
         Matrix::CalcXYProc fInvProc = Matrix::GetXYProc(operType);
         GetRotateDimension(fInvProc, srcSize, dstSize);
+    }
+
+    if ((static_cast<uint8_t>(operType) & Matrix::TRANSLATE) == Matrix::TRANSLATE) {
+        if (matrix_.GetTransX() > 0) {
+            dstSize.width = static_cast<int32_t>(srcSize.width + matrix_.GetTransX() + FHALF);
+        }
+        if (matrix_.GetTranY() > 0) {
+            dstSize.height = static_cast<int32_t>(srcSize.height + matrix_.GetTranY() + FHALF);
+        }
     }
 }
 
@@ -170,6 +179,16 @@ uint32_t BasicTransformer::TransformPixmap(const PixmapInfo &inPixmap, PixmapInf
     return IMAGE_SUCCESS;
 }
 
+static inline void pointLoop(Point &pt, const Size &size)
+{
+    if (pt.x < 0) {
+        pt.x = size.width + pt.x;
+    }
+    if (pt.y < 0) {
+        pt.y = size.height + pt.y;
+    }
+}
+
 bool BasicTransformer::DrawPixelmap(const PixmapInfo &pixmapInfo, const int32_t pixelBytes, const Size &size,
                                     uint8_t *data)
 {
@@ -188,6 +207,9 @@ bool BasicTransformer::DrawPixelmap(const PixmapInfo &pixmapInfo, const int32_t 
             // Center coordinate alignment, need to add 0.5, so the boundary can also be considered
             fInvProc(invertMatrix, static_cast<float>(x) + minX_ + FHALF, static_cast<float>(y) + minY_ + FHALF,
                      srcPoint);
+            if ((static_cast<uint8_t>(operType) & Matrix::OperType::SCALE) == Matrix::OperType::SCALE) {
+                pointLoop(srcPoint, pixmapInfo.imageInfo.size);
+            }
             if (CheckOutOfRange(srcPoint, pixmapInfo.imageInfo.size)) {
                 continue;
             }
@@ -242,6 +264,7 @@ void BasicTransformer::BilinearProc(const Point &pt, const PixmapInfo &pixmapInf
     uint32_t suby = GetSubValue(srcY);
 
     AroundPixels aroundPixels;
+
     switch (pixmapInfo.imageInfo.pixelFormat) {
         case PixelFormat::RGBA_8888:
         case PixelFormat::ARGB_8888:
