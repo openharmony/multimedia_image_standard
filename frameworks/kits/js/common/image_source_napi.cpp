@@ -73,7 +73,7 @@ struct ImageSourceAsyncContext {
     DecodeOptions decodeOpts;
     std::shared_ptr<ImageSource> rImageSource;
     std::shared_ptr<PixelMap> rPixelMap;
-    napi_value error = nullptr;
+    napi_ref error = nullptr;
     std::string errMsg;
 };
 
@@ -101,6 +101,18 @@ static std::string GetStringArgument(napi_env env, napi_value value)
     return strValue;
 }
 
+static void CreateErrorMsg(napi_env env, const std::string msg, napi_ref* error)
+{
+    napi_value tmpError;
+    int32_t refCount = 1;
+    napi_status status = napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &tmpError);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Create error msg error");
+        return;
+    }
+    napi_create_reference(env, tmpError, refCount, error);
+}
+
 static void ImageSourceCallbackRoutine(napi_env env, ImageSourceAsyncContext* &context, const napi_value &valueParam)
 {
     napi_value result[NUM_2] = {0};
@@ -113,7 +125,8 @@ static void ImageSourceCallbackRoutine(napi_env env, ImageSourceAsyncContext* &c
     if (context->status == SUCCESS) {
         result[NUM_1] = valueParam;
     } else if (context->error != nullptr) {
-        result[NUM_0] = context->error;
+        napi_get_reference_value(env, context->error, &result[NUM_0]);
+        napi_delete_reference(env, context->error);
     } else {
         HiLog::Debug(LABEL, "error status, no message");
     }
@@ -397,7 +410,7 @@ static PixelFormat ParsePixlForamt(int32_t val)
     return PixelFormat::UNKNOWN;
 }
 
-static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opts, uint32_t* pIndex, napi_value* error)
+static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opts, uint32_t* pIndex, napi_ref* error)
 {
     uint32_t tmpNumber = 0;
     napi_value tmpValue = nullptr;
@@ -418,7 +431,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
             opts->rotateDegrees = (float)opts->rotateNewDegrees;
         } else {
             HiLog::Debug(LABEL, "Invalid rotate %{public}d", opts->rotateNewDegrees);
-            napi_create_string_utf8(env, "DecodeOptions mismatch", NAPI_AUTO_LENGTH, error);
+            CreateErrorMsg(env, "DecodeOptions mismatch", error);
             return false;
         }
     }
@@ -451,7 +464,7 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
             opts->desiredPixelFormat = ParsePixlForamt(tmpNumber);
         } else {
             HiLog::Debug(LABEL, "Invalid desiredPixelFormat %{public}d", tmpNumber);
-            napi_create_string_utf8(env, "DecodeOptions mismatch", NAPI_AUTO_LENGTH, error);
+            CreateErrorMsg(env, "DecodeOptions mismatch", error);
             return false;
         }
     }
