@@ -51,7 +51,6 @@ struct ImagePackerAsyncContext {
     napi_async_work work;
     napi_deferred deferred;
     napi_ref callbackRef = nullptr;
-    napi_value errorMsg = nullptr;
     napi_ref errorMsg = nullptr;
     ImagePackerNapi *constructor_;
     bool status = false;

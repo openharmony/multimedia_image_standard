@@ -105,8 +105,7 @@ static void CreateErrorMsg(napi_env env, const std::string msg, napi_ref* error)
 {
     napi_value tmpError;
     int32_t refCount = 1;
-    napi_status status;
-    status = napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &tmpError);
+    napi_status status = napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &tmpError);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Create error msg error");
         return;
