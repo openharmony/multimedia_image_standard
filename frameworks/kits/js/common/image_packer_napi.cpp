@@ -317,6 +317,7 @@ void ImagePackerNapi::Destructor(napi_env env, void *nativeObject, void *finaliz
     ImagePackerNapi *pImagePackerNapi = reinterpret_cast<ImagePackerNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImagePackerNapi)) {
+        pImagePackerNapi->nativeImgPck = nullptr;
         pImagePackerNapi->~ImagePackerNapi();
     }
 }
