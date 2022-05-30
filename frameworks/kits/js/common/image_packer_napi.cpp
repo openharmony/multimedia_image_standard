@@ -51,7 +51,7 @@ struct ImagePackerAsyncContext {
     napi_async_work work;
     napi_deferred deferred;
     napi_ref callbackRef = nullptr;
-    napi_value errorMsg = nullptr;
+    napi_ref errorMsg = nullptr;
     ImagePackerNapi *constructor_;
     bool status = false;
     std::shared_ptr<ImageSource> rImageSource;
@@ -91,7 +91,8 @@ static void CommonCallbackRoutine(napi_env env, ImagePackerAsyncContext* &connec
     if (connect->status == SUCCESS) {
         result[NUM_1] = valueParam;
     } else if (connect->errorMsg != nullptr) {
-        result[NUM_0] = connect->errorMsg;
+        napi_get_reference_value(env, connect->errorMsg, &result[NUM_0]);
+        napi_delete_reference(env, connect->errorMsg);
     } else {
         napi_create_string_utf8(env, "Internal error", NAPI_AUTO_LENGTH, &(result[NUM_0]));
     }
@@ -316,6 +317,7 @@ void ImagePackerNapi::Destructor(napi_env env, void *nativeObject, void *finaliz
     ImagePackerNapi *pImagePackerNapi = reinterpret_cast<ImagePackerNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImagePackerNapi)) {
+        pImagePackerNapi->nativeImgPck = nullptr;
         pImagePackerNapi->~ImagePackerNapi();
     }
 }
@@ -441,9 +443,17 @@ static void BuildMsgOnError(napi_env env,
                             bool assertion,
                             const std::string msg)
 {
+    napi_value tmpError;
+    int32_t refCount = 1;
+    napi_status status;
     if (!assertion) {
         HiLog::Error(LABEL, "%{public}s", msg.c_str());
-        napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &(context->errorMsg));
+        status = napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &tmpError);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "Create error msg error");
+            return;
+        }
+        napi_create_reference(env, tmpError, refCount, &(context->errorMsg));
     }
 }
 
