@@ -69,7 +69,7 @@ uint32_t ICCProfileInfo::ParsingICCProfile(j_decompress_ptr cinfo)
     skcms_ICCProfile parsed;
     uint32_t parseResult = OHOS::Media::ERR_IMAGE_DENCODE_ICC_FAILED;
     sk_sp<SkColorSpace> skColorSpace = nullptr;
-    if (skcms_Parse(profile->data(), profile->size(), &parsed)) {
+    if (profile != nullptr && skcms_Parse(profile->data(), profile->size(), &parsed)) {
         skColorSpace = SkColorSpace::Make(parsed);
         if (skColorSpace != nullptr) {
             isSupportICCProfile_ = true;
