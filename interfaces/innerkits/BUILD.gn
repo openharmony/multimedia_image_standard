@@ -38,6 +38,7 @@ config("image_external_config") {
     "//foundation/graphic/graphic_2d/interfaces/innerkits/common",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
     "//foundation/graphic/graphic_2d/utils/buffer_handle/export",
+    "//foundation/graphic/graphic_2d/utils/color_manager/export",
     "//drivers/peripheral/display/interfaces/include",
     "//drivers/peripheral/base",
   ]
@@ -85,12 +86,16 @@ ohos_shared_library("image") {
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/pixel_map_napi.cpp",
   ]
 
-  cflags = [ "-DIMAGE_DEBUG_FLAG" ]
+  cflags = [ 
+    "-DIMAGE_DEBUG_FLAG",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
 
   deps = [
     ":image_native",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/graphic/graphic_2d:libsurface",
+    "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
     "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
@@ -110,6 +115,11 @@ ohos_shared_library("image") {
 
 ohos_shared_library("image_native") {
   public_configs = [ ":image_external_config" ]
+
+  cflags = [ 
+    "-DIMAGE_DEBUG_FLAG",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
 
   sources = [
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/codec/src/image_packer.cpp",
@@ -145,6 +155,7 @@ ohos_shared_library("image_native") {
     ]
     deps = [
       "//foundation/graphic/graphic_2d:libsurface",
+      "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter_static",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils_static",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
@@ -161,6 +172,7 @@ ohos_shared_library("image_native") {
     ]
     deps = [
       "//foundation/graphic/graphic_2d:libsurface",
+      "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter_static",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils_static",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
@@ -174,6 +186,7 @@ ohos_shared_library("image_native") {
     deps = [
       "//foundation/arkui/napi:ace_napi",
       "//foundation/graphic/graphic_2d:libsurface",
+      "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
@@ -209,12 +222,16 @@ ohos_static_library("image_static_napi") {
     "//foundation/multimedia/image_standard/frameworks/kits/js/common/pixel_map_napi.cpp",
   ]
 
-  cflags = [ "-DIMAGE_DEBUG_FLAG" ]
+  cflags = [ 
+    "-DIMAGE_DEBUG_FLAG",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
 
   deps = [
     ":image_native",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/graphic/graphic_2d:libsurface",
+    "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
     "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
@@ -260,6 +277,7 @@ ohos_static_library("image_static") {
     ]
     deps = [
       "//foundation/graphic/graphic_2d:libsurface",
+      "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter_static",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils_static",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
@@ -277,6 +295,7 @@ ohos_static_library("image_static") {
 
     deps = [
       "//foundation/graphic/graphic_2d:libsurface",
+      "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter_static",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils_static",
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
@@ -290,6 +309,7 @@ ohos_static_library("image_static") {
     deps = [
       "//foundation/arkui/napi:ace_napi",
       "//foundation/graphic/graphic_2d:libsurface",
+      "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",

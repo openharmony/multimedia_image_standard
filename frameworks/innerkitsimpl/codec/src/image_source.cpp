@@ -380,6 +380,16 @@ unique_ptr<PixelMap> ImageSource::CreatePixelMap(uint32_t index, const DecodeOpt
         }
         return nullptr;
     }
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    // add graphic colorspace object to pixelMap.
+    bool isSupportICCProfile = mainDecoder_->IsSupportICCProfile();
+    if (isSupportICCProfile) {
+        OHOS::ColorManager::ColorSpace grColorSpace = mainDecoder_->getGrColorSpace();
+        pixelMap->InnerSetColorSpace(grColorSpace);
+    }
+#endif
+
     pixelMap->SetPixelsAddr(context.pixelsBuffer.buffer, context.pixelsBuffer.context, context.pixelsBuffer.bufferSize,
                             context.allocatorType, context.freeFunc);
     DecodeOptions procOpts;

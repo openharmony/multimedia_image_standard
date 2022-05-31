@@ -1630,5 +1630,17 @@ uint32_t PixelMap::crop(const Rect &rect)
     };
     return postProc.ConvertProc(rect, dstImageInfo, *this, imageInfo_);
 }
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    void PixelMap::InnerSetColorSpace(const OHOS::ColorManager::ColorSpace &grColorSpace)
+    {
+        grColorSpace_ = OHOS::ColorManager::ColorSpace(grColorSpace.ToSkColorSpace());
+    }
+
+    OHOS::ColorManager::ColorSpace PixelMap::InnerGetGrColorSpace()
+    {
+        return grColorSpace_;
+    }
+#endif
 } // namespace Media
 } // namespace OHOS

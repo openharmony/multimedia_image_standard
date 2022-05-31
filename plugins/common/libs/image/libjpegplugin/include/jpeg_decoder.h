@@ -20,7 +20,11 @@
 #include <string>
 #include "abs_image_decoder.h"
 #include "abs_image_decompress_component.h"
+#ifdef IMAGE_COLORSPACE_FLAG
+#include "color_space.h"
+#endif
 #include "hilog/log.h"
+#include "icc_profile_info.h"
 #include "jpeg_utils.h"
 #include "jpeglib.h"
 #include "log_tags.h"
@@ -59,6 +63,12 @@ public:
         const int fd) override;
     uint32_t ModifyImageProperty(uint32_t index, const std::string &key, const std::string &value,
         uint8_t *data, uint32_t size) override;
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    OHOS::ColorManager::ColorSpace getGrColorSpace();
+    bool IsSupportICCProfile();
+#endif
+
 private:
     DISALLOW_COPY_AND_MOVE(JpegDecoder);
     int ExifPrintMethod();
@@ -84,6 +94,7 @@ private:
     PlPixelFormat outputFormat_ = PlPixelFormat::UNKNOWN;
     PixelDecodeOptions opts_;
     EXIFInfo exifInfo_;
+    ICCProfileInfo iccProfileInfo_;
 };
 } // namespace ImagePlugin
 } // namespace OHOS

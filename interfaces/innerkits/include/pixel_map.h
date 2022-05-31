@@ -17,6 +17,9 @@
 #define PIXEL_MAP_H
 
 #include <memory>
+#ifdef IMAGE_COLORSPACE_FLAG
+#include "color_space.h"
+#endif
 #include "image_type.h"
 #include "parcel.h"
 
@@ -126,6 +129,13 @@ public:
     NATIVEEXPORT bool Marshalling(Parcel &data) const override;
     NATIVEEXPORT static PixelMap *Unmarshalling(Parcel &data);
 
+#ifdef IMAGE_COLORSPACE_FLAG
+    // -------[inner api for ImageSource/ImagePacker codec] it will get a colorspace object pointer----begin----
+    NATIVEEXPORT void InnerSetColorSpace(const OHOS::ColorManager::ColorSpace &grColorSpace);
+    NATIVEEXPORT OHOS::ColorManager::ColorSpace InnerGetGrColorSpace();
+    // -------[inner api for ImageSource/ImagePacker codec] it will get a colorspace object pointer----end-------
+#endif
+
 private:
     static constexpr size_t MAX_IMAGEDATA_SIZE = 128 * 1024 * 1024; // 128M
     static constexpr size_t MIN_IMAGEDATA_SIZE = 32 * 1024;         // 32k
@@ -192,6 +202,11 @@ private:
     uint32_t pixelsSize_ = 0;
     bool editable_ = false;
     bool useSourceAsResponse_ = false;
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    OHOS::ColorManager::ColorSpace grColorSpace_ =
+        OHOS::ColorManager::ColorSpace(OHOS::ColorManager::ColorSpaceName::SRGB);
+#endif
 };
 } // namespace Media
 } // namespace OHOS

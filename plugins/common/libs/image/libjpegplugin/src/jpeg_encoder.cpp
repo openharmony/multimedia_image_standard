@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+#ifdef IMAGE_COLORSPACE_FLAG
+#include "color_space.h"
+#endif
+#include "include/core/SkColorSpace.h"
+#include "include/core/SkImageInfo.h"
 #include "jerror.h"
 #include "media_errors.h"
 #include "pixel_convert.h"
@@ -193,6 +198,28 @@ uint32_t JpegEncoder::SequenceEncoder(const uint8_t *data)
         return ERR_IMAGE_ENCODE_FAILED;
     }
     jpeg_start_compress(&encodeInfo_, TRUE);
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    // packing icc profile.
+    SkImageInfo skImageInfo;
+    OHOS::ColorManager::ColorSpace grColorSpace = pixelMaps_[0]->InnerGetGrColorSpace();
+    sk_sp<SkColorSpace> skColorSpace = grColorSpace.ToSkColorSpace();
+
+    // when there is colorspace data, package it.
+    if (skColorSpace != nullptr) {
+        int width = 0;
+        int height = 0;
+        SkColorType ct = SkColorType::kUnknown_SkColorType;
+        SkAlphaType at = SkAlphaType::kUnknown_SkAlphaType;
+        skImageInfo = SkImageInfo::Make(width, height, ct, at, skColorSpace);
+        uint32_t iccPackedresult = iccProfileInfo_.PackingICCProfile(&encodeInfo_, skImageInfo);
+        if (iccPackedresult == OHOS::Media::ERR_IMAGE_ENCODE_ICC_FAILED) {
+            HiLog::Error(LABEL, "encode image icc error.");
+            return iccPackedresult;
+        }
+    }
+#endif
+
     uint8_t *base = const_cast<uint8_t *>(data);
     uint32_t rowStride = encodeInfo_.image_width * encodeInfo_.input_components;
     uint8_t *buffer = nullptr;

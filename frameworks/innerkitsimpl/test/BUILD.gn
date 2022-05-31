@@ -161,12 +161,49 @@ ohos_unittest("transformtest") {
 
   #  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 }
+ohos_unittest("imagecolorspacetest") {
+  module_out_path = module_output_path
+
+  include_dirs = [
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/converter/include",
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils/include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    "//foundation/multimedia/image_standard/plugins/manager/include",
+    "//foundation/multimedia/utils/include",
+    "//foundation/graphic/graphic_2d/utils/color_manager/export",
+    "//third_party/googletest/googletest/include",
+    "//utils/native/base/include",
+  ]
+
+  cflags = [
+    "-DIMAGE_DEBUG_FLAG",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
+
+  sources = [
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_color_space_test.cpp",
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/image_source_util.cpp",
+  ]
+
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
+    "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+  ]
+  resource_config_file =
+      "//foundation/multimedia/image_standard/test/resource/image/ohos_test.xml"
+}
 
 ################################################
 group("unittest") {
   testonly = true
   deps = [
     ":colorconvertertest",
+    ":imagecolorspacetest",
     ":imagepixelmapparceltest",
     ":imagepixelmaptest",
     ":imagesourcetest",

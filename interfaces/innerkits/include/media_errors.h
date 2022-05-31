@@ -107,6 +107,8 @@ const int32_t ERR_MEDIA_RTSP_CAMERA_NUM_REACH_MAX = BASE_MEDIA_ERR_OFFSET + 71; 
 const int32_t ERR_MEDIA_SET_VOLUME = BASE_MEDIA_ERR_OFFSET + 72;                   // media set volume error
 const int32_t ERR_MEDIA_NUMBER_OVERFLOW = BASE_MEDIA_ERR_OFFSET + 73;              // media number operation overflow
 const int32_t ERR_MEDIA_DIS_PLAYER_UNSUPPORTED = BASE_MEDIA_ERR_OFFSET + 74;  // media distribute player unsupporteded
+const uint32_t ERR_IMAGE_DENCODE_ICC_FAILED = BASE_MEDIA_ERR_OFFSET + 75;          // image dencode ICC fail
+const uint32_t ERR_IMAGE_ENCODE_ICC_FAILED = BASE_MEDIA_ERR_OFFSET + 76;           // image encode ICC fail
 
 const int32_t ERR_MEDIA_UNKNOWN = BASE_MEDIA_ERR_OFFSET + 200;  // media unknown error
 }  // namespace Media

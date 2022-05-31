@@ -25,6 +25,9 @@
 #include <sys/mman.h>
 #include "ashmem.h"
 #endif
+#ifdef IMAGE_COLORSPACE_FLAG
+#include "color_space.h"
+#endif
 #include "image_plugin_type.h"
 #include "input_data_stream.h"
 #include "media_errors.h"
@@ -165,6 +168,20 @@ public:
     {
         return Media::ERR_MEDIA_INVALID_OPERATION;
     }
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    // get current source is support icc profile or not.
+    bool IsSupportICCProfile()
+    {
+        return false;
+    }
+
+    // if current source support icc. get relevant color gamut information by this method.
+    OHOS::ColorManager::ColorSpace getGrColorSpace()
+    {
+        return OHOS::ColorManager::ColorSpace(OHOS::ColorManager::ColorSpaceName::NONE);
+    }
+#endif
 
     // define multiple subservices for this interface
     static constexpr uint16_t SERVICE_DEFAULT = 0;

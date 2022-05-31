@@ -61,6 +61,12 @@
             <option name="push" value="images/test.wbmp -> /data/local/tmp/image" src="res"/>
         </preparer>
     </target>
+        <target name="imagecolorspacetest">
+        <preparer>
+            <option name="push" value="images/jpeg_icc_test.jpg -> /data/local/tmp/image" src="res"/>
+            <option name="push" value="images/test.jpg -> /data/local/tmp/image" src="res"/>
+        </preparer>
+    </target>
     <target name="test_imagesystemadapter_java_maple">
         <preparer>
             <option name="push" value="images/test.png -> /data/local/tmp/image" src="res"/>

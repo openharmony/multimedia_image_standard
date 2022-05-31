@@ -19,6 +19,7 @@
 #include <vector>
 #include "abs_image_encoder.h"
 #include "hilog/log.h"
+#include "icc_profile_info.h"
 #include "jpeg_utils.h"
 #include "jpeglib.h"
 #include "log_tags.h"
@@ -50,8 +51,8 @@ private:
     ErrorMgr jerr_;
     std::vector<Media::PixelMap *> pixelMaps_;
     PlEncodeOptions encodeOpts_;
+    ICCProfileInfo iccProfileInfo_;
 };
 } // namespace ImagePlugin
 } // namespace OHOS
-
 #endif // JPEG_ENCODER_H

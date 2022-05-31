@@ -30,6 +30,8 @@ using namespace OHOS::HiviewDFX;
 using namespace MultimediaPlugin;
 using namespace Media;
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "JpegDecoder" };
+static constexpr uint32_t PL_ICC_MARKER = JPEG_APP0 + 2;
+static constexpr uint32_t PL_MARKER_LENGTH_LIMIT = 0xFFFF;
 namespace {
 constexpr uint32_t NUM_100 = 100;
 constexpr uint32_t PIXEL_BYTES_RGB_565 = 2;
@@ -323,6 +325,16 @@ uint32_t JpegDecoder::DoSwDecode(DecodeContext &context)
         }
     }
     streamPosition_ = srcMgr_.inputStream->Tell();
+
+#ifdef IMAGE_COLORSPACE_FLAG
+    // paser icc profile info
+    uint32_t iccPaseredResult = iccProfileInfo_.ParsingICCProfile(&decodeInfo_);
+    if (iccPaseredResult == OHOS::Media::ERR_IMAGE_DENCODE_ICC_FAILED) {
+        HiLog::Error(LABEL, "dencode image icc error.");
+        return iccPaseredResult;
+    }
+#endif
+
     return Media::SUCCESS;
 }
 
@@ -525,6 +537,8 @@ uint32_t JpegDecoder::DecodeHeader()
         }
     }
 
+    // call jpeg_save_markers, use to get ICC profile.
+    jpeg_save_markers(&decodeInfo_, PL_ICC_MARKER, PL_MARKER_LENGTH_LIMIT);
     int32_t ret = jpeg_read_header(&decodeInfo_, false);
     streamPosition_ = srcMgr_.inputStream->Tell();
     if (ret == JPEG_SUSPENDED) {
@@ -695,5 +709,19 @@ uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key
     }
     return Media::SUCCESS;
 }
+
+#ifdef IMAGE_COLORSPACE_FLAG
+OHOS::ColorManager::ColorSpace JpegDecoder::getGrColorSpace()
+{
+    OHOS::ColorManager::ColorSpace grColorSpace = iccProfileInfo_.getGrColorSpace();
+    return grColorSpace;
+}
+
+bool JpegDecoder::IsSupportICCProfile()
+{
+    bool isSupportICCProfile = iccProfileInfo_.IsSupportICCProfile();
+    return isSupportICCProfile;
+}
+#endif
 } // namespace ImagePlugin
 } // namespace OHOS
