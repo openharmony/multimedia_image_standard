@@ -32,7 +32,7 @@ ohos_shared_library("pluginmanager") {
     "//foundation/multimedia/image_standard/plugins/manager/src/thirdpartyadp/gstreamer/gst_plugin_fw.cpp",
   ]
 
-  cflags = [ 
+  cflags = [
     "-DIMAGE_DEBUG_FLAG",
     "-DIMAGE_COLORSPACE_FLAG",
   ]
