@@ -204,8 +204,9 @@ private:
     bool useSourceAsResponse_ = false;
 
 #ifdef IMAGE_COLORSPACE_FLAG
-    OHOS::ColorManager::ColorSpace grColorSpace_ =
-        OHOS::ColorManager::ColorSpace(OHOS::ColorManager::ColorSpaceName::SRGB);
+    std::shared_ptr<OHOS::ColorManager::ColorSpace> grColorSpace_ = nullptr;
+#else
+    std::shared_ptr<uint8_t> grColorSpace_ = nullptr;
 #endif
 };
 } // namespace Media
