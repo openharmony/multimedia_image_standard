@@ -250,6 +250,7 @@ PixelMapNapi::~PixelMapNapi()
 {
     if (nativePixelMap_ != nullptr) {
         nativePixelMap_ = nullptr;
+        nativeInner_ = nullptr;
     }
 
     if (wrapper_ != nullptr) {
@@ -501,6 +502,7 @@ napi_value PixelMapNapi::Constructor(napi_env env, napi_callback_info info)
 
     pPixelMapNapi->env_ = env;
     pPixelMapNapi->nativePixelMap_ = sPixelMap_;
+    pPixelMapNapi->nativeInner_ = sPixelMap_;
 
     status = napi_wrap(env, thisVar, reinterpret_cast<void*>(pPixelMapNapi.get()),
                         PixelMapNapi::Destructor, nullptr, &(pPixelMapNapi->wrapper_));
@@ -1244,7 +1246,12 @@ napi_value PixelMapNapi::Release(napi_env env, napi_callback_info info)
                 context->status = ERROR;
                 return;
             } else {
-                context->nConstructor->nativePixelMap_= nullptr;
+                if (context->nConstructor->nativePixelMap_ != nullptr
+					&& context->nConstructor->nativePixelMap_ == context->nConstructor->nativeInner_)
+		        {
+		            context->nConstructor->nativePixelMap_ = nullptr;
+		            context->nConstructor->nativeInner_ = nullptr;
+		        }
                 context->status = SUCCESS;
             }
         }, EmptyResultComplete, asyncContext, asyncContext->work);
