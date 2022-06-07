@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef BASIC_TRANSFORMER_H
-#define BASIC_TRANSFORMER_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_BASIC_TRANSFORMER_H_
+#define FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_BASIC_TRANSFORMER_H_
 
 #include <algorithm>
 #include <string>
@@ -66,7 +66,7 @@ struct PixmapInfo {
     uint8_t *data = nullptr;
     uint32_t bufferSize = 0;
     bool isAutoDestruct = true;
-    PixmapInfo(){};
+    PixmapInfo(){}
 
     ~PixmapInfo()
     {
@@ -118,8 +118,8 @@ public:
     BasicTransformer()
     {
         ResetParam();
-    };
-    ~BasicTransformer(){};
+    }
+    ~BasicTransformer(){}
 
     // Reset pixel map info transform param, back to the original state
     void ResetParam();
@@ -198,4 +198,4 @@ private:
 };
 } // namespace Media
 } // namespace OHOS
-#endif // BASIC_TRANSFORMER_H
+#endif // FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_BASIC_TRANSFORMER_H_

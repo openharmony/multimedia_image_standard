@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SCAN_LINE_FILTER_H
-#define SCAN_LINE_FILTER_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_SCAN_LINE_FILTER_H_
+#define FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_SCAN_LINE_FILTER_H_
 
 #include "image_type.h"
 #include "pixel_convert.h"
@@ -45,4 +45,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // SCAN_LINE_FILTER_H
+#endif // FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_SCAN_LINE_FILTER_H_

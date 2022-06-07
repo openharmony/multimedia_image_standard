@@ -240,13 +240,13 @@ uint32_t PostProc::CheckScanlineFilter(const Rect &cropRect, ImageInfo &dstImage
         }
         scanLine++;
     }
-    uint32_t ret = pixelMap.SetImageInfo(dstImageInfo);
-    if (ret != SUCCESS) {
+    uint32_t result = pixelMap.SetImageInfo(dstImageInfo);
+    if (result != SUCCESS) {
         ReleaseBuffer(decodeOpts_.allocatorType, fd, bufferSize, &resultData);
-        return ret;
+        return result;
     }
     pixelMap.SetPixelsAddr(resultData, nullptr, bufferSize, decodeOpts_.allocatorType, nullptr);
-    return ret;
+    return result;
 }
 
 uint32_t PostProc::ConvertProc(const Rect &cropRect, ImageInfo &dstImageInfo, PixelMap &pixelMap,
@@ -323,7 +323,7 @@ uint32_t PostProc::AllocBuffer(ImageInfo imageInfo, uint8_t **resultData, uint64
     }
     bufferSize = static_cast<uint64_t>(imageInfo.size.width) * imageInfo.size.height * pixelBytes;
     IMAGE_LOGD("[PostProc]size.width:%{public}d, size.height:%{public}d, bufferSize:%{public}lld",
-               imageInfo.size.width, imageInfo.size.height, (long long)bufferSize);
+               imageInfo.size.width, imageInfo.size.height, (int64_t)bufferSize);
     if (decodeOpts_.allocatorType == AllocatorType::SHARE_MEM_ALLOC) {
         *resultData = AllocSharedMemory(imageInfo.size, bufferSize, fd);
         if (*resultData == nullptr) {
@@ -347,7 +347,7 @@ bool PostProc::AllocHeapBuffer(uint64_t bufferSize, uint8_t **buffer)
     *buffer = static_cast<uint8_t *>(malloc(bufferSize));
     if (*buffer == nullptr) {
         IMAGE_LOGE("[PostProc]alloc covert color buffersize[%{public}llu] failed.",
-                   static_cast<unsigned long long>(bufferSize));
+                   static_cast<uint64_t>(bufferSize));
         return false;
     }
 #ifdef _WIN32
@@ -371,7 +371,7 @@ uint8_t *PostProc::AllocSharedMemory(const Size &size, const uint64_t bufferSize
 #else
     fd = AshmemCreate("Parcel RawData", bufferSize);
     if (fd < 0) {
-        IMAGE_LOGE("[PostProc]AllocSharedMemory fd error, bufferSize %{public}lld", (long long)bufferSize);
+        IMAGE_LOGE("[PostProc]AllocSharedMemory fd error, bufferSize %{public}lld", (int64_t)bufferSize);
         return nullptr;
     }
     int result = AshmemSetProt(fd, PROT_READ | PROT_WRITE);
@@ -383,11 +383,11 @@ uint8_t *PostProc::AllocSharedMemory(const Size &size, const uint64_t bufferSize
     void* ptr = ::mmap(nullptr, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (ptr == MAP_FAILED) {
         IMAGE_LOGE("[PostProc]mmap error, errno: %{public}s, fd %{public}d, bufferSize %{public}lld",
-            strerror(errno), fd, (long long)bufferSize);
+            strerror(errno), fd, (int64_t)bufferSize);
         ::close(fd);
         return nullptr;
     }
-    return (uint8_t *)ptr;
+    return reinterpret_cast<uint8_t *>(ptr);
 #endif
 }
 

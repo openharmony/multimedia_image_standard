@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef PIXEL_MAP_JNI_UTILS_H
-#define PIXEL_MAP_JNI_UTILS_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_PIXELCONVERTER_INCLUDE_PIXEL_MAP_JNI_UTILS_H_
+#define FRAMEWORKS_INNERKITSIMPL_PIXELCONVERTER_INCLUDE_PIXEL_MAP_JNI_UTILS_H_
 
 #include "hilog/log.h"
 #include "jkit_utils.h"
@@ -30,4 +30,4 @@ public:
 } // namespace Media
 } // namespace OHOS
 
-#endif // PIXEL_MAP_JNI_UTILS_H
+#endif // FRAMEWORKS_INNERKITSIMPL_PIXELCONVERTER_INCLUDE_PIXEL_MAP_JNI_UTILS_H_

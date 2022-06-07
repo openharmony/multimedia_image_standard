@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_MATRIX_H_
+#define FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_MATRIX_H_
 
 #include <cmath>
 #include "image_log.h"
@@ -104,11 +104,11 @@ public:
      * | 0  1  0 |
      * | 0  0  1 |
      */
-    constexpr Matrix() : Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1, IDENTITY){};
+    constexpr Matrix() : Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1, IDENTITY){}
 
     constexpr Matrix(float sx, float kx, float tx, float ky, float sy, float ty, float p0, float p1, float p2,
                      uint32_t operType)
-        : fMat_ { sx, kx, tx, ky, sy, ty, p0, p1, p2 }, operType_(operType){};
+        : fMat_ { sx, kx, tx, ky, sy, ty, p0, p1, p2 }, operType_(operType){}
 
     ~Matrix() = default;
 
@@ -195,4 +195,4 @@ private:
 };
 } // namespace Media
 } // namespace OHOS
-#endif // MATRIX_H
+#endif // FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_MATRIX_H_

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef POST_PROC_H
-#define POST_PROC_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_POST_PROC_H_
+#define FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_POST_PROC_H_
 
 #include <vector>
 #include "basic_transformer.h"
@@ -62,4 +62,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // POST_PROC_H
+#endif // FRAMEWORKS_INNERKITSIMPL_CONVERTER_INCLUDE_POST_PROC_H_
