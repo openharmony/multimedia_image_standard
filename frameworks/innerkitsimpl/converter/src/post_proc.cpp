@@ -350,7 +350,6 @@ bool PostProc::AllocHeapBuffer(uint64_t bufferSize, uint8_t **buffer)
                    static_cast<unsigned long long>(bufferSize));
         return false;
     }
-    }
 #ifdef _WIN32
     memset(*buffer, 0, bufferSize);
     return true;
