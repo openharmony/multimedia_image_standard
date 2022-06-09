@@ -302,6 +302,7 @@ napi_value PixelMapNapi::Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("createAlphaPixelmap", CreateAlphaPixelmap),
         DECLARE_NAPI_FUNCTION("getDensity", GetDensity),
         DECLARE_NAPI_FUNCTION("setDensity", SetDensity),
+        DECLARE_NAPI_FUNCTION("setAlpha", SetAlpha),
         DECLARE_NAPI_FUNCTION("release", Release),
         DECLARE_NAPI_FUNCTION("scale", Scale),
         DECLARE_NAPI_FUNCTION("translate", Translate),
