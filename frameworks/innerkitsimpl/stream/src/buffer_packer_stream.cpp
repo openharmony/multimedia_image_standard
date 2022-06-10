@@ -37,7 +37,7 @@ bool BufferPackerStream::Write(const uint8_t *buffer, uint32_t size)
     uint32_t leftSize = maxSize_ - offset_;
     if (size > leftSize) {
         HiLog::Error(LABEL, "write data:[%{public}lld] out of max size:[%{public}u].",
-                     static_cast<long long>(size + offset_), maxSize_);                  
+                     static_cast<long long>(size + offset_), maxSize_);
         return false;
     }
     if (memcpy_s(outputData_ + offset_, leftSize, buffer, size) != EOK) {

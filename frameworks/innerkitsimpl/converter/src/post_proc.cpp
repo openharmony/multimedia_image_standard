@@ -383,7 +383,7 @@ uint8_t *PostProc::AllocSharedMemory(const Size &size, const uint64_t bufferSize
     void* ptr = ::mmap(nullptr, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (ptr == MAP_FAILED) {
         IMAGE_LOGE("[PostProc]mmap error, errno: %{public}s, fd %{public}d, bufferSize %{public}lld",
-            strerror(errno), fd, (long long)bufferSize);          
+            strerror(errno), fd, (long long)bufferSize);
         ::close(fd);
         return nullptr;
     }

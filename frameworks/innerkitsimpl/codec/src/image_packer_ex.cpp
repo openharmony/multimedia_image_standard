@@ -12,9 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "image_packer_ex.h"
-                                                                                                                                            
+#include "image_packer_ex.h"                                                                                                                                          
 namespace OHOS {
 namespace Media {
 uint32_t ImagePackerEx::StartPacking(PackerStream &outputStream, const PackOption &option)
