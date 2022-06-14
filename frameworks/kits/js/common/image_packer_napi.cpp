@@ -41,6 +41,7 @@ const int ARGS_THREE = 3;
 const int PARAM0 = 0;
 const int PARAM1 = 1;
 const int PARAM2 = 2;
+const uint8_t BYTE_FULL = 0xFF;
 const int32_t SIZE = 100;
 const int32_t TYPE_IMAGE_SOURCE = 1;
 const int32_t TYPE_PIXEL_MAP = 2;
@@ -305,41 +306,64 @@ void ImagePackerNapi::Destructor(napi_env env, void *nativeObject, void *finaliz
 
 static bool parsePackOptions(napi_env env, napi_value root, PackOption* opts)
 {
-    char buffer[SIZE];
-    napi_value property = nullptr;
-    bool present = false;
-    size_t res = 0;
-    uint32_t len = 0;
-    napi_value stringItem = nullptr;
-    int32_t quality = 0;
-    HiLog::Debug(LABEL, "GetPackingOptionsParam IN");
+    napi_value tmpValue = nullptr;
+    uint32_t tmpNumber = 0;
 
-    napi_has_named_property(env, root, "format", &present);
-    if (present && napi_get_named_property(env, root, "format", &property) == napi_ok) {
-        HiLog::Debug(LABEL, "GetPackingOptionsParam IN 1");
-        napi_get_array_length(env, property, &len);
+    HiLog::Debug(LABEL, "parsePackOptions IN");
+    if (!GET_NODE_BY_NAME(root, "format", tmpValue)) {
+        HiLog::Error(LABEL, "No format in pack option");
+        return false;
+    }
+
+    bool isFormatArray = false;
+    napi_is_array(env, tmpValue, &isFormatArray);
+    auto formatType = ImageNapiUtils::getType(env, tmpValue);
+
+    HiLog::Debug(LABEL, "parsePackOptions format type %{public}d, is array %{public}d",
+        formatType, isFormatArray);
+
+    char buffer[SIZE] = {0};
+    size_t res = 0;
+    if (napi_string == formatType) {
+        if (napi_get_value_string_utf8(env, tmpValue, buffer, SIZE, &res) != napi_ok) {
+            HiLog::Error(LABEL, "Parse pack option format failed");
+            return false;
+        }
+        opts->format = std::string(buffer);
+    } else if (isFormatArray) {
+        uint32_t len = 0;
+        if (napi_get_array_length(env, tmpValue, &len) != napi_ok) {
+            HiLog::Error(LABEL, "Parse pack napi_get_array_length failed");
+            return false;
+        }
+        HiLog::Debug(LABEL, "Parse pack array_length=%{public}u", len);
         for (size_t i = 0; i < len; i++) {
-            napi_get_element(env, property, i, &stringItem);
-            napi_get_value_string_utf8(env, stringItem, buffer, SIZE, &res);
+            napi_value item;
+            napi_get_element(env, tmpValue, i, &item);
+            if (napi_get_value_string_utf8(env, item, buffer, SIZE, &res) != napi_ok) {
+                HiLog::Error(LABEL, "Parse format in item failed %{public}zu", i);
+                continue;
+            }
             opts->format = std::string(buffer);
             HiLog::Debug(LABEL, "format is %{public}s.", opts->format.c_str());
-            if (memset_s(buffer, SIZE, 0, sizeof(buffer)) != EOK) {
-                HiLog::Error(LABEL, "memset buffer failed.");
-                free(buffer);
-            }
         }
+    } else {
+        HiLog::Error(LABEL, "Invalid pack option format type");
+        return false;
     }
-    present = false;
-    napi_has_named_property(env, root, "quality", &present);
-    if (present) {
-        if (napi_get_named_property(env, root, "quality", &property) != napi_ok) {
-            HiLog::Error(LABEL, "Could not get the quality argument!");
-        } else {
-            napi_get_value_int32(env, property, &quality);
-            opts->quality = quality;
-            HiLog::Debug(LABEL, "quality is %{public}u.", quality);
-        }
+    HiLog::Debug(LABEL, "parsePackOptions format:[%{public}s]", opts->format.c_str());
+
+    if (!GET_UINT32_BY_NAME(root, "quality", tmpNumber)) {
+        HiLog::Error(LABEL, "No quality in pack option");
+        return false;
     }
+    if (tmpNumber > SIZE) {
+        HiLog::Error(LABEL, "Invalid quality");
+        opts->quality = BYTE_FULL;
+    } else {
+        opts->quality = static_cast<uint8_t>(tmpNumber & 0xff);
+    }
+    HiLog::Debug(LABEL, "parsePackOptions OUT");
     return true;
 }
 
