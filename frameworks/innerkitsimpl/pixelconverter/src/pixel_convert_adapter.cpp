@@ -45,7 +45,8 @@ static const map<PixelFormat, SkColorType> PIXEL_FORMAT_MAP = {
     { PixelFormat::RGB_565, SkColorType::kRGB_565_SkColorType},
     { PixelFormat::RGBA_F16, SkColorType::kRGBA_F16_SkColorType},
     { PixelFormat::RGBA_8888, SkColorType::kRGBA_8888_SkColorType},
-    { PixelFormat::BGRA_8888, SkColorType::kBGRA_8888_SkColorType}
+    { PixelFormat::BGRA_8888, SkColorType::kBGRA_8888_SkColorType},
+    { PixelFormat::RGB_888, SkColorType::kRGB_888x_SkColorType},
 };
 
 static SkColorType PixelFormatConvert(const PixelFormat &pixelFormat)
@@ -100,6 +101,59 @@ static void RGBAToARGB(uint8_t* srcPixels, uint8_t* dstPixels, uint32_t byteCoun
     }
 }
 
+static void RGBxToRGB(const uint8_t* srcPixels, uint8_t* dstPixels, uint32_t byteCount)
+{
+    if (byteCount % NUM_4 != NUM_0) {
+        HiLog::Error(LABEL, "Pixel count must multiple of 4.");
+        return;
+    }
+    const uint8_t *src = srcPixels;
+    uint8_t *dst = dstPixels;
+    uint8_t R, G, B;
+    for (uint32_t i = NUM_0 ; i < byteCount; i += NUM_4) {
+        R = src[NUM_0];
+        G = src[NUM_1];
+        B = src[NUM_2];
+        dst[NUM_0] = R;
+        dst[NUM_1] = G;
+        dst[NUM_2] = B;
+        src += NUM_4;
+        dst += NUM_3;
+    }
+}
+
+static void RGBToRGBx(const uint8_t* srcPixels, uint8_t* dstPixels, uint32_t byteCount)
+{
+    if (byteCount % NUM_3 != NUM_0) {
+        HiLog::Error(LABEL, "Pixel count must multiple of 3.");
+        return;
+    }
+    const uint8_t *src = srcPixels;
+    uint8_t *dst = dstPixels;
+    uint8_t R, G, B;
+    for (uint32_t i = NUM_0 ; i < byteCount; i += NUM_3) {
+        R = src[NUM_0];
+        G = src[NUM_1];
+        B = src[NUM_2];
+        dst[NUM_0] = R;
+        dst[NUM_1] = G;
+        dst[NUM_2] = B;
+        dst[NUM_3] = 0;
+        src += NUM_3;
+        dst += NUM_4;
+    }
+}
+
+static int32_t GetRGBxRowBytes(const ImageInfo &imgInfo)
+{
+    return imgInfo.size.width * NUM_4;
+}
+
+static int32_t GetRGBxSize(const ImageInfo &imgInfo)
+{
+    return imgInfo.size.height * GetRGBxRowBytes(imgInfo);
+}
+
 bool PixelConvertAdapter::WritePixelsConvert(const void *srcPixels, uint32_t srcRowBytes, const ImageInfo &srcInfo,
                                              void *dstPixels, const Position &dstPos, uint32_t dstRowBytes,
                                              const ImageInfo &dstInfo)
@@ -116,14 +170,27 @@ bool PixelConvertAdapter::WritePixelsConvert(const void *srcPixels, uint32_t src
     SkColorType dstColorType = PixelFormatConvert(dstInfo.pixelFormat);
     SkImageInfo srcImageInfo = SkImageInfo::Make(srcInfo.size.width, srcInfo.size.height, srcColorType, srcAlphaType);
     SkImageInfo dstImageInfo = SkImageInfo::Make(dstInfo.size.width, dstInfo.size.height, dstColorType, dstAlphaType);
-    SkBitmap dstBitmap;
-    SkPixmap srcPixmap(srcImageInfo, srcPixels, srcRowBytes);
 
+    int32_t dstRGBxSize = (dstInfo.pixelFormat == PixelFormat::RGB_888) ? GetRGBxSize(dstInfo) : NUM_1;
+    auto dstRGBxPixels = std::make_unique<uint8_t[]>(dstRGBxSize);
+    auto keepDstPixels = dstPixels;
+    dstPixels = (dstInfo.pixelFormat == PixelFormat::RGB_888) ? &dstRGBxPixels[0] : dstPixels;
+    dstRowBytes = (dstInfo.pixelFormat == PixelFormat::RGB_888) ? GetRGBxRowBytes(dstInfo) : dstRowBytes;
+
+    int32_t srcRGBxSize = (srcInfo.pixelFormat == PixelFormat::RGB_888) ? GetRGBxSize(srcInfo) : NUM_1;
+    auto srcRGBxPixels = std::make_unique<uint8_t[]>(srcRGBxSize);
+    if (srcInfo.pixelFormat == PixelFormat::RGB_888) {
+        RGBToRGBx(static_cast<const uint8_t*>(srcPixels), &srcRGBxPixels[0], srcRowBytes * srcInfo.size.height);
+        srcPixels = &srcRGBxPixels[0];
+        srcRowBytes = GetRGBxRowBytes(srcInfo);
+    }
+    SkPixmap srcPixmap(srcImageInfo, srcPixels, srcRowBytes);
     if (srcInfo.pixelFormat == PixelFormat::ARGB_8888) {
         uint8_t* src = static_cast<uint8_t*>(srcPixmap.writable_addr());
         ARGBToRGBA(src, src, srcRowBytes * srcInfo.size.height);
     }
 
+    SkBitmap dstBitmap;
     if (!dstBitmap.installPixels(dstImageInfo, dstPixels, dstRowBytes)) {
         HiLog::Error(LABEL, "WritePixelsConvert dst bitmap install pixels failed.");
         return false;
@@ -136,6 +203,8 @@ bool PixelConvertAdapter::WritePixelsConvert(const void *srcPixels, uint32_t src
     if (dstInfo.pixelFormat == PixelFormat::ARGB_8888) {
         uint32_t dstSize = dstRowBytes * dstInfo.size.height;
         RGBAToARGB(static_cast<uint8_t*>(dstPixels), static_cast<uint8_t*>(dstPixels), dstSize);
+    } else if (dstInfo.pixelFormat == PixelFormat::RGB_888) {
+        RGBxToRGB(&dstRGBxPixels[0], static_cast<uint8_t*>(keepDstPixels), dstRGBxSize);
     }
 
     return true;

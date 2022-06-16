@@ -56,6 +56,8 @@ private:
     static bool DoTransformBgrA(Media::PixelMap &pixelMap, char* dst, int componentsNum);
     static bool DoTransformF16To8888(Media::PixelMap &pixelMap, char* dst, int componentsNum);
     static bool DoTransformF16pTo8888(Media::PixelMap &pixelMap, char* dst, int componentsNum);
+    static bool DoTransformArgbToRgb(Media::PixelMap &pixelMap, char* dst, int componentsNum);
+    static bool DoTransformArgbToRgba(Media::PixelMap &pixelMap, char* dst, int componentsNum);
     static bool DoTransformRGB565(Media::PixelMap &pixelMap, char* dst, int componentsNum);
     static bool DoTransformGray(Media::PixelMap &pixelMap, char* dst, int componentsNum);
     static Media::ImageInfo MakeImageInfo(int width, int height, Media::PixelFormat pf, Media::AlphaType at,

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "jpeg_encoder.h"
 #ifdef IMAGE_COLORSPACE_FLAG
 #include "color_space.h"
 #endif
@@ -21,7 +22,7 @@
 #include "jerror.h"
 #include "media_errors.h"
 #include "pixel_convert.h"
-#include "jpeg_encoder.h"
+#include "src/images/SkImageEncoderFns.h"
 
 namespace OHOS {
 namespace ImagePlugin {
@@ -35,6 +36,7 @@ constexpr uint32_t COMPONENT_NUM_BGRA = 4;
 constexpr uint32_t COMPONENT_NUM_RGB = 3;
 constexpr uint32_t COMPONENT_NUM_GRAY = 1;
 constexpr uint32_t PIXEL_SIZE_RGBA_F16 = 8;
+constexpr uint32_t PIXEL_SIZE_RGB565 = 2;
 // yuv format
 constexpr uint8_t COMPONENT_NUM_YUV420SP = 3;
 constexpr uint8_t Y_SAMPLE_ROW = 16;
@@ -103,6 +105,7 @@ J_COLOR_SPACE JpegEncoder::GetEncodeFormat(PixelFormat format, int32_t &componen
             components = COMPONENT_NUM_GRAY;
             break;
         }
+        case PixelFormat::RGB_565:
         case PixelFormat::RGB_888: {
             colorSpace = JCS_RGB;
             components = COMPONENT_NUM_RGB;
@@ -155,6 +158,8 @@ uint32_t JpegEncoder::FinalizeEncode()
         errorCode = Yuv420spEncoder(data);
     } else if (pixelFormat == PixelFormat::RGBA_F16) {
         errorCode = RGBAF16Encoder(data);
+    } else if (pixelFormat == PixelFormat::RGB_565) {
+        errorCode = RGB565Encoder(data);
     } else {
         errorCode = SequenceEncoder(data);
     }
@@ -331,6 +336,41 @@ uint32_t JpegEncoder::RGBAF16Encoder(const uint8_t *data)
         jpeg_write_scanlines(&encodeInfo_, &rowBufferPtr, RW_LINE_NUM);
     }
     jpeg_finish_compress(&encodeInfo_);
+    return SUCCESS;
+}
+
+uint32_t JpegEncoder::RGB565Encoder(const uint8_t *data)
+{
+    HiLog::Debug(LABEL, "RGB565Encoder IN.");
+    if (setjmp(jerr_.setjmp_buffer)) {
+        HiLog::Error(LABEL, "encode image error.");
+        return ERR_IMAGE_ENCODE_FAILED;
+    }
+
+    jpeg_start_compress(&encodeInfo_, TRUE);
+
+    uint8_t *base = const_cast<uint8_t *>(data);
+
+    uint32_t orgRowStride = encodeInfo_.image_width * PIXEL_SIZE_RGB565;
+    uint8_t *orgRowBuffer = nullptr;
+
+    uint32_t outRowStride = encodeInfo_.image_width * encodeInfo_.input_components;
+    auto outRowBuffer = std::make_unique<uint8_t[]>(outRowStride);
+
+    while (encodeInfo_.next_scanline < encodeInfo_.image_height) {
+        orgRowBuffer = base + encodeInfo_.next_scanline * orgRowStride;
+
+        transform_scanline_565(
+            reinterpret_cast<char*>(&outRowBuffer[0]),
+            reinterpret_cast<const char*>(orgRowBuffer),
+            encodeInfo_.image_width, encodeInfo_.input_components);
+
+        uint8_t *rowBufferPtr = outRowBuffer.get();
+        jpeg_write_scanlines(&encodeInfo_, &rowBufferPtr, RW_LINE_NUM);
+    }
+
+    jpeg_finish_compress(&encodeInfo_);
+    HiLog::Debug(LABEL, "RGB565Encoder OUT.");
     return SUCCESS;
 }
 

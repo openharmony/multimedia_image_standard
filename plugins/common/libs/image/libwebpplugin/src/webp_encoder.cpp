@@ -152,6 +152,14 @@ bool WebpEncoder::CheckEncodeFormat(Media::PixelMap &pixelMap)
             HiLog::Debug(LABEL, "CheckEncodeFormat, RGBA_F16");
             return true;
         }
+        case PixelFormat::ARGB_8888: {
+            HiLog::Debug(LABEL, "CheckEncodeFormat, ARGB_8888");
+            return true;
+        }
+        case PixelFormat::RGB_888: {
+            HiLog::Debug(LABEL, "CheckEncodeFormat, RGB_888");
+            return true;
+        }
         case PixelFormat::RGB_565: {
             bool isOpaque = IsOpaque(pixelMap);
             HiLog::Debug(LABEL, "CheckEncodeFormat, RGB_565, isOpaque=%{public}d", isOpaque);
@@ -204,6 +212,14 @@ bool WebpEncoder::DoTransform(Media::PixelMap &pixelMap, char* dst, int componen
     } else if ((pixelFormat == PixelFormat::RGBA_F16) && (alphaType == AlphaType::IMAGE_ALPHA_TYPE_PREMUL)) {
         HiLog::Debug(LABEL, "DoTransform, RGBA_F16, PREMUL");
         return DoTransformF16pTo8888(pixelMap, dst, componentsNum);
+    } else if ((pixelFormat == PixelFormat::ARGB_8888) && (alphaType == AlphaType::IMAGE_ALPHA_TYPE_OPAQUE)) {
+        return DoTransformArgbToRgb(pixelMap, dst, componentsNum);
+    } else if ((pixelFormat == PixelFormat::ARGB_8888) && (alphaType == AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL)) {
+        return DoTransformArgbToRgba(pixelMap, dst, componentsNum);
+    } else if ((pixelFormat == PixelFormat::ARGB_8888) && (alphaType == AlphaType::IMAGE_ALPHA_TYPE_PREMUL)) {
+        return DoTransformArgbToRgba(pixelMap, dst, componentsNum);
+    } else if (pixelFormat == PixelFormat::RGB_888) {
+        return DoTransformMemcpy(pixelMap, dst, componentsNum);
     } else if ((pixelFormat == PixelFormat::RGB_565) && IsOpaque(pixelMap)) {
         HiLog::Debug(LABEL, "DoTransform, RGB_565, Opaque");
         return DoTransformRGB565(pixelMap, dst, componentsNum);
@@ -235,7 +251,7 @@ uint32_t WebpEncoder::SetEncodeConfig(Media::PixelMap &pixelMap, WebPConfig &web
     } else {
         componentsNum_ = IsOpaque(pixelMap) ? COMPONENT_NUM_3 : COMPONENT_NUM_4;
     }
-    HiLog::Debug(LABEL, "SetEncodeConfig, componentsNum_=%{public}u", componentsNum_);
+    HiLog::Debug(LABEL, "SetEncodeConfig, componentsNum=%{public}u", componentsNum_);
 
     if (!WebPConfigPreset(&webpConfig, WEBP_PRESET_DEFAULT, encodeOpts_.quality)) {
         HiLog::Error(LABEL, "SetEncodeConfig, config preset issue.");
@@ -255,7 +271,7 @@ uint32_t WebpEncoder::SetEncodeConfig(Media::PixelMap &pixelMap, WebPConfig &web
 
     auto colorSpace = GetColorSpace(pixelMap);
     HiLog::Debug(LABEL, "SetEncodeConfig, "
-        "width=%{public}u, height=%{public}u, colorspace=%{public}d, componentsNum_=%{public}d.",
+        "width=%{public}u, height=%{public}u, colorspace=%{public}d, componentsNum=%{public}d.",
         webpPicture.width, webpPicture.height, colorSpace, componentsNum_);
 
     HiLog::Debug(LABEL, "SetEncodeConfig OUT");
@@ -396,7 +412,7 @@ bool WebpEncoder::DoTransformMemcpy(Media::PixelMap &pixelMap, char* dst, int co
     }
 
     HiLog::Debug(LABEL, "DoTransformMemcpy OUT");
-    return false;
+    return true;
 }
 
 bool WebpEncoder::DoTransformRGBX(Media::PixelMap &pixelMap, char* dst, int componentsNum)
@@ -623,6 +639,70 @@ bool WebpEncoder::DoTransformF16pTo8888(Media::PixelMap &pixelMap, char* dst, in
     return true;
 }
 
+bool WebpEncoder::DoTransformArgbToRgb(Media::PixelMap &pixelMap, char* dst, int componentsNum)
+{
+    HiLog::Debug(LABEL, "DoTransformArgbToRgb IN");
+
+    const void *srcPixels = pixelMap.GetPixels();
+    uint32_t srcRowBytes = pixelMap.GetRowBytes();
+    const ImageInfo srcInfo = MakeImageInfo(pixelMap.GetWidth(), pixelMap.GetHeight(),
+        PixelFormat::ARGB_8888, AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
+
+    void *dstPixels = dst;
+    uint32_t dstRowBytes = pixelMap.GetWidth() * componentsNum;
+    const ImageInfo dstInfo = MakeImageInfo(pixelMap.GetWidth(), pixelMap.GetHeight(),
+        PixelFormat::RGB_888, AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
+
+    ShowTransformParam(srcInfo, srcRowBytes, dstInfo, dstRowBytes, componentsNum);
+
+    if ((srcPixels == nullptr) || (dstPixels == nullptr)) {
+        HiLog::Error(LABEL, "DoTransformArgbToRgb, address issue.");
+        return false;
+    }
+
+    const Position dstPos;
+    if (!PixelConvertAdapter::WritePixelsConvert(srcPixels, srcRowBytes, srcInfo,
+        dstPixels, dstPos, dstRowBytes, dstInfo)) {
+        HiLog::Error(LABEL, "DoTransformArgbToRgb, pixel convert in adapter failed.");
+        return false;
+    }
+
+    HiLog::Debug(LABEL, "DoTransformArgbToRgb OUT");
+    return true;
+}
+
+bool WebpEncoder::DoTransformArgbToRgba(Media::PixelMap &pixelMap, char* dst, int componentsNum)
+{
+    HiLog::Debug(LABEL, "DoTransformArgbToRgba IN");
+
+    const void *srcPixels = pixelMap.GetPixels();
+    uint32_t srcRowBytes = pixelMap.GetRowBytes();
+    const ImageInfo srcInfo = MakeImageInfo(pixelMap.GetWidth(), pixelMap.GetHeight(),
+        PixelFormat::ARGB_8888, pixelMap.GetAlphaType());
+
+    void *dstPixels = dst;
+    uint32_t dstRowBytes = pixelMap.GetWidth() * componentsNum;
+    const ImageInfo dstInfo = MakeImageInfo(pixelMap.GetWidth(), pixelMap.GetHeight(),
+        PixelFormat::RGBA_8888, pixelMap.GetAlphaType());
+
+    ShowTransformParam(srcInfo, srcRowBytes, dstInfo, dstRowBytes, componentsNum);
+
+    if ((srcPixels == nullptr) || (dstPixels == nullptr)) {
+        HiLog::Error(LABEL, "DoTransformArgbToRgba, address issue.");
+        return false;
+    }
+
+    const Position dstPos;
+    if (!PixelConvertAdapter::WritePixelsConvert(srcPixels, srcRowBytes, srcInfo,
+        dstPixels, dstPos, dstRowBytes, dstInfo)) {
+        HiLog::Error(LABEL, "DoTransformArgbToRgba, pixel convert in adapter failed.");
+        return false;
+    }
+
+    HiLog::Debug(LABEL, "DoTransformArgbToRgba OUT");
+    return true;
+}
+
 bool WebpEncoder::DoTransformRGB565(Media::PixelMap &pixelMap, char* dst, int componentsNum)
 {
     HiLog::Debug(LABEL, "DoTransformRGB565 IN");
@@ -667,7 +747,7 @@ bool WebpEncoder::DoTransformGray(Media::PixelMap &pixelMap, char* dst, int comp
     void *dstPixels = dst;
     uint32_t dstRowBytes = pixelMap.GetWidth() * componentsNum;
     const ImageInfo dstInfo = MakeImageInfo(pixelMap.GetWidth(), pixelMap.GetHeight(),
-        PixelFormat::RGB_888, AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL);
+        PixelFormat::RGBA_8888, AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL);
 
     ShowTransformParam(srcInfo, srcRowBytes, dstInfo, dstRowBytes, componentsNum);
 
