@@ -300,7 +300,7 @@ release(): Promise<void>;
 
 ### 15.packing<a name="packing"></a>
 
-mage提供了操作imagesource的接口，如创建、读取和删除，以下展示了如何压缩图片。
+image提供了操作imagesource的接口，如创建、读取和删除，以下展示了如何压缩图片。
 
 1.使用createImageSource创建图片源。
 
