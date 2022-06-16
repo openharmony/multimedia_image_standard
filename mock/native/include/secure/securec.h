@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#ifndef MOCK_NATIVE_INCLUDE_SECURE_SECUREC_H_
+#define MOCK_NATIVE_INCLUDE_SECURE_SECUREC_H_
 
 /* success */
 #ifndef EOK
@@ -20,3 +22,5 @@
 #endif
 
 #define F_DUPFD_CLOEXEC 1030
+
+#endif // MOCK_NATIVE_INCLUDE_SECURE_SECUREC_H_

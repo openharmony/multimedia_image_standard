@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef PEER_LISTENER_H
-#define PEER_LISTENER_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_PEER_LISTENER_H_
+#define INTERFACES_INNERKITS_INCLUDE_PEER_LISTENER_H_
 
 namespace OHOS {
 namespace Media {
@@ -27,4 +27,4 @@ public:
 } // namespace Media
 } // namespace OHOS
 
-#endif // PEER_LISTENER_H
+#endif // INTERFACES_INNERKITS_INCLUDE_PEER_LISTENER_H_

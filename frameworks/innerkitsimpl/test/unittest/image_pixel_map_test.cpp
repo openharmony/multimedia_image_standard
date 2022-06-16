@@ -32,8 +32,8 @@ constexpr int32_t PIXEL_MAP_BIG_TEST_HEIGHT = 3 * 100;
 
 class ImagePixelMapTest : public testing::Test {
 public:
-    ImagePixelMapTest(){};
-    ~ImagePixelMapTest(){};
+    ImagePixelMapTest(){}
+    ~ImagePixelMapTest(){}
 };
 
     std::unique_ptr<PixelMap> ConstructPixmap()
@@ -57,7 +57,7 @@ public:
         if (buffer == nullptr) {
             return nullptr;
         }
-        char *ch = (char *)buffer;
+        char *ch = reinterpret_cast<char *>(buffer);
         for (unsigned int i = 0; i < bufferSize; i++) {
             *(ch++) = (char)i;
         }
@@ -87,7 +87,7 @@ public:
         if (buffer == nullptr) {
             return nullptr;
         }
-        char *ch = (char *)buffer;
+        char *ch = reinterpret_cast<char *>(buffer);
         for (int32_t i = 0; i < bufferSize; i++) {
             *(ch++) = 'a';
         }

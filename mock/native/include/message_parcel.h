@@ -14,8 +14,8 @@
  */
 
 
-#ifndef ZIPC_MESSAGE_PARCEL_H
-#define ZIPC_MESSAGE_PARCEL_H
+#ifndef MOCK_NATIVE_INCLUDE_MESSAGE_PARCEL_H_
+#define MOCK_NATIVE_INCLUDE_MESSAGE_PARCEL_H_
 #include <string>
 #include "parcel.h"
 #include "refbase.h"
@@ -30,4 +30,4 @@ public:
     int  ReadFileDescriptor();
 };
 } // namespace OHOS
-#endif /* ZIPC_MESSAGE_PARCEL_H */
+#endif // MOCK_NATIVE_INCLUDE_MESSAGE_PARCEL_H_

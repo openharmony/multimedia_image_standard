@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +44,10 @@ int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMa
     option.quality = NUM_100;
     option.numberHint = NUM_1;
     std::set<std::string> formats;
+    if (pixelMap == nullptr) {
+        HiLog::Error(LABEL, "pixelMap is nullptr");
+        return 0;
+    }
     uint32_t ret = imagePacker.GetSupportedFormats(formats);
     if (ret != SUCCESS) {
         HiLog::Error(LABEL_TEST, "image packer get supported format failed, ret=%{public}u.", ret);
@@ -53,7 +57,7 @@ int64_t PackImage(const std::string &filePath, std::unique_ptr<PixelMap> pixelMa
     imagePacker.AddImage(*pixelMap);
     int64_t packedSize = 0;
     imagePacker.FinalizePacking(packedSize);
-    HiLog::Debug(LABEL_TEST, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
+    HiLog::Debug(LABEL_TEST, "packedSize=%{public}lld.", static_cast<int64_t>(packedSize));
     return packedSize;
 }
 
@@ -65,13 +69,17 @@ int64_t PackImage(std::unique_ptr<ImageSource> imageSource)
     option.quality = NUM_100;
     option.numberHint = 1;
     std::set<std::string> formats;
+    if (imageSource == nullptr) {
+        HiLog::Error(LABEL, "imageSource is nullptr");
+        return 0;
+    }
     uint32_t ret = imagePacker.GetSupportedFormats(formats);
     if (ret != SUCCESS) {
         HiLog::Error(LABEL_TEST, "image packer get supported format failed, ret=%{public}u.", ret);
         return 0;
     }
     int64_t bufferSize = BUFFER_SIZE;
-    uint8_t *resultBuffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *resultBuffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     if (resultBuffer == nullptr) {
         HiLog::Error(LABEL_TEST, "image packer malloc buffer failed.");
         return 0;
@@ -80,7 +88,7 @@ int64_t PackImage(std::unique_ptr<ImageSource> imageSource)
     imagePacker.AddImage(*imageSource);
     int64_t packedSize = 0;
     imagePacker.FinalizePacking(packedSize);
-    HiLog::Debug(LABEL_TEST, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
+    HiLog::Debug(LABEL_TEST, "packedSize=%{public}lld.", static_cast<int64_t>(packedSize));
     return packedSize;
 }
 
@@ -91,6 +99,12 @@ bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t buffe
         HiLog::Error(LABEL_TEST, "file path to real path failed, file path=%{public}s.", filePath.c_str());
         return false;
     }
+
+    if (buffer == nullptr) {
+        HiLog::Error(LABEL, "buffer is nullptr");
+        return false;
+    }
+    
     FILE *fp = fopen(realPath.c_str(), "rb");
     if (fp == nullptr) {
         HiLog::Error(LABEL_TEST, "open file failed, real path=%{public}s.", realPath.c_str());

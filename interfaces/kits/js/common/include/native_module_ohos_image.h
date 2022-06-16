@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef NATIVE_MODULE_OHOS_IMAGE_H_
-#define NATIVE_MODULE_OHOS_IMAGE_H_
+#ifndef INTERFACES_KITS_JS_COMMON_INCLUDE_NATIVE_MODULE_OHOS_IMAGE_H_
+#define INTERFACES_KITS_JS_COMMON_INCLUDE_NATIVE_MODULE_OHOS_IMAGE_H_
 
 #include "napi/native_node_api.h"
 #include "image_source_napi.h"
@@ -23,4 +23,4 @@
 #include "image_receiver_napi.h"
 #include "image_napi.h"
 
-#endif /* NATIVE_MODULE_OHOS_IMAGE_H_ */
+#endif // INTERFACES_KITS_JS_COMMON_INCLUDE_NATIVE_MODULE_OHOS_IMAGE_H_

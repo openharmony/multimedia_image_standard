@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef BUFFER_SOURCE_STREAM_H
-#define BUFFER_SOURCE_STREAM_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_BUFFER_SOURCE_STREAM_H_
+#define FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_BUFFER_SOURCE_STREAM_H_
 
 #include <cstdint>
 #include <memory>
@@ -46,4 +46,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // BUFFER_SOURCE_STREAM_H
+#endif // FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_BUFFER_SOURCE_STREAM_H_

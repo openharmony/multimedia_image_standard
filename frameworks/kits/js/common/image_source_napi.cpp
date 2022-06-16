@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -83,7 +83,7 @@ static std::string GetStringArgument(napi_env env, napi_value value)
     size_t bufLength = 0;
     napi_status status = napi_get_value_string_utf8(env, value, nullptr, NUM_0, &bufLength);
     if (status == napi_ok && bufLength > NUM_0 && bufLength < PATH_MAX) {
-        char *buffer = (char *)malloc((bufLength + NUM_1) * sizeof(char));
+        char *buffer = reinterpret_cast<char *>(malloc((bufLength + NUM_1) * sizeof(char)));
         if (buffer == nullptr) {
             HiLog::Error(LABEL, "No memory");
             return strValue;
@@ -121,6 +121,11 @@ static void ImageSourceCallbackRoutine(napi_env env, ImageSourceAsyncContext* &c
 
     napi_get_undefined(env, &result[NUM_0]);
     napi_get_undefined(env, &result[NUM_1]);
+
+    if (context == nullptr) {
+        HiLog::Error(LABEL, "context is nullptr");
+        return;
+    }
 
     if (context->status == SUCCESS) {
         result[NUM_1] = valueParam;
@@ -353,6 +358,10 @@ STATIC_COMPLETE_FUNC(GetImageInfo)
 
 static bool ParseSize(napi_env env, napi_value root, Size* size)
 {
+    if (size == nullptr) {
+        HiLog::Error(LABEL, "size is nullptr");
+        return false;
+    }
     if (!GET_INT32_BY_NAME(root, "height", size->height)) {
         return false;
     }
@@ -367,6 +376,11 @@ static bool ParseSize(napi_env env, napi_value root, Size* size)
 static bool ParseRegion(napi_env env, napi_value root, Rect* region)
 {
     napi_value tmpValue = nullptr;
+
+    if (region == nullptr) {
+        HiLog::Error(LABEL, "region is nullptr");
+        return false;
+    }
 
     if (!GET_INT32_BY_NAME(root, "x", region->left)) {
         return false;
@@ -425,6 +439,11 @@ static bool ParseDecodeOptions2(napi_env env, napi_value root, DecodeOptions* op
         }
     }
 
+    if (opts == nullptr) {
+        HiLog::Error(LABEL, "opts is nullptr");
+        return false;
+    }
+
     if (!GET_INT32_BY_NAME(root, "fitDensity", opts->fitDensity)) {
         HiLog::Debug(LABEL, "no fitDensity");
     }
@@ -437,6 +456,11 @@ static bool ParseDecodeOptions(napi_env env, napi_value root, DecodeOptions* opt
 
     if (!ImageNapiUtils::GetUint32ByName(env, root, "index", pIndex)) {
         HiLog::Debug(LABEL, "no index");
+    }
+
+    if (opts == nullptr) {
+        HiLog::Error(LABEL, "opts is nullptr");
+        return false;
     }
 
     if (!GET_UINT32_BY_NAME(root, "sampleSize", opts->sampleSize)) {
@@ -712,6 +736,10 @@ napi_value ImageSourceNapi::GetImageInfo(napi_env env, napi_callback_info info)
 static void CreatePixelMapExecute(napi_env env, void *data)
 {
     HiLog::Debug(LABEL, "CreatePixelMapExecute IN");
+    if (data == nullptr) {
+        HiLog::Error(LABEL, "data is nullptr");
+        return;
+    }
     uint32_t errorCode = 0;
     auto context = static_cast<ImageSourceAsyncContext*>(data);
     if (context == nullptr) {

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOURCE_STREAM_H
-#define SOURCE_STREAM_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_SOURCE_STREAM_H_
+#define FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_SOURCE_STREAM_H_
 
 #include <cinttypes>
 #include "image/input_data_stream.h"
@@ -32,4 +32,4 @@ public:
 } // namespace Media
 } // namespace OHOS
 
-#endif // SOURCE_STREAM_H
+#endif // FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_SOURCE_STREAM_H_

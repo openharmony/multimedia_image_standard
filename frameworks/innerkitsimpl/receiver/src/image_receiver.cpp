@@ -39,7 +39,10 @@ namespace OHOS {
             option.quality = ImageReceiver::OPTION_QUALITY;
             option.numberHint = ImageReceiver::OPTION_NUMBERHINT;
             std::set<std::string> formats;
-
+            if (pixelMap == nullptr) {
+                HiLog::Error(LABEL, "pixelMap is nullptr");
+                return 0;
+            }
             uint32_t ret = imagePacker.GetSupportedFormats(formats);
             if (ret != SUCCESS) {
                 HiLog::Error(LABEL, "image packer get supported format failed, ret=%{public}u.", ret);
@@ -52,12 +55,13 @@ namespace OHOS {
             int64_t packedSize = 0;
             imagePacker.FinalizePacking(packedSize);
             HiLog::Debug(LABEL, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
+            HiLog::Debug(LABEL, "packedSize=%{public}lld.", static_cast<long long>(packedSize));
             return packedSize;
         }
 
         std::unique_ptr<PixelMap> ImageReceiver::getSurfacePixelMap(InitializationOptions initializationOpts)
         {
-            uint32_t *addr = (uint32_t *)iraContext_->currentBuffer_->GetVirAddr();
+            uint32_t *addr = reinterpret_cast<uint32_t *>(iraContext_->currentBuffer_->GetVirAddr());
             int32_t size = iraContext_->currentBuffer_->GetSize();
             return PixelMap::Create(addr, (uint32_t)size, initializationOpts);
         }
@@ -93,10 +97,14 @@ namespace OHOS {
         {
             int32_t errorcode = 0;
             if (buffer != nullptr) {
-                uint32_t *addr = (uint32_t *)buffer->GetVirAddr();
+                uint32_t *addr = reinterpret_cast<uint32_t *>(buffer->GetVirAddr());
                 int32_t size = buffer->GetSize();
                 errorcode = SaveSTP(addr, (uint32_t)size, fd, initializationOpts);
-                (iraContext_->GetReceiverBufferConsumer())->ReleaseBuffer(buffer, -1);
+                if ((iraContext_->GetReceiverBufferConsumer()) != nullptr) {
+                    (iraContext_->GetReceiverBufferConsumer())->ReleaseBuffer(buffer, -1);
+                } else {
+                    HiLog::Debug(LABEL, "iraContext_->GetReceiverBufferConsumer() == nullptr");
+                }
             } else {
                 HiLog::Debug(LABEL, "SaveBufferAsImage buffer == nullptr");
             }

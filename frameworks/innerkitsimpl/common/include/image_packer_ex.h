@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_PACKER_EX_H
-#define IMAGE_PACKER_EX_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_COMMON_INCLUDE_IMAGE_PACKER_EX_H_
+#define FRAMEWORKS_INNERKITSIMPL_COMMON_INCLUDE_IMAGE_PACKER_EX_H_
 
 #include "image_packer.h"
 #include "packer_stream.h"
@@ -34,4 +34,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // IMAGE_PACKER_EX_H
+#endif // FRAMEWORKS_INNERKITSIMPL_COMMON_INCLUDE_IMAGE_PACKER_EX_H_

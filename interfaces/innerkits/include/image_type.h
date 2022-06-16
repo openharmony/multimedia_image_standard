@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_TYPE_H
-#define IMAGE_TYPE_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_IMAGE_TYPE_H_
+#define INTERFACES_INNERKITS_INCLUDE_IMAGE_TYPE_H_
 
 #include <inttypes.h>
 
@@ -180,4 +180,4 @@ enum class IncrementalMode { FULL_DATA = 0, INCREMENTAL_DATA = 1 };
 } // namespace Media
 } // namespace OHOS
 
-#endif // IMAGE_TYPE_H
+#endif // INTERFACES_INNERKITS_INCLUDE_IMAGE_TYPE_H_

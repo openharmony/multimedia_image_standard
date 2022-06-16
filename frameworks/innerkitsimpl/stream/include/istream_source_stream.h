@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef ISTREAM_SOURCE_STREAM_H
-#define ISTREAM_SOURCE_STREAM_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_ISTREAM_SOURCE_STREAM_H_
+#define FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_ISTREAM_SOURCE_STREAM_H_
 
 #include <cstdint>
 #include <istream>
@@ -53,4 +53,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // ISTREAM_SOURCE_STREAM_H
+#endif // FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_ISTREAM_SOURCE_STREAM_H_

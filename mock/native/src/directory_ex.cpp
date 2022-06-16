@@ -40,8 +40,9 @@ string ExtractFileExt(const string& fileName)
 string TransformFileName(const string& fileName)
 {
     string::size_type pos = fileName.find(".");
+    string transformfileName = "";
     if (pos == string::npos) {
-        string transformfileName = fileName;
+        transformfileName = fileName;
 
 #ifdef _WIN32
         transformfileName = transformfileName.append(".dll");
@@ -51,7 +52,7 @@ string TransformFileName(const string& fileName)
 
         return transformfileName;
     } else {
-        string transformfileName = string(fileName).substr(0, pos + 1);
+        transformfileName = string(fileName).substr(0, pos + 1);
 
 #ifdef _WIN32
         transformfileName = transformfileName.append("dll");

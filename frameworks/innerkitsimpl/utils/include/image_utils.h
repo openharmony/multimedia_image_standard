@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_UTILS_H
-#define IMAGE_UTILS_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_UTILS_H_
+#define FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_UTILS_H_
 
 #include <cstdio>
 #include <istream>
@@ -46,4 +46,4 @@ private:
 };
 } // namespace Media
 } // namespace OHOS
-#endif // IMAGE_UTILS_H
+#endif // FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_UTILS_H_

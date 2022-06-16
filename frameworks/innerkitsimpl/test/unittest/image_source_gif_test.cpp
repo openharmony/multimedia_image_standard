@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,8 +39,8 @@ static constexpr uint32_t DEFAULT_DELAY_UTIME = 10000;  // 10 ms.
 
 class ImageSourceGifTest : public testing::Test {
 public:
-    ImageSourceGifTest() {};
-    ~ImageSourceGifTest() {};
+    ImageSourceGifTest() {}
+    ~ImageSourceGifTest() {}
 };
 
 /**
@@ -164,7 +164,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode004, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize("/data/local/tmp/image/test.gif", bufferSize);
     ASSERT_EQ(ret, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = ReadFileToBuffer("/data/local/tmp/image/test.gif", buffer, bufferSize);
     ASSERT_EQ(ret, true);
@@ -326,7 +326,7 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode007, TestSize.Level3)
     size_t bufferSize = 0;
     bool fileRet = ImageUtils::GetFileSize("/data/local/tmp/image/moving_test.gif", bufferSize);
     ASSERT_EQ(fileRet, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     fileRet = ReadFileToBuffer("/data/local/tmp/image/moving_test.gif", buffer, bufferSize);
     ASSERT_EQ(fileRet, true);

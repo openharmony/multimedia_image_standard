@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef PIXEL_MAP_H
-#define PIXEL_MAP_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_PIXEL_MAP_H_
+#define INTERFACES_INNERKITS_INCLUDE_PIXEL_MAP_H_
 
 #include <memory>
 #ifdef IMAGE_COLORSPACE_FLAG
@@ -212,4 +212,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // PIXEL_MAP_H
+#endif // INTERFACES_INNERKITS_INCLUDE_PIXEL_MAP_H_

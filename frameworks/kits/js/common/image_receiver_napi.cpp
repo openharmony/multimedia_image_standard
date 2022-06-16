@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,6 +71,11 @@ static void CommonCallbackRoutine(napi_env env, Context &context, const napi_val
 
     napi_get_undefined(env, &result[0]);
     napi_get_undefined(env, &result[1]);
+
+    if (context == nullptr) {
+        IMAGE_ERR("context is nullptr");
+        return;
+    }
 
     if (context->status == SUCCESS) {
         result[1] = valueParam;
@@ -463,7 +468,7 @@ static void TestRequestBuffer(OHOS::sptr<OHOS::Surface> &receiverSurface,
     requestConfig.height = receiverSurface->GetDefaultHeight();
     receiverSurface->RequestBuffer(buffer, releaseFence, requestConfig);
     IMAGE_ERR("RequestBuffer");
-    int32_t *p = (int32_t *)buffer->GetVirAddr();
+    int32_t *p = reinterpret_cast<int32_t *>(buffer->GetVirAddr());
     IMAGE_ERR("RequestBuffer %{public}p", p);
     if (p != nullptr) {
         for (int32_t i = 0; i < requestConfig.width * requestConfig.height; i++) {

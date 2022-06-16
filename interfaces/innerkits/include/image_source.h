@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_SOURCE_H
-#define IMAGE_SOURCE_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_IMAGE_SOURCE_H_
+#define INTERFACES_INNERKITS_INCLUDE_IMAGE_SOURCE_H_
 
 #include <cstdint>
 #include <iostream>
@@ -248,4 +248,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // IMAGE_SOURCE_H
+#endif // INTERFACES_INNERKITS_INCLUDE_IMAGE_SOURCE_H_

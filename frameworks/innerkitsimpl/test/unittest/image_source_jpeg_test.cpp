@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -65,8 +65,8 @@ const std::string GPS_LONGITUDE_REF = "GPSLongitudeRef";
 
 class ImageSourceJpegTest : public testing::Test {
 public:
-    ImageSourceJpegTest() {};
-    ~ImageSourceJpegTest() {};
+    ImageSourceJpegTest() {}
+    ~ImageSourceJpegTest() {}
 };
 
 /**
@@ -123,7 +123,7 @@ HWTEST_F(ImageSourceJpegTest, TC030, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_JPEG_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_JPEG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
@@ -338,7 +338,7 @@ GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC055 start";
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_JPEG_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_JPEG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
@@ -354,13 +354,15 @@ GTEST_LOG_(INFO) << "ImageSourceJpegTest: TC055 start";
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
 
     ImageInfo imageInfo;
     pixelMap->GetImageInfo(imageInfo);
     decodeOpts.CropRect = { imageInfo.size.width - 1, imageInfo.size.height - 1, 1, 1 };
     std::unique_ptr<PixelMap> cropPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    ASSERT_NE(pixelMap.get(), nullptr);
+    ASSERT_NE(cropPixelMap, nullptr);
+    ASSERT_NE(cropPixelMap.get(), nullptr);
     cropPixelMap->GetImageInfo(imageInfo);
     ASSERT_EQ(imageInfo.size.width, 1);
     ASSERT_EQ(imageInfo.size.height, 1);
@@ -408,6 +410,7 @@ HWTEST_F(ImageSourceJpegTest, TC056, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
     /**
@@ -454,6 +457,7 @@ HWTEST_F(ImageSourceJpegTest, TC057, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     /**
      * @tc.steps: step3. compress the pixel map to jpeg file.
@@ -549,6 +553,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode001, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
     /**
@@ -644,7 +649,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode005, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_JPEG_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_JPEG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
@@ -666,6 +671,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode005, TestSize.Level3)
     pixelMap->GetImageInfo(imageInfo);
     decodeOpts.CropRect = { imageInfo.size.width - 1, imageInfo.size.height - 1, 1, 1 };
     std::unique_ptr<PixelMap> cropPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     cropPixelMap->GetImageInfo(imageInfo);
     ASSERT_EQ(imageInfo.size.width, 1);
@@ -707,6 +713,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode006, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     /**
      * @tc.steps: step3. compress the pixel map to jpeg file.
@@ -730,7 +737,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode007, TestSize.Level3)
     size_t bufferSize = 0;
     bool fileRet = ImageUtils::GetFileSize(IMAGE_INPUT_JPEG_PATH, bufferSize);
     ASSERT_EQ(fileRet, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     fileRet = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_JPEG_PATH, buffer, bufferSize);
     ASSERT_EQ(fileRet, true);
@@ -748,6 +755,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode007, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<IncrementalPixelMap> incPixelMap = imageSource->CreateIncrementalPixelMap(0, decodeOpts,
         errorCode);
+    ASSERT_NE(incPixelMap, nullptr);
     uint32_t updateSize = 0;
     srand(time(nullptr));
     bool isCompleted = false;
@@ -799,6 +807,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode008, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap1 = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap1, nullptr);
     ASSERT_NE(pixelMap1.get(), nullptr);
     /**
      * @tc.steps: step3. decode image source to pixel map by default decode options again.
@@ -806,7 +815,8 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode008, TestSize.Level3)
      */
     std::unique_ptr<PixelMap> pixelMap2 = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
-    ASSERT_NE(pixelMap1.get(), nullptr);
+    ASSERT_NE(pixelMap2, nullptr);
+    ASSERT_NE(pixelMap2.get(), nullptr);
     /**
      * @tc.steps: step4. compress the pixel map to jpeg file.
      * @tc.expected: step4. pack pixel map success and the jpeg compress file size equals to JPEG_PACK_SIZE.
@@ -831,7 +841,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode009, TestSize.Level3)
     size_t bufferSize = 0;
     bool fileRet = ImageUtils::GetFileSize(IMAGE_INPUT_JPEG_PATH, bufferSize);
     ASSERT_EQ(fileRet, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     fileRet = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_JPEG_PATH, buffer, bufferSize);
     ASSERT_EQ(fileRet, true);
@@ -849,6 +859,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode009, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<IncrementalPixelMap> incPixelMap = imageSource->CreateIncrementalPixelMap(0, decodeOpts,
         errorCode);
+    ASSERT_NE(incPixelMap, nullptr);
     uint32_t updateSize = 0;
     srand(time(nullptr));
     bool isCompleted = false;
@@ -874,6 +885,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode009, TestSize.Level3)
      */
     std::unique_ptr<PixelMap> pixelMap1 = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap1, nullptr);
     ASSERT_NE(pixelMap1.get(), nullptr);
     /**
      * @tc.steps: step4. compress the pixel map to jpeg file.
@@ -900,7 +912,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode010, TestSize.Level3)
     size_t bufferSize = 0;
     bool fileRet = ImageUtils::GetFileSize(IMAGE_INPUT_JPEG_PATH, bufferSize);
     ASSERT_EQ(fileRet, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     fileRet = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_JPEG_PATH, buffer, bufferSize);
     ASSERT_EQ(fileRet, true);
@@ -936,6 +948,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode010, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap1 = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap1, nullptr);
     ASSERT_NE(pixelMap1.get(), nullptr);
 
     /**
@@ -944,6 +957,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageDecode010, TestSize.Level3)
      */
     std::unique_ptr<IncrementalPixelMap> incPixelMap = imageSource->CreateIncrementalPixelMap(0, decodeOpts,
         errorCode);
+    ASSERT_NE(incPixelMap, nullptr);
     uint8_t decodeProgress = 0;
     incPixelMap->PromoteDecoding(decodeProgress);
     incPixelMap->DetachFromDecoding();
@@ -1069,7 +1083,7 @@ HWTEST_F(ImageSourceJpegTest, JpegImageReceiver001, TestSize.Level3)
     OHOS::sptr<OHOS::Surface> receiverSurface = ImageReceiver::getSurfaceById(receiveKey);
     receiverSurface->RequestBufferWithFence(buffer, releaseFence, requestConfig);
     HiLog::Debug(LABEL_TEST, "RequestBufferWithFence");
-    int32_t *p = (int32_t *)buffer->GetVirAddr();
+    int32_t *p = reinterpret_cast<int32_t *>(buffer->GetVirAddr());
     if (p != nullptr)
     {
         for (int32_t i = 0; i < requestConfig.width * requestConfig.height; i++) {

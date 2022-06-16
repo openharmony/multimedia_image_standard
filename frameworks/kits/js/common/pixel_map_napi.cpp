@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -96,6 +96,10 @@ static ScaleMode ParseScaleMode(int32_t val)
 
 static bool parseSize(napi_env env, napi_value root, Size* size)
 {
+    if (size == nullptr) {
+        return false;
+    }
+
     if (!GET_INT32_BY_NAME(root, "height", size->height)) {
         return false;
     }
@@ -111,6 +115,10 @@ static bool parseInitializationOptions(napi_env env, napi_value root, Initializa
 {
     uint32_t tmpNumber = 0;
     napi_value tmpValue = nullptr;
+
+    if (opts == nullptr) {
+        return false;
+    }
 
     if (!GET_BOOL_BY_NAME(root, "editable", opts->editable)) {
         HiLog::Info(LABEL, "no editable in initialization options");
@@ -148,6 +156,10 @@ static bool parseRegion(napi_env env, napi_value root, Rect* region)
 {
     napi_value tmpValue = nullptr;
 
+    if (region == nullptr) {
+        return false;
+    }
+
     if (!GET_INT32_BY_NAME(root, "x", region->left)) {
         return false;
     }
@@ -174,6 +186,10 @@ static bool parseRegion(napi_env env, napi_value root, Rect* region)
 static bool parsePositionArea(napi_env env, napi_value root, PositionArea* area)
 {
     napi_value tmpValue = nullptr;
+
+    if (area == nullptr) {
+        return false;
+    }
 
     if (!GET_BUFFER_BY_NAME(root, "pixels", area->pixels, area->size)) {
         return false;
@@ -206,6 +222,9 @@ static void CommonCallbackRoutine(napi_env env, PixelMapAsyncContext* &asyncCont
     napi_get_undefined(env, &result[NUM_0]);
     napi_get_undefined(env, &result[NUM_1]);
 
+    if (asyncContext == nullptr) {
+        return;
+    }
     if (asyncContext->status == SUCCESS) {
         result[NUM_1] = valueParam;
     } else {
@@ -645,6 +664,9 @@ napi_value PixelMapNapi::GetIsEditable(napi_env env, napi_callback_info info)
     
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, pixelMapNapi), result, HiLog::Error(LABEL, "fail to unwrap context"));
 
+    if (pixelMapNapi->nativePixelMap_ == nullptr) {
+        return result;
+    }
     bool isEditable = pixelMapNapi->nativePixelMap_->IsEditable();
 
     napi_get_boolean(env, isEditable, &result);

@@ -25,8 +25,8 @@ namespace OHOS {
 namespace Multimedia {
     class ImagePixelMapParcelTest : public testing::Test {
     public:
-        ImagePixelMapParcelTest(){};
-        ~ImagePixelMapParcelTest(){};
+        ImagePixelMapParcelTest(){}
+        ~ImagePixelMapParcelTest(){}
     };
 
     std::unique_ptr<PixelMap> ConstructPixmap()
@@ -44,7 +44,7 @@ namespace Multimedia {
         int32_t rowDataSize = pixelMapWidth;
         uint32_t bufferSize = rowDataSize * pixelMapHeight;
         void *buffer = malloc(bufferSize);
-        char *ch = (char *)buffer;
+        char *ch = reinterpret_cast<char *>(buffer);
         for (unsigned int i = 0; i < bufferSize; i++) {
             *(ch++) = (char)i;
         }

@@ -240,13 +240,13 @@ uint32_t PostProc::CheckScanlineFilter(const Rect &cropRect, ImageInfo &dstImage
         }
         scanLine++;
     }
-    uint32_t ret = pixelMap.SetImageInfo(dstImageInfo);
-    if (ret != SUCCESS) {
+    uint32_t result = pixelMap.SetImageInfo(dstImageInfo);
+    if (result != SUCCESS) {
         ReleaseBuffer(decodeOpts_.allocatorType, fd, bufferSize, &resultData);
-        return ret;
+        return result;
     }
     pixelMap.SetPixelsAddr(resultData, nullptr, bufferSize, decodeOpts_.allocatorType, nullptr);
-    return ret;
+    return result;
 }
 
 uint32_t PostProc::ConvertProc(const Rect &cropRect, ImageInfo &dstImageInfo, PixelMap &pixelMap,
@@ -387,7 +387,7 @@ uint8_t *PostProc::AllocSharedMemory(const Size &size, const uint64_t bufferSize
         ::close(fd);
         return nullptr;
     }
-    return (uint8_t *)ptr;
+    return reinterpret_cast<uint8_t *>(ptr);
 #endif
 }
 

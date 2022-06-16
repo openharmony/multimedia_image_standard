@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_LOG_H
-#define IMAGE_LOG_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_LOG_H_
+#define FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_LOG_H_
 
 #include "hilog/log.h"
 #include "log_tags.h"
@@ -27,4 +27,4 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_
 #define IMAGE_LOGI(...) (void)OHOS::HiviewDFX::HiLog::Info(LABEL, __VA_ARGS__)
 #define IMAGE_LOGD(...) (void)OHOS::HiviewDFX::HiLog::Debug(LABEL, __VA_ARGS__)
 
-#endif // IMAGE_LOG_H
+#endif // FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_LOG_H_

@@ -14,8 +14,8 @@
  */
 
 
-#ifndef ZIPC_PARCEL_H
-#define ZIPC_PARCEL_H
+#ifndef MOCK_NATIVE_INCLUDE_PARCEL_H_
+#define MOCK_NATIVE_INCLUDE_PARCEL_H_
 
 #include <string>
 #include <vector>
@@ -54,4 +54,4 @@ public:
     const uint8_t *ReadBuffer(size_t length);
 };
 } // namespace OHOS
-#endif // ZIPC_PARCEL_H
+#endif // MOCK_NATIVE_INCLUDE_PARCEL_H_

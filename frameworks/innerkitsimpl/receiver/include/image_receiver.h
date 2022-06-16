@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_RECEIVER_H
-#define IMAGE_RECEIVER_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_H_
+#define FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_H_
 
 #include <surface.h>
 #include <cstdint>
@@ -43,14 +43,14 @@ public:
     sptr<Surface> receiverConsumerSurface_ = nullptr;
     sptr<Surface> receiverProducerSurface_ = nullptr;
     std::shared_ptr<SurfaceBufferAvaliableListener> surfaceBufferAvaliableListener_ = nullptr;
-    ImageReceiver() {};
+    ImageReceiver() {}
     ~ImageReceiver()
     {
         receiverConsumerSurface_ = nullptr;
         receiverProducerSurface_ = nullptr;
         iraContext_ = nullptr;
         surfaceBufferAvaliableListener_ = nullptr;
-    };
+    }
     static inline int32_t pipeFd[2] = {};
     static inline std::string OPTION_FORMAT = "image/jpeg";
     static inline std::int32_t OPTION_QUALITY = 100;
@@ -84,4 +84,4 @@ public:
 } // namespace Media
 } // namespace OHOS
 
-#endif // IMAGE_RECEIVER_H
+#endif // FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_RECEIVER_NAPI_H_
-#define IMAGE_RECEIVER_NAPI_H_
+#ifndef INTERFACES_KITS_JS_COMMON_INCLUDE_IMAGE_RECEIVER_NAPI_H_
+#define INTERFACES_KITS_JS_COMMON_INCLUDE_IMAGE_RECEIVER_NAPI_H_
 
 #include <cerrno>
 #include <dirent.h>
@@ -133,4 +133,4 @@ public:
 };
 } // namespace Media
 } // namespace OHOS
-#endif /* IMAGE_RECEIVER_NAPI_H_ */
+#endif // INTERFACES_KITS_JS_COMMON_INCLUDE_IMAGE_RECEIVER_NAPI_H_

@@ -14,8 +14,8 @@
  */
 
 
-#ifndef UTILS_BASE_ERRORS_H
-#define UTILS_BASE_ERRORS_H
+#ifndef MOCK_NATIVE_INCLUDE_ERRORS_H_
+#define MOCK_NATIVE_INCLUDE_ERRORS_H_
 
 #include <errno.h>
 
@@ -113,4 +113,4 @@ enum {
 #define FAILED(errCode) ((errCode) != ERR_OK)
 } // namespace OHOS
 
-#endif
+#endif  // MOCK_NATIVE_INCLUDE_ERRORS_H_

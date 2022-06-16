@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_NATIVE_INTERFACE_UTILS_H
-#define IMAGE_NATIVE_INTERFACE_UTILS_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_IMAGE_NATIVE_INTERFACE_UTILS_H_
+#define INTERFACES_INNERKITS_INCLUDE_IMAGE_NATIVE_INTERFACE_UTILS_H_
 
 #include "pixel_map.h"
 #include "jkit_utils.h"
@@ -27,4 +27,4 @@ jobject GetShellPixelMap(JNIEnv *env, jobject bitmapObj);
 void PixelMapWriteToParcel(JNIEnv *env, jobject pixelMapObj, jobject parcel);
 } // namespace Media
 } // namespace OHOS
-#endif // IMAGE_NATIVE_INTERFACE_UTILS_H
+#endif // INTERFACES_INNERKITS_INCLUDE_IMAGE_NATIVE_INTERFACE_UTILS_H_

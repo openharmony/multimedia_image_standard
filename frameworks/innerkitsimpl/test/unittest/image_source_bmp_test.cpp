@@ -35,8 +35,8 @@ static const std::string IMAGE_OUTPUT_BMP_FILE_PATH = "/data/test/test_bmp_file.
 
 class ImageSourceBmpTest : public testing::Test {
 public:
-    ImageSourceBmpTest() {};
-    ~ImageSourceBmpTest() {};
+    ImageSourceBmpTest() {}
+    ~ImageSourceBmpTest() {}
 };
 
 /**
@@ -251,7 +251,7 @@ HWTEST_F(ImageSourceBmpTest, BmpImageDecode008, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_BMP_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = ReadFileToBuffer(IMAGE_INPUT_BMP_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
@@ -378,7 +378,7 @@ HWTEST_F(ImageSourceBmpTest, BmpImageDecode011, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_BMP_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    uint8_t *buffer = (uint8_t *)malloc(bufferSize);
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = ReadFileToBuffer(IMAGE_INPUT_BMP_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);

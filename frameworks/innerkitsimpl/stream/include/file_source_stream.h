@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FILE_SOURCE_STREAM_H
-#define FILE_SOURCE_STREAM_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_FILE_SOURCE_STREAM_H_
+#define FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_FILE_SOURCE_STREAM_H_
 
 #include <cstdio>
 #include <memory>
@@ -55,4 +55,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // FILE_SOURCE_STREAM_H
+#endif // FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_FILE_SOURCE_STREAM_H_

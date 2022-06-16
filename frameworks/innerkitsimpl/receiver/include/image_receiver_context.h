@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_RECEIVER_PRIVATE_H
-#define IMAGE_RECEIVER_PRIVATE_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_CONTEXT_H_
+#define FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_CONTEXT_H_
 
 #include <surface.h>
 #include <list>
@@ -25,7 +25,7 @@ namespace Media {
 class ImageReceiverContext {
 public:
     ImageReceiverContext() {
-    };
+    }
     ~ImageReceiverContext()
     {
         currentBuffer_ = nullptr;
@@ -111,4 +111,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // IMAGE_RECEIVER_PRIVATE_H
+#endif // FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_CONTEXT_H_

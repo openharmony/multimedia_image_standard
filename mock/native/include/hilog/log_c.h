@@ -14,8 +14,8 @@
  */
 
 
-#ifndef HIVIEWDFX_HILOG_C_H
-#define HIVIEWDFX_HILOG_C_H
+#ifndef MOCK_NATIVE_INCLUDE_HILOG_LOG_C_H_
+#define MOCK_NATIVE_INCLUDE_HILOG_LOG_C_H_
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -74,4 +74,4 @@ bool HiLogIsLoggable(unsigned int domain, const char *tag, LogLevel level);
 }
 #endif
 
-#endif // HIVIEWDFX_HILOG_C_H
+#endif // MOCK_NATIVE_INCLUDE_HILOG_LOG_C_H_

@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-#ifndef HIVIEWDFX_HILOG_H
-#define HIVIEWDFX_HILOG_H
+#ifndef MOCK_NATIVE_INCLUDE_HILOG_LOG_H_
+#define MOCK_NATIVE_INCLUDE_HILOG_LOG_H_
 
 #include "hilog/log_c.h"
 #include "hilog/log_cpp.h"
 
-#endif // HIVIEWDFX_HILOG_H
+#endif // MOCK_NATIVE_INCLUDE_HILOG_LOG_H_

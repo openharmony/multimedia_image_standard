@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,6 +63,10 @@ uint32_t ImagePacker::GetSupportedFormats(std::set<std::string> &formats)
 
 uint32_t ImagePacker::StartPackingImpl(const PackOption &option)
 {
+    if (packerStream_ == nullptr || packerStream_.get() == nullptr) {
+        HiLog::Error(LABEL, "make buffer packer stream failed.");
+        return ERR_IMAGE_DATA_ABNORMAL;
+    }
     if (!GetEncoderPlugin(option)) {
         HiLog::Error(LABEL, "StartPackingImpl get encoder plugin failed.");
         return ERR_IMAGE_MISMATCHED_FORMAT;
@@ -181,6 +185,10 @@ uint32_t ImagePacker::AddImage(ImageSource &source)
         HiLog::Error(LABEL, "image source create pixel map failed.");
         return ret;
     }
+    if (pixelMap_ == nullptr || pixelMap_.get() == nullptr) {
+        HiLog::Error(LABEL, "create the pixel map unique_ptr fail.");
+        return ERR_IMAGE_MALLOC_ABNORMAL;
+    }
     return AddImage(*pixelMap_.get());
 }
 
@@ -195,6 +203,10 @@ uint32_t ImagePacker::AddImage(ImageSource &source, uint32_t index)
     if (ret != SUCCESS) {
         HiLog::Error(LABEL, "image source create pixel map failed.");
         return ret;
+    }
+    if (pixelMap_ == nullptr || pixelMap_.get() == nullptr) {
+        HiLog::Error(LABEL, "create the pixel map unique_ptr fail.");
+        return ERR_IMAGE_MALLOC_ABNORMAL;
     }
     return AddImage(*pixelMap_.get());
 }

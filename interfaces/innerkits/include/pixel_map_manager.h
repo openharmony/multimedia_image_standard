@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef PIXEL_MAP_MANAGER_H
-#define PIXEL_MAP_MANAGER_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_PIXEL_MAP_MANAGER_H_
+#define INTERFACES_INNERKITS_INCLUDE_PIXEL_MAP_MANAGER_H_
 
 #include "pixel_map.h"
 
@@ -72,4 +72,4 @@ private:
 };
 } // namespace Media
 } // namespace OHOS
-#endif // PIXEL_MAP_MANAGER_H
+#endif // INTERFACES_INNERKITS_INCLUDE_PIXEL_MAP_MANAGER_H_

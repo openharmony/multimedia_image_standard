@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef OSTREAM_PACKER_STREAM_H
-#define OSTREAM_PACKER_STREAM_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_OSTREAM_PACKER_STREAM_H_
+#define FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_OSTREAM_PACKER_STREAM_H_
 
 #include <ostream>
 #include "hilog/log.h"
@@ -42,4 +42,4 @@ private:
 } // namespace Media
 } // namespace OHOS
 
-#endif // OSTREAM_PACKER_STREAM_H
+#endif // FRAMEWORKS_INNERKITSIMPL_STREAM_INCLUDE_OSTREAM_PACKER_STREAM_H_

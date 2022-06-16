@@ -34,8 +34,8 @@ static const std::string IMAGE_OUTPUT_DNG_FILE_PATH = "/data/test/test_raw_file.
 
 class ImageSourceRawTest : public testing::Test {
 public:
-    ImageSourceRawTest() {};
-    ~ImageSourceRawTest() {};
+    ImageSourceRawTest() {}
+    ~ImageSourceRawTest() {}
 };
 
 /**
@@ -62,6 +62,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode001, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
     /**
@@ -97,6 +98,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode002, TestSize.Level3)
     decodeOpts.desiredPixelFormat = PixelFormat::BGRA_8888;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
     /**
@@ -161,6 +163,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode004, TestSize.Level3)
     decodeOpts.desiredPixelFormat = PixelFormat::BGRA_8888;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     ASSERT_EQ(pixelMap->GetAlphaType(), AlphaType::IMAGE_ALPHA_TYPE_OPAQUE);
     /**
@@ -232,7 +235,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode007, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_DNG_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    auto *buffer = (uint8_t *)malloc(bufferSize);
+    auto *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_DNG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);
@@ -254,6 +257,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode007, TestSize.Level3)
     pixelMap->GetImageInfo(imageInfo);
     decodeOpts.CropRect = { imageInfo.size.width - 1, imageInfo.size.height - 1, 1, 1 };
     std::unique_ptr<PixelMap> cropPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    ASSERT_NE(pixelMap, nullptr);
     ASSERT_NE(pixelMap.get(), nullptr);
     cropPixelMap->GetImageInfo(imageInfo);
     ASSERT_EQ(imageInfo.size.width, 1);
@@ -295,6 +299,8 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode008, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap, nullptr);
+    ASSERT_NE(pixelMap.get(), nullptr);
     /**
      * @tc.steps: step3. compress the pixel map to jpeg file.
      * @tc.expected: step3. pack pixel map success and the jpeg compress file size.
@@ -326,6 +332,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode009, TestSize.Level3)
     DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> pixelMap1 = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(pixelMap1, nullptr);
     ASSERT_NE(pixelMap1.get(), nullptr);
     /**
      * @tc.steps: step3. decode image source to pixel map by default decode options again.
@@ -333,7 +340,8 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode009, TestSize.Level3)
      */
     std::unique_ptr<PixelMap> pixelMap2 = imageSource->CreatePixelMap(decodeOpts, errorCode);
     ASSERT_EQ(errorCode, SUCCESS);
-    ASSERT_NE(pixelMap1.get(), nullptr);
+    ASSERT_NE(pixelMap2, nullptr);
+    ASSERT_NE(pixelMap2.get(), nullptr);
     /**
      * @tc.steps: step4. compress the pixel map to jpeg file.
      * @tc.expected: step4. pack pixel map success and compare the jpeg compress file size.
@@ -359,7 +367,7 @@ HWTEST_F(ImageSourceRawTest, RawImageDecode010, TestSize.Level3)
     size_t bufferSize = 0;
     bool ret = ImageUtils::GetFileSize(IMAGE_INPUT_DNG_PATH, bufferSize);
     ASSERT_EQ(ret, true);
-    auto *buffer = (uint8_t *)malloc(bufferSize);
+    auto *buffer = reinterpret_cast<uint8_t *>(malloc(bufferSize));
     ASSERT_NE(buffer, nullptr);
     ret = OHOS::ImageSourceUtil::ReadFileToBuffer(IMAGE_INPUT_DNG_PATH, buffer, bufferSize);
     ASSERT_EQ(ret, true);

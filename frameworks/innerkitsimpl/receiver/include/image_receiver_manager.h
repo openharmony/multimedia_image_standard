@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_RECEIVER_MANAGER_H
-#define IMAGE_RECEIVER_MANAGER_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_MANAGER_H_
+#define FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_MANAGER_H_
 
 #include <surface.h>
 #include <cstdint>
@@ -28,7 +28,7 @@ namespace Media {
 using namespace std;
 class ImageReceiverManager {
 public:
-    ~ImageReceiverManager() {};
+    ~ImageReceiverManager() {}
     ImageReceiverManager(const ImageReceiverManager&) = delete;
     ImageReceiverManager& operator=(const ImageReceiverManager&) = delete;
     static ImageReceiverManager& getInstance()
@@ -41,9 +41,9 @@ public:
     shared_ptr<ImageReceiver> getImageReceiverByKeyId(string keyId);
 private:
     map<string, shared_ptr<ImageReceiver>> mapReceiver_;
-    ImageReceiverManager() {};
+    ImageReceiverManager() {}
 };
 } // namespace Media
 } // namespace OHOS
 
-#endif // IMAGE_RECEIVER_MANAGER_H
+#endif // FRAMEWORKS_INNERKITSIMPL_RECEIVER_INCLUDE_IMAGE_RECEIVER_MANAGER_H_

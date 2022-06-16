@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef MODULES_H
-#define MODULES_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_MODULES_H_
+#define INTERFACES_INNERKITS_INCLUDE_MODULES_H_
 
 const int MODULE_AUDIO = 0;
 const int MODULE_MEDIA = 1;
@@ -22,4 +22,4 @@ const int MODULE_CAMERA = 2;
 const int MODULE_PLUGIN = 3;
 const int MODULE_DATA_TUNNEL = 4;
 
-#endif
+#endif // INTERFACES_INNERKITS_INCLUDE_MODULES_H_

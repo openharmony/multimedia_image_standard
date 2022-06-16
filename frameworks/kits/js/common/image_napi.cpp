@@ -68,6 +68,11 @@ static void CommonCallbackRoutine(napi_env env, ImageAsyncContext* &context,
     napi_get_undefined(env, &result[0]);
     napi_get_undefined(env, &result[1]);
 
+    if (context == nullptr) {
+        IMAGE_ERR("context is nullptr");
+        return;
+    }
+
     if (context->status == SUCCESS) {
         result[1] = valueParam;
     }
@@ -235,7 +240,7 @@ unique_ptr<ImageAsyncContext> ImageNapi::UnwarpContext(napi_env env, napi_callba
     return context;
 }
 
-static void BuildIntProperty(napi_env env, const std::string name,
+static void BuildIntProperty(napi_env env, const std::string &name,
                              int32_t val, napi_value result)
 {
     napi_value nVal;
@@ -354,6 +359,10 @@ static void JSReleaseCallBack(napi_env env, napi_status status,
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
 
+    if (context == nullptr) {
+        IMAGE_ERR("context is nullptr");
+        return;
+    }
     context->constructor_->NativeRelease();
     context->status = SUCCESS;
 
@@ -456,22 +465,27 @@ static bool JsGetComponentArgs(napi_env env, size_t argc, napi_value* argv,
                                int32_t* componentType, napi_ref* callbackRef)
 {
     int32_t refCount = 1;
+    if (argv == nullptr) {
+        IMAGE_ERR("argv is nullptr");
+        return false;
+    }
+
     if (argc == ARGS1 || argc == ARGS2) {
-        auto argType = ImageNapiUtils::getType(env, argv[PARAM0]);
-        if (argType == napi_number) {
+        auto argType0 = ImageNapiUtils::getType(env, argv[PARAM0]);
+        if (argType0 == napi_number) {
             napi_get_value_int32(env, argv[PARAM0], componentType);
         } else {
-            IMAGE_ERR("Unsupport arg 0 type: %{public}d", argType);
+            IMAGE_ERR("Unsupport arg 0 type: %{public}d", argType0);
             return false;
         }
     }
 
     if (argc == ARGS2) {
-        auto argType = ImageNapiUtils::getType(env, argv[PARAM1]);
-        if (argType == napi_function) {
+        auto argType1 = ImageNapiUtils::getType(env, argv[PARAM1]);
+        if (argType1 == napi_function) {
             napi_create_reference(env, argv[PARAM1], refCount, callbackRef);
         } else {
-            IMAGE_ERR("Unsupport arg 1 type: %{public}d", argType);
+            IMAGE_ERR("Unsupport arg 1 type: %{public}d", argType1);
             return false;
         }
     }

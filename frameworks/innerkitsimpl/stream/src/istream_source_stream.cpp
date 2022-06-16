@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,8 @@ IstreamSourceStream::~IstreamSourceStream()
 
 std::unique_ptr<IstreamSourceStream> IstreamSourceStream::CreateSourceStream(unique_ptr<istream> inputStream)
 {
-    if ((inputStream == nullptr) || (inputStream->rdbuf() == nullptr)) {
+    if ((inputStream == nullptr) || (inputStream->rdbuf() == nullptr) ||
+        inputStream.get() == nullptr) {
         IMAGE_LOGE("[IstreamSourceStream]input parameter exception.");
         return nullptr;
     }

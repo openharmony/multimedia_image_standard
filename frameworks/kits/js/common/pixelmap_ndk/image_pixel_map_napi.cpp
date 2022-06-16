@@ -14,7 +14,8 @@
  */
 
 #include "image_pixel_map_napi.h"
-
+namespace OHOS {
+namespace Media {
 extern "C" int32_t OHOS_MEDIA_GetImageInfo(napi_env env, napi_value value, OhosPixelMapInfo *info);
 extern "C" int32_t OHOS_MEDIA_AccessPixels(napi_env env, napi_value value, uint8_t** addrPtr);
 extern "C" int32_t OHOS_MEDIA_UnAccessPixels(napi_env env, napi_value value);
@@ -50,4 +51,5 @@ extern "C" __attribute__((visibility("default"))) int32_t OH_UnAccessPixels(napi
 
     return OHOS_IMAGE_RESULT_SUCCESS;
 }
-
+}  // namespace Media
+}  // namespace OHOS

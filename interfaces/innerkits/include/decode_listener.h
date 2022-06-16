@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef DECODE_LISTENER_H
-#define DECODE_LISTENER_H
+#ifndef INTERFACES_INNERKITS_INCLUDE_DECODE_LISTENER_H_
+#define INTERFACES_INNERKITS_INCLUDE_DECODE_LISTENER_H_
 
 namespace OHOS {
 namespace Media {
@@ -27,4 +27,4 @@ public:
 } // namespace Media
 } // namespace OHOS
 
-#endif // DECODE_LISTENER_H
+#endif // INTERFACES_INNERKITS_INCLUDE_DECODE_LISTENER_H_

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_TRACE_H
-#define IMAGE_TRACE_H
+#ifndef FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_TRACE_H_
+#define FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_TRACE_H_
 
 #include <string>
 
@@ -31,4 +31,4 @@ private:
 };
 } // namespace Media
 } // namespace OHOS
-#endif // IMAGE_TRACE_H
+#endif // FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_TRACE_H_

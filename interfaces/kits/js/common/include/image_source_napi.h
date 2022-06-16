@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_SOURCE_NAPI_H_
-#define IMAGE_SOURCE_NAPI_H_
+#ifndef INTERFACES_KITS_JS_COMMON_INCLUDE_IMAGE_SOURCE_NAPI_H_
+#define INTERFACES_KITS_JS_COMMON_INCLUDE_IMAGE_SOURCE_NAPI_H_
 
 #include "pixel_map.h"
 #include "image_type.h"
@@ -75,4 +75,4 @@ private:
 };
 } // namespace Media
 } // namespace OHOS
-#endif /* PIXEL_MAP_NAPI_H_ */
+#endif // INTERFACES_KITS_JS_COMMON_INCLUDE_IMAGE_SOURCE_NAPI_H_

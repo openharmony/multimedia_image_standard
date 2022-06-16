@@ -52,7 +52,7 @@ unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const string &
         IMAGE_LOGE("[FileSourceStream]open file fail.");
         return nullptr;
     }
-    long offset = ftell(filePtr);
+    int64_t offset = ftell(filePtr);
     if (offset < 0) {
         IMAGE_LOGE("[FileSourceStream]get the position fail.");
         fclose(filePtr);
@@ -73,7 +73,7 @@ unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const int fd)
         IMAGE_LOGE("[FileSourceStream]open file fail.");
         return nullptr;
     }
-    long offset = ftell(filePtr);
+    int64_t offset = ftell(filePtr);
     if (offset < 0) {
         IMAGE_LOGE("[FileSourceStream]get the position fail.");
         fclose(filePtr);
