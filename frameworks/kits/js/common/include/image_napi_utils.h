@@ -115,6 +115,9 @@ public:
     static napi_valuetype getType(napi_env env, napi_value root);
     static bool CreateArrayBuffer(napi_env env, void* src, size_t srcLen, napi_value *res);
     static void HicheckerReport();
+    static void CreateErrorObj(napi_env env, napi_value &errorObj,
+        const int32_t errCode, const std::string errMsg);
+    static napi_value ThrowExceptionError(napi_env env, const int32_t errCode, const std::string errMsg);
 };
 } // namespace Media
 } // namespace OHOS

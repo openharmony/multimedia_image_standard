@@ -656,11 +656,9 @@ declare namespace image {
    */
   function createImageReceiver(width: number, height: number, format: number, capacity: number): ImageReceiver;
 
-  /**
-   * PixelMap instance.
-   * @since 7
-   * @syscap SystemCapability.Multimedia.Image.Core
-   */
+  
+  function createImageCreator(width: number, height: number, format: number, capacity: number): ImageCreator;
+
   interface PixelMap {
     /**
      * Whether the image pixel map can be edited.
@@ -1329,6 +1327,17 @@ declare namespace image {
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @return A Promise instance used to return the operation result.
      */
+    release(): Promise<void>;
+  }
+  interface ImageCreator {
+    readonly capacity: number;
+    readonly format: ImageFormat;
+    dequeueImage(callback: AsyncCallback<Image>): void;
+    dequeueImage(): Promise<Image>;
+    queueImage(interface: Image, callback: AsyncCallback<void>): void;
+    queueImage(interface: Image): Promise<void>;
+    on(type: 'imageRelease', callback: AsyncCallback<void>): void;
+    release(callback: AsyncCallback<void>): void;
     release(): Promise<void>;
   }
 }

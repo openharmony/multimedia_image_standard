@@ -21,6 +21,7 @@
 #include "pixel_map_napi.h"
 #include "image_packer_napi.h"
 #include "image_receiver_napi.h"
+#include "image_creator_napi.h"
 #include "image_napi.h"
 
 #endif // INTERFACES_KITS_JS_COMMON_INCLUDE_NATIVE_MODULE_OHOS_IMAGE_H_
