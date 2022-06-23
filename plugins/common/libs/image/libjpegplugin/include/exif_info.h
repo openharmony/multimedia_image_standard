@@ -69,6 +69,7 @@ private:
     bool WriteExifDataToFile(ExifData *data, unsigned int orginExifDataLength, unsigned long fileLength,
         unsigned char *buf, FILE *fp);
     void UpdateCacheExifData(FILE *fp);
+    bool CheckExifEntryValid(const ExifIfd &ifd, const ExifTag &tag);
 
 private:
     ExifIfd imageFileDirectory_;
