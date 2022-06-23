@@ -1122,8 +1122,7 @@ napi_value ImageSourceNapi::ModifyImageProperty(napi_env env, napi_callback_info
     }
 
     IMG_CREATE_CREATE_ASYNC_WORK(env, status, "ModifyImageProperty",
-        [](napi_env env, void *data)
-        {
+        [](napi_env env, void *data) {
             auto context = static_cast<ImageSourceAsyncContext*>(data);
 
             if (!CheckExifDataValue(context->keyStr, context->valueStr, context->errMsg)) {
@@ -1174,8 +1173,7 @@ napi_value ImageSourceNapi::GetImageProperty(napi_env env, napi_callback_info in
     }
 
     IMG_CREATE_CREATE_ASYNC_WORK(env, status, "GetImageProperty",
-        [](napi_env env, void *data)
-        {
+        [](napi_env env, void *data) {
             auto context = static_cast<ImageSourceAsyncContext*>(data);
             context->status = context->rImageSource->GetImagePropertyString(context->index,
                                                                             context->keyStr,
