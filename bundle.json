@@ -16,7 +16,8 @@
         "SystemCapability.Multimedia.Image.Core",
         "SystemCapability.Multimedia.Image.ImageSource",
         "SystemCapability.Multimedia.Image.ImagePacker",
-        "SystemCapability.Multimedia.Image.ImageReceiver"
+        "SystemCapability.Multimedia.Image.ImageReceiver",
+        "SystemCapability.Multimedia.Image.ImageCreator"
       ],
       "features": [],
       "adapted_system_type": [ "standard" ],

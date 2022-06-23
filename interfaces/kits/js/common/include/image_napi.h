@@ -29,6 +29,7 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "image_receiver.h"
+#include "image_creator.h"
 
 namespace OHOS {
 namespace Media {
@@ -38,9 +39,13 @@ public:
     ImageNapi();
     ~ImageNapi();
     static napi_value Init(napi_env env, napi_value exports);
+    static std::shared_ptr<ImageNapi> GetImageSource(napi_env env, napi_value image);
     static napi_value Create(napi_env env, sptr<SurfaceBuffer> surfaceBuffer,
         std::shared_ptr<ImageReceiver> imageReceiver);
+    static napi_value CreateBufferToImage(napi_env env, sptr<SurfaceBuffer> surfaceBuffer,
+        std::shared_ptr<ImageCreator> imageCreator);
     void NativeRelease();
+    sptr<SurfaceBuffer> sSurfaceBuffer_;
 
 private:
     static napi_value Constructor(napi_env env, napi_callback_info info);
@@ -59,11 +64,13 @@ private:
     static thread_local napi_ref sConstructor_;
     static sptr<SurfaceBuffer> staticInstance_;
     static std::shared_ptr<ImageReceiver> staticImageReceiverInstance_;
+    static std::shared_ptr<ImageCreator> staticImageCreatorInstance_;
 
     napi_env env_ = nullptr;
     napi_ref wrapper_ = nullptr;
-    sptr<SurfaceBuffer> sSurfaceBuffer_;
     std::shared_ptr<ImageReceiver> imageReceiver_;
+    std::shared_ptr<ImageCreator> imageCreator_;
+    std::shared_ptr<ImageNapi> nativeImage_;
 };
 
 struct ImageAsyncContext {

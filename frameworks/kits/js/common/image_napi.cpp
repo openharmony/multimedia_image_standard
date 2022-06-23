@@ -34,6 +34,7 @@ namespace OHOS {
 namespace Media {
 static const std::string CLASS_NAME = "ImageNapi";
 std::shared_ptr<ImageReceiver> ImageNapi::staticImageReceiverInstance_ = nullptr;
+std::shared_ptr<ImageCreator> ImageNapi::staticImageCreatorInstance_ = nullptr;
 sptr<SurfaceBuffer> ImageNapi::staticInstance_ = nullptr;
 thread_local napi_ref ImageNapi::sConstructor_ = nullptr;
 
@@ -145,6 +146,25 @@ napi_value ImageNapi::Init(napi_env env, napi_value exports)
     return exports;
 }
 
+std::shared_ptr<ImageNapi> ImageNapi::GetImageSource(napi_env env, napi_value image)
+{
+    std::unique_ptr<ImageNapi> imageNapi = std::make_unique<ImageNapi>();
+
+    napi_status status = napi_unwrap(env, image, reinterpret_cast<void**>(&imageNapi));
+    if (!IMG_IS_OK(status)) {
+        IMAGE_ERR("GetImage napi unwrap failed");
+        return nullptr;
+    }
+
+    if (imageNapi == nullptr) {
+        IMAGE_ERR("GetImage imageNapi is nullptr");
+        return nullptr;
+    }
+    IMAGE_ERR("get nativeImage");
+
+    return imageNapi;
+}
+
 napi_value ImageNapi::Constructor(napi_env env, napi_callback_info info)
 {
     napi_value undefineVar = nullptr;
@@ -204,6 +224,37 @@ napi_value ImageNapi::Create(napi_env env, sptr<SurfaceBuffer> surfaceBuffer,
     if (IMG_IS_OK(status)) {
         staticInstance_ = surfaceBuffer;
         staticImageReceiverInstance_ = imageReceiver;
+        status = napi_new_instance(env, constructor, 0, nullptr, &result);
+        if (status == napi_ok) {
+            IMAGE_FUNCTION_OUT();
+            return result;
+        } else {
+            IMAGE_ERR("New instance could not be obtained");
+        }
+    }
+
+    IMAGE_ERR("Failed to get reference of constructor");
+    return result;
+}
+
+napi_value ImageNapi::CreateBufferToImage(napi_env env, sptr<SurfaceBuffer> surfaceBuffer,
+    std::shared_ptr<ImageCreator> imageCreator)
+{
+    napi_status status;
+    napi_value constructor = nullptr, result = nullptr;
+
+    IMAGE_FUNCTION_IN();
+    if (surfaceBuffer == nullptr) {
+        IMAGE_ERR("surfaceBuffer is nullptr");
+        return result;
+    }
+
+    napi_get_undefined(env, &result);
+
+    status = napi_get_reference_value(env, sConstructor_, &constructor);
+    if (IMG_IS_OK(status)) {
+        staticInstance_ = surfaceBuffer;
+        staticImageCreatorInstance_ = imageCreator;
         status = napi_new_instance(env, constructor, 0, nullptr, &result);
         if (status == napi_ok) {
             IMAGE_FUNCTION_OUT();
@@ -432,6 +483,19 @@ napi_value ImageNapi::JsRelease(napi_env env, napi_callback_info info)
     return result;
 }
 
+static bool CreateArrayBuffer(napi_env env, uint8_t* src, size_t srcLen, napi_value *res)
+{
+    if (src == nullptr || srcLen == 0) {
+        return false;
+    }
+    auto status = napi_create_external_arraybuffer(env, src, srcLen,
+        [](napi_env env, void* data, void* hint) { }, nullptr, res);
+    if (status != napi_ok) {
+        return false;
+    }
+    return true;
+}
+
 void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
                                        ImageAsyncContext* context)
 {
@@ -444,7 +508,7 @@ void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
     void *buffer = context->constructor_->sSurfaceBuffer_->GetVirAddr();
 
     napi_value array;
-    if (!ImageNapiUtils::CreateArrayBuffer(env, buffer, bufferSize, &array)) {
+    if (!CreateArrayBuffer(env, static_cast<uint8_t*>(buffer), bufferSize, &array)) {
         context->status = ERROR;
         HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
         napi_get_undefined(env, &result);

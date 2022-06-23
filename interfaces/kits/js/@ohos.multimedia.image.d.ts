@@ -564,47 +564,20 @@ declare namespace image {
    * @since 6
    * @syscap SystemCapability.Multimedia.Image.ImageSource
    * @param uri Image source URI.
-   * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
-   */
-  function createImageSource(uri: string): ImageSource;
-
-  /**
-   * Creates an ImageSource instance based on the URI.
-   * @since 9
-   * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param uri Image source URI.
    * @param options The config of Image source.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function createImageSource(uri: string, options: SourceOptions): ImageSource;
+  function createImageSource(uri: string, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImageSource instance based on the file descriptor.
    * @since 7
    * @syscap SystemCapability.Multimedia.Image.ImageSource
    * @param fd ID of a file descriptor.
-   * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
-   */
-  function createImageSource(fd: number): ImageSource;
-
-  /**
-   * Creates an ImageSource instance based on the file descriptor.
-   * @since 9
-   * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param fd ID of a file descriptor.
    * @param options The config of Image source.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function createImageSource(fd: number, options: SourceOptions): ImageSource;
-
-  /**
-   * Creates an ImageSource instance based on the buffer.
-   * @since 9
-   * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param buf The buffer of the iamge.
-   * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
-   */
-  function createImageSource(buf: ArrayBuffer): ImageSource;
+  function createImageSource(fd: number, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImageSource instance based on the buffer.
@@ -614,16 +587,7 @@ declare namespace image {
    * @param options The config of Image source.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
-  function createImageSource(buf: ArrayBuffer, options: SourceOptions): ImageSource;
-
-  /**
-   * Creates an ImageSource instance based on the buffer in incremental.
-   * @since 9
-   * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param buf The buffer of the iamge.
-   * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
-   */
-  function CreateIncrementalSource(buf: ArrayBuffer): ImageSource;
+  function createImageSource(buf: ArrayBuffer, options?: SourceOptions): ImageSource;
 
   /**
    * Creates an ImageSource instance based on the buffer in incremental.
@@ -656,11 +620,9 @@ declare namespace image {
    */
   function createImageReceiver(width: number, height: number, format: number, capacity: number): ImageReceiver;
 
-  /**
-   * PixelMap instance.
-   * @since 7
-   * @syscap SystemCapability.Multimedia.Image.Core
-   */
+  
+  function createImageCreator(width: number, height: number, format: number, capacity: number): ImageCreator;
+
   interface PixelMap {
     /**
      * Whether the image pixel map can be edited.
@@ -1329,6 +1291,17 @@ declare namespace image {
      * @syscap SystemCapability.Multimedia.Image.ImageReceiver
      * @return A Promise instance used to return the operation result.
      */
+    release(): Promise<void>;
+  }
+  interface ImageCreator {
+    readonly capacity: number;
+    readonly format: ImageFormat;
+    dequeueImage(callback: AsyncCallback<Image>): void;
+    dequeueImage(): Promise<Image>;
+    queueImage(interface: Image, callback: AsyncCallback<void>): void;
+    queueImage(interface: Image): Promise<void>;
+    on(type: 'imageRelease', callback: AsyncCallback<void>): void;
+    release(callback: AsyncCallback<void>): void;
     release(): Promise<void>;
   }
 }
