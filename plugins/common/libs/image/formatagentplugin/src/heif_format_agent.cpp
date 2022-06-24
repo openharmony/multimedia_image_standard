@@ -68,7 +68,7 @@ bool HeifFormatAgent::CheckFormat(const void *headerData, uint32_t dataSize)
     if (!IsHeif64(headerData, dataSize, offset, chunkSize)) {
         return false;
     }
-    int64_t chunkDataSize = chunkSize - offset;
+    int64_t chunkDataSize = static_cast<int64_t>(chunkSize) - offset;
     // It should at least have major brand (4-byte) and minor version (4-bytes).
     // The rest of the chunk (if any) is a list of (4-byte) compatible brands.
     if (chunkDataSize < HEADER_LEAST_SIZE) {
