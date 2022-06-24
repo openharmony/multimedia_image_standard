@@ -384,7 +384,7 @@ bool WebpDecoder::AllocHeapBuffer(DecodeContext &context, bool isIncremental)
     }
 
     if (context.pixelsBuffer.buffer == nullptr) {
-        uint64_t byteCount = static_cast<uint64_t>((webpSize_.width) * webpSize_.height * bytesPerPixel_);
+        uint64_t byteCount = static_cast<uint64_t>(webpSize_.width * webpSize_.height * bytesPerPixel_);
         if (context.allocatorType == Media::AllocatorType::SHARE_MEM_ALLOC) {
 #ifndef _WIN32
             int fd = AshmemCreate("WEBP RawData", byteCount);
