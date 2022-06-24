@@ -236,7 +236,7 @@ bool ImageUtils::CheckMulOverflow(int32_t width, int32_t bytesPerPixel)
         HiLog::Error(LABEL, "para is 0");
         return true;
     }
-    int64_t rowSize = static_cast<uint64_t>(width) * bytesPerPixel;
+    int64_t rowSize = static_cast<int64_t>(width) * bytesPerPixel;
     if ((rowSize / width) != bytesPerPixel) {
         HiLog::Error(LABEL, "width * bytesPerPixel overflow!");
         return true;
@@ -250,7 +250,7 @@ bool ImageUtils::CheckMulOverflow(int32_t width, int32_t height, int32_t bytesPe
         HiLog::Error(LABEL, "para is 0");
         return true;
     }
-    int64_t rectSize = static_cast<uint64_t>(width) * height;
+    int64_t rectSize = static_cast<int64_t>(width) * height;
     if ((rectSize / width) != height) {
         HiLog::Error(LABEL, "width * height overflow!");
         return true;
