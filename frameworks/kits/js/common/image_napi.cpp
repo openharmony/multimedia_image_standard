@@ -16,6 +16,7 @@
 #include "image_napi.h"
 #include "media_errors.h"
 #include "hilog/log.h"
+#include "image_format.h"
 #include "image_napi_utils.h"
 
 using OHOS::HiviewDFX::HiLog;
@@ -76,10 +77,17 @@ static void CommonCallbackRoutine(napi_env env, ImageAsyncContext* &context,
         if (context->status == SUCCESS) {
             napi_resolve_deferred(env, context->deferred, result[1]);
         } else {
+            ImageNapiUtils::CreateErrorObj(env, result[0], context->status,
+                "There is generic napi failure!");
             napi_reject_deferred(env, context->deferred, result[0]);
         }
     } else {
-        napi_create_uint32(env, context->status, &result[0]);
+        if (context->status == SUCCESS) {
+            napi_create_uint32(env, context->status, &result[0]);
+        } else {
+            ImageNapiUtils::CreateErrorObj(env, result[0], context->status,
+                "There is generic napi failure!");
+        }
         napi_get_reference_value(env, context->callbackRef, &callback);
         napi_call_function(env, nullptr, callback, PARAM2, result, &retVal);
         napi_delete_reference(env, context->callbackRef);
@@ -452,6 +460,17 @@ void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
     CommonCallbackRoutine(env, context, result);
 }
 
+static bool CheckComponentType(const int32_t& type)
+{
+    if (type == static_cast<int32_t>(ComponentType::YUV_Y) ||
+        type == static_cast<int32_t>(ComponentType::YUV_U) ||
+        type == static_cast<int32_t>(ComponentType::YUV_V) ||
+        type == static_cast<int32_t>(ComponentType::JPEG)) {
+        return true;
+    }
+    return false;
+}
+
 static bool JsGetComponentArgs(napi_env env, size_t argc, napi_value* argv,
                                int32_t* componentType, napi_ref* callbackRef)
 {
@@ -462,6 +481,11 @@ static bool JsGetComponentArgs(napi_env env, size_t argc, napi_value* argv,
             napi_get_value_int32(env, argv[PARAM0], componentType);
         } else {
             IMAGE_ERR("Unsupport arg 0 type: %{public}d", argType);
+            return false;
+        }
+
+        if (!CheckComponentType(*componentType)) {
+            IMAGE_ERR("Unsupport component type 0 value: %{public}d", *componentType);
             return false;
         }
     }
@@ -496,14 +520,16 @@ napi_value ImageNapi::JsGetComponent(napi_env env, napi_callback_info info)
 
     unique_ptr<ImageAsyncContext> context = UnwarpContext(env, info);
     if (context == nullptr) {
-        IMAGE_ERR("fail to unwrap constructor_ %{public}d", status);
-        return result;
+        std::string errMsg = "fail to unwrap constructor_ ";
+        return ImageNapiUtils::ThrowExceptionError(env, static_cast<int32_t>(napi_invalid_arg),
+            errMsg.append(std::to_string(status)));
     }
 
     if (!JsGetComponentArgs(env, argc, argv,
                             &(context->componentType),
                             &(context->callbackRef))) {
-        return result;
+        return ImageNapiUtils::ThrowExceptionError(env, static_cast<int32_t>(napi_invalid_arg),
+            "Unsupport arg type!");
     }
 
     if (context->callbackRef == nullptr) {

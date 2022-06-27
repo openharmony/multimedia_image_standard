@@ -622,6 +622,11 @@ uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &
     } else {
         return Media::ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
     }
+
+    if (IsSameTextStr(value, "")) {
+        HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, ifd and entry are not matched!");
+        return Media::ERR_MEDIA_VALUE_INVALID;
+    }
     HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, value:%{public}s", value.c_str());
     return Media::SUCCESS;
 }

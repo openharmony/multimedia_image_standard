@@ -41,19 +41,19 @@ public:
     uint32_t ModifyExifData(const ExifTag &tag, const std::string &value, unsigned char *data, uint32_t size);
 
 public:
-    std::string bitsPerSample_; // Number of bits in each pixel of an image.
-    std::string orientation_;
-    std::string imageLength_;   // Image length.
-    std::string imageWidth_;    // mage width.
-    std::string gpsLatitude_;
-    std::string gpsLongitude_;
-    std::string gpsLatitudeRef_;
-    std::string gpsLongitudeRef_;
-    std::string dateTimeOriginal_;  // Original date and time.
-    std::string exposureTime_;
-    std::string fNumber_;
-    std::string isoSpeedRatings_;
-    std::string sceneType_;
+    std::string bitsPerSample_ = ""; // Number of bits in each pixel of an image.
+    std::string orientation_ = "";
+    std::string imageLength_ = "";   // Image length.
+    std::string imageWidth_ = "";    // mage width.
+    std::string gpsLatitude_ = "";
+    std::string gpsLongitude_ = "";
+    std::string gpsLatitudeRef_ = "";
+    std::string gpsLongitudeRef_ = "";
+    std::string dateTimeOriginal_ = "";  // Original date and time.
+    std::string exposureTime_ = "";
+    std::string fNumber_ = "";
+    std::string isoSpeedRatings_ = "";
+    std::string sceneType_ = "";
 
 private:
     void SetExifTagValues(const ExifTag &tag, const std::string &value);
@@ -69,6 +69,7 @@ private:
     bool WriteExifDataToFile(ExifData *data, unsigned int orginExifDataLength, unsigned long fileLength,
         unsigned char *buf, FILE *fp);
     void UpdateCacheExifData(FILE *fp);
+    bool CheckExifEntryValid(const ExifIfd &ifd, const ExifTag &tag);
 
 private:
     ExifIfd imageFileDirectory_;

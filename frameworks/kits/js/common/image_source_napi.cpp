@@ -841,16 +841,17 @@ static void ModifyImagePropertyComplete(napi_env env, napi_status status, ImageS
     napi_value callback = nullptr;
     if (context->status == ERR_MEDIA_WRITE_PARCEL_FAIL) {
         if (context->fdIndex != -1) {
-            napi_create_string_utf8(env, "Create Fd without write permission!", NAPI_AUTO_LENGTH, &result[NUM_0]);
+            ImageNapiUtils::CreateErrorObj(env, result[0], context->status,
+                "Create Fd without write permission!");
         }
     } else if (context->status == ERR_MEDIA_OUT_OF_RANGE) {
-        napi_create_string_utf8(env, "The given buffer size is too small to add new exif data!",
-            NAPI_AUTO_LENGTH, &result[NUM_0]);
+        ImageNapiUtils::CreateErrorObj(env, result[0], context->status,
+            "The given buffer size is too small to add new exif data!");
     } else if (context->status == ERR_IMAGE_DECODE_EXIF_UNSUPPORT) {
-        napi_create_string_utf8(env, "The exif data format is not standard, so modify it failed!",
-            NAPI_AUTO_LENGTH, &result[NUM_0]);
+        ImageNapiUtils::CreateErrorObj(env, result[0], context->status,
+            "The exif data format is not standard, so modify it failed!");
     } else if (context->status == ERR_MEDIA_VALUE_INVALID) {
-        napi_create_string_utf8(env, (context->errMsg).c_str(), NAPI_AUTO_LENGTH, &result[NUM_0]);
+        ImageNapiUtils::CreateErrorObj(env, result[0], context->status, context->errMsg);
     }
 
     if (context->deferred) {
@@ -881,17 +882,39 @@ static void GetImagePropertyComplete(napi_env env, napi_status status, ImageSour
         HiLog::Error(LABEL, "context is nullptr");
         return;
     }
-    napi_value result = nullptr;
-    napi_create_object(env, &result);
+
+    napi_value result[NUM_2] = {0};
+    napi_value retVal;
+    napi_value callback = nullptr;
+
+    napi_get_undefined(env, &result[NUM_0]);
+    napi_get_undefined(env, &result[NUM_1]);
 
     if (context->status == SUCCESS) {
-        napi_create_string_utf8(env, context->valueStr.c_str(), context->valueStr.length(), &result);
+        napi_create_string_utf8(env, context->valueStr.c_str(), context->valueStr.length(), &result[NUM_1]);
+    } else if (context->status == ERR_IMAGE_DECODE_EXIF_UNSUPPORT) {
+        ImageNapiUtils::CreateErrorObj(env, result[0], context->status, "Unsupport EXIF info key!");
     } else {
-        napi_create_string_utf8(env, context->defaultValueStr.c_str(), context->defaultValueStr.length(), &result);
-        context->status = SUCCESS;
+        ImageNapiUtils::CreateErrorObj(env, result[0], context->status, "There is generic napi failure!");
     }
+
+    if (context->deferred) {
+        if (context->status == SUCCESS) {
+            napi_resolve_deferred(env, context->deferred, result[NUM_1]);
+        } else {
+            napi_reject_deferred(env, context->deferred, result[NUM_0]);
+        }
+    } else {
+        HiLog::Debug(LABEL, "call callback function");
+        napi_get_reference_value(env, context->callbackRef, &callback);
+        napi_call_function(env, nullptr, callback, NUM_2, result, &retVal);
+        napi_delete_reference(env, context->callbackRef);
+    }
+
+    napi_delete_async_work(env, context->work);
+    delete context;
+    context = nullptr;
     HiLog::Debug(LABEL, "GetImagePropertyComplete OUT");
-    ImageSourceCallbackRoutine(env, context, result);
 }
 
 static std::unique_ptr<ImageSourceAsyncContext> UnwrapContext(napi_env env, napi_callback_info info)
@@ -1065,8 +1088,8 @@ napi_value ImageSourceNapi::ModifyImageProperty(napi_env env, napi_callback_info
     HiLog::Debug(LABEL, "ModifyImageProperty IN");
     std::unique_ptr<ImageSourceAsyncContext> asyncContext = UnwrapContextForModify(env, info);
     if (asyncContext == nullptr) {
-        HiLog::Error(LABEL, "async context unwrap failed");
-        return result;
+        return ImageNapiUtils::ThrowExceptionError(env, static_cast<int32_t>(napi_invalid_arg),
+            "async context unwrap failed");
     }
 
     if (asyncContext->callbackRef == nullptr) {
@@ -1117,8 +1140,8 @@ napi_value ImageSourceNapi::GetImageProperty(napi_env env, napi_callback_info in
     HiLog::Debug(LABEL, "GetImageProperty IN");
     std::unique_ptr<ImageSourceAsyncContext> asyncContext = UnwrapContext(env, info);
     if (asyncContext == nullptr) {
-        HiLog::Error(LABEL, "async context unwrap failed");
-        return result;
+        return ImageNapiUtils::ThrowExceptionError(env, static_cast<int32_t>(napi_invalid_arg),
+            "async context unwrap failed");
     }
 
     if (asyncContext->callbackRef == nullptr) {

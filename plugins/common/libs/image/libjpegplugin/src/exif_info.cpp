@@ -79,7 +79,9 @@ int EXIFInfo::ParseExifData(const unsigned char *buf, unsigned len)
                     char tagValueChar[1024];
                     exif_entry_get_value(ee, tagValueChar, sizeof(tagValueChar));
                     std::string tagValueStr(&tagValueChar[0], &tagValueChar[strlen(tagValueChar)]);
-                    ((EXIFInfo*)userData)->SetExifTagValues(ee->tag, tagValueStr);
+                    if (((EXIFInfo*)userData)->CheckExifEntryValid(exif_entry_get_ifd(ee), ee->tag)) {
+                        ((EXIFInfo*)userData)->SetExifTagValues(ee->tag, tagValueStr);
+                    }
                 }, userData);
         }, this);
 
@@ -762,6 +764,49 @@ void EXIFInfo::UpdateCacheExifData(FILE *fp)
     ParseExifData(fileBuf, static_cast<unsigned int>(fileLength));
     free(fileBuf);
     fileBuf = nullptr;
+}
+
+bool EXIFInfo::CheckExifEntryValid(const ExifIfd &ifd, const ExifTag &tag)
+{
+    bool ret = false;
+    switch (ifd) {
+        case EXIF_IFD_0: {
+            if (tag == EXIF_TAG_ORIENTATION) {
+                ret = true;
+            }
+            break;
+        }
+        case EXIF_IFD_EXIF: {
+            if (tag == EXIF_TAG_DATE_TIME_ORIGINAL ||
+                tag == EXIF_TAG_EXPOSURE_TIME ||
+                tag == EXIF_TAG_FNUMBER ||
+                tag == EXIF_TAG_ISO_SPEED_RATINGS ||
+                tag == EXIF_TAG_SCENE_TYPE) {
+                ret = true;
+            }
+            break;
+        }
+        case EXIF_IFD_1: {
+            if (tag == EXIF_TAG_BITS_PER_SAMPLE ||
+                tag == EXIF_TAG_IMAGE_LENGTH ||
+                tag == EXIF_TAG_IMAGE_WIDTH) {
+                ret = true;
+            }
+            break;
+        }
+        case EXIF_IFD_GPS: {
+            if (tag == EXIF_TAG_GPS_LATITUDE ||
+                tag == EXIF_TAG_GPS_LONGITUDE ||
+                tag == EXIF_TAG_GPS_LATITUDE_REF ||
+                tag == EXIF_TAG_GPS_LONGITUDE_REF) {
+                ret = true;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    return ret;
 }
 } // namespace ImagePlugin
 } // namespace OHOS

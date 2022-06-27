@@ -121,5 +121,38 @@ void ImageNapiUtils::HicheckerReport()
     std::string cautionMsg = "Trigger: pid = " + std::to_string(pid) + ", tid = " + std::to_string(tid);
     HiviewDFX::HiChecker::NotifySlowProcess(cautionMsg);
 }
+
+void ImageNapiUtils::CreateErrorObj(napi_env env, napi_value &errorObj,
+    const int32_t errCode, const std::string errMsg)
+{
+    napi_value outErrorCode = nullptr;
+    napi_value outErrorMsg = nullptr;
+    napi_status status = napi_create_string_utf8(env, std::to_string(errCode).c_str(),
+        NAPI_AUTO_LENGTH, &outErrorCode);
+    if (status != napi_ok) {
+        return;
+    }
+
+    status = napi_create_string_utf8(env, errMsg.c_str(), NAPI_AUTO_LENGTH, &outErrorMsg);
+    if (status != napi_ok) {
+        return;
+    }
+
+    status = napi_create_error(env, outErrorCode, outErrorMsg, &errorObj);
+    if (status != napi_ok) {
+        napi_get_undefined(env, &errorObj);
+    }
+}
+
+napi_value ImageNapiUtils::ThrowExceptionError(napi_env env, const int32_t errCode,
+    const std::string errMsg)
+{
+    napi_value result = nullptr;
+    napi_status status = napi_throw_error(env, std::to_string(errCode).c_str(), errMsg.c_str());
+    if (status == napi_ok) {
+        napi_get_undefined(env, &result);
+    }
+    return result;
+}
 }  // namespace Media
 }  // namespace OHOS
