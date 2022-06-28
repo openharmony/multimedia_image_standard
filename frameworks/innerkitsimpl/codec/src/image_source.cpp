@@ -623,7 +623,7 @@ uint32_t ImageSource::GetImagePropertyInt(uint32_t index, const std::string &key
 
     ret = mainDecoder_->GetImagePropertyInt(index, key, value);
     if (ret != SUCCESS) {
-        IMAGE_LOGE("[ImageSource] GetImagePropertyString fail, ret:%{public}u", ret);
+        IMAGE_LOGE("[ImageSource] GetImagePropertyInt fail, ret:%{public}u", ret);
         return ret;
     }
 
@@ -641,7 +641,7 @@ uint32_t ImageSource::GetImagePropertyString(uint32_t index, const std::string &
     }
     ret = mainDecoder_->GetImagePropertyString(index, key, value);
     if (ret != SUCCESS) {
-        IMAGE_LOGE("[ImageSource] GetImagePropertyInt fail, ret:%{public}u", ret);
+        IMAGE_LOGE("[ImageSource] GetImagePropertyString fail, ret:%{public}u", ret);
         return ret;
     }
     return SUCCESS;
