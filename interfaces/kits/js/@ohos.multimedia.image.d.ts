@@ -1338,14 +1338,75 @@ declare namespace image {
     release(): Promise<void>;
   }
   interface ImageCreator {
+    /**
+     * Image capacity.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     */
     readonly capacity: number;
+
+    /**
+     * Image format.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     */
     readonly format: ImageFormat;
+
+    /**
+     * apply for new graphic buffer from free queue and uses a callback to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param callback Callback to return the operation result.
+     */
     dequeueImage(callback: AsyncCallback<Image>): void;
+
+    /**
+     * apply for new graphic buffer from free queue and uses a promise to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @return A Promise instance used to return the operation result.
+     */
     dequeueImage(): Promise<Image>;
+
+    /**
+     * queue buffer to dirty queue and uses a callback to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param callback Callback to return the operation result.
+     */
     queueImage(interface: Image, callback: AsyncCallback<void>): void;
+
+    /**
+     * queue buffer to dirty queue and uses a promise to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @return A Promise instance used to return the operation result.
+     */
     queueImage(interface: Image): Promise<void>;
+
+    /**
+     * Subscribe callback when releasing a buffer
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param type Callback used to return the operation result.
+     * @param callback Callback used to return the operation result.
+     */
     on(type: 'imageRelease', callback: AsyncCallback<void>): void;
+
+    /**
+     * Releases an ImageCreator instance and uses a callback to return the result.
+     * @since 6
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param callback Callback to return the operation result.
+     */
     release(callback: AsyncCallback<void>): void;
+
+    /**
+     * Releases an ImageCreator instance and uses a promise to return the result.
+     * @since 6
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @return A Promise instance used to return the operation result.
+     */
     release(): Promise<void>;
   }
 }
