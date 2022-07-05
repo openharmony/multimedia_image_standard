@@ -754,7 +754,7 @@ declare namespace image {
 
   /**
    * PixelMap instance.
-   * @since 6
+   * @since 7
    * @syscap SystemCapability.Multimedia.Image.ImageSource
    */
   interface PixelMap {
