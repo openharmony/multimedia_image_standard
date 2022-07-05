@@ -1385,7 +1385,7 @@ declare namespace image {
     queueImage(interface: Image): Promise<void>;
 
     /**
-     * Subscribe callback when releasing a buffer
+     * Subscribe callback when releasing buffer
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageCreator
      * @param type Callback used to return the operation result.
@@ -1395,7 +1395,7 @@ declare namespace image {
 
     /**
      * Releases an ImageCreator instance and uses a callback to return the result.
-     * @since 6
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageCreator
      * @param callback Callback to return the operation result.
      */
@@ -1403,7 +1403,7 @@ declare namespace image {
 
     /**
      * Releases an ImageCreator instance and uses a promise to return the result.
-     * @since 6
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.ImageCreator
      * @return A Promise instance used to return the operation result.
      */
