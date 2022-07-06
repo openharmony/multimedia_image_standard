@@ -51,6 +51,54 @@ declare namespace image {
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     RGBA_8888 = 3,
+
+    /**
+     * Indicates that each pixel is stored on 32 bits. Components B, G, R, and A each occupies 8 bits
+     * and are stored from the higher-order to the lower-order bits.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    BGRA_8888 = 4,
+
+    /**
+     * Indicates that each pixel is stored on 24 bits. Only the R, G, and B each occupies 8 bits
+     * and are stored from the higher-order to the lower-order bits.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    RGB_888 = 5,
+
+    /**
+     * Indicates that each pixel is stored on 8 bits. Only the ALPHA which occupies 8 bits
+     * and is stored from the higher-order to the lower-order bits.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    ALPHA_8 = 6,
+
+    /**
+     * Indicates that each pixel is stored on 32 bits. Components B, G, R, and A each occupies 8 bits
+     * and are stored from the higher-order to the lower-order bits in F16.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    RGBA_F16 = 7,
+
+    /**
+     * Indicates that The storage order is to store Y first and then V U alternately each occupies 8 bits
+     * and are stored from the higher-order to the lower-order bits.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    NV21 = 8,
+
+    /**
+     * Indicates that The storage order is to store Y first and then U V alternately each occupies 8 bits
+     * and are stored from the higher-order to the lower-order bits.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    NV12 = 9, 
   }
 
   /**
@@ -134,7 +182,42 @@ declare namespace image {
      * @since 7
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    GPS_LONGITUDE_REF = "GPSLongitudeRef"
+    GPS_LONGITUDE_REF = "GPSLongitudeRef",
+
+    /**
+     * Shooting time
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    DateTimeOriginal = "2022:06:02 15:51:35",
+
+    /**
+     * Exposure time
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    ExposureTime = "1/33 sec.",
+
+    /**
+     * Scene type
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    SceneType = "Directly photographed",
+
+    /**
+     * ISO speedratings
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    ISOSpeedRatings = "400",
+
+    /**
+     * Aperture value
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.Core
+     */
+    FNumber = "f/1.8",
   }
 
   /**
@@ -656,9 +739,24 @@ declare namespace image {
    */
   function createImageReceiver(width: number, height: number, format: number, capacity: number): ImageReceiver;
 
-  
+  /**
+   * Creates an ImageCreator instance.
+   * @since 9
+   * @syscap SystemCapability.Multimedia.Image.ImageCreator
+   * @param width The default width in pixels of the Images that this creator will produce.
+   * @param height The default height in pixels of the Images that this creator will produce.
+   * @param format The format of the Image that this creator will produce. This must be one of the
+   *            {@link ImageFormat} constants. Note that not all formats are supported, like ImageFormat.NV21.
+   * @param capacity The maximum number of images the user will want to access simultaneously.
+   * @return Returns the ImageCreator instance if the operation is successful; returns null otherwise.
+   */
   function createImageCreator(width: number, height: number, format: number, capacity: number): ImageCreator;
 
+  /**
+   * PixelMap instance.
+   * @since 7
+   * @syscap SystemCapability.Multimedia.Image.ImageSource
+   */
   interface PixelMap {
     /**
      * Whether the image pixel map can be edited.
@@ -904,7 +1002,7 @@ declare namespace image {
      * @param region The region to crop.
      * @param callback Callback used to return the operation result. If the operation fails, an error message is returned.
      */
-    crop(region: Region callback: AsyncCallback<void>): void;
+    crop(region: Region, callback: AsyncCallback<void>): void;
 
     /**
      * Crop the image. This method uses a promise to return the result.
@@ -1329,15 +1427,82 @@ declare namespace image {
      */
     release(): Promise<void>;
   }
+
+  /**
+   * Image creator object.
+   * @since 9
+   * @syscap SystemCapability.Multimedia.Image.ImageCreator
+   */
   interface ImageCreator {
+    /**
+     * Image capacity.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     */
     readonly capacity: number;
+
+    /**
+     * Image format.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     */
     readonly format: ImageFormat;
+
+    /**
+     * apply for new graphic buffer from free queue and uses a callback to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param callback Callback to return the operation result.
+     */
     dequeueImage(callback: AsyncCallback<Image>): void;
+
+    /**
+     * apply for new graphic buffer from free queue and uses a promise to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @return A Promise instance used to return the operation result.
+     */
     dequeueImage(): Promise<Image>;
+
+    /**
+     * queue buffer to dirty queue and uses a callback to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param callback Callback to return the operation result.
+     */
     queueImage(interface: Image, callback: AsyncCallback<void>): void;
+
+    /**
+     * queue buffer to dirty queue and uses a promise to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @return A Promise instance used to return the operation result.
+     */
     queueImage(interface: Image): Promise<void>;
+
+    /**
+     * Subscribe callback when releasing buffer
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param type Callback used to return the operation result.
+     * @param callback Callback used to return the operation result.
+     */
     on(type: 'imageRelease', callback: AsyncCallback<void>): void;
+
+    /**
+     * Releases buffer in bufferqueue instance and uses a callback to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @param callback Callback to return the operation result.
+     */
     release(callback: AsyncCallback<void>): void;
+
+    /**
+     * Releases buffer in bufferqueue instance and uses a promise to return the result.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImageCreator
+     * @return A Promise instance used to return the operation result.
+     */
     release(): Promise<void>;
   }
 }
