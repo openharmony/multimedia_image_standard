@@ -372,7 +372,12 @@ std::shared_ptr<PixelMap> PixelMapNapi::GetPixelMap(napi_env env, napi_value pix
         return nullptr;
     }
 
-    return pixelMapNapi->nativePixelMap_;
+    auto pixelmapNapiPtr = pixelMapNapi.release();
+    if (pixelmapNapiPtr == nullptr) {
+        HiLog::Error(LABEL, "GetPixelMap pixelmapNapi is nullptr");
+        return nullptr;
+    }
+    return pixelmapNapiPtr->nativePixelMap_;
 }
 
 std::shared_ptr<PixelMap>* PixelMapNapi::GetPixelMap()
