@@ -14,10 +14,11 @@
  */
 
 #include "hilog/log.h"
-#include <cstdarg>
-#include <cstdio>
-#include <cstring>
 #include <iostream>
+#include "__config"
+#include "iosfwd"
+#include "hilog/log_cpp.h"
+#include "ostream"
 
 namespace OHOS {
 namespace HiviewDFX {

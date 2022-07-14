@@ -15,6 +15,12 @@
 
 
 #include "wbmp_format_agent.h"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
+#include "image_plugin_type.h"
+#include "log_tags.h"
+#include "plugin_service.h"
+#include "string"
 
 namespace OHOS {
 namespace ImagePlugin {

@@ -16,18 +16,24 @@
 #ifndef PLUGIN_SERVER_H
 #define PLUGIN_SERVER_H
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
-#include <cstdint>
-#include "singleton.h"
+#include "__functional_base"
 #include "attr_data.h"
+#include "iosfwd"
+#include "nocopyable.h"
 #include "plugin_class_base.h"
 #include "plugin_common_type.h"
-#include "plugin_errors.h"
 #include "plugin_service.h"
 #include "priority_scheme.h"
+#include "singleton.h"
 
+namespace OHOS::MultimediaPlugin { class GstPluginFw; }
+namespace OHOS::MultimediaPlugin { class PlatformAdp; }
+namespace OHOS::MultimediaPlugin { class PluginFw; }
+namespace OHOS::MultimediaPlugin { struct ClassInfo; }
 namespace OHOS {
 namespace MultimediaPlugin {
 class PlatformAdp;

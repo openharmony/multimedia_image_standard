@@ -16,16 +16,19 @@
 #ifndef GST_PLUGIN_FW_H
 #define GST_PLUGIN_FW_H
 
+#include <cstdint>
 #include <map>
-#include <mutex>
-#include <string>
 #include <vector>
+#include "iosfwd"
 #include "nocopyable.h"
 #include "singleton.h"
-#include "attr_data.h"
 #include "plugin_class_base.h"
 #include "plugin_common_type.h"
 
+namespace OHOS::MultimediaPlugin { class AttrData; }
+namespace OHOS::MultimediaPlugin { class PluginClassBase; }
+namespace OHOS::MultimediaPlugin { class PriorityScheme; }
+namespace OHOS::MultimediaPlugin { struct ClassInfo; }
 namespace OHOS {
 namespace MultimediaPlugin {
 class PriorityScheme;

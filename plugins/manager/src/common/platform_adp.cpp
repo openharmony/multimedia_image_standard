@@ -18,8 +18,12 @@
 #include <dlfcn.h>
 #endif
 #include "directory_ex.h"
-#include "hilog/log.h"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
 #include "log_tags.h"
+#include "string"
+#include "plugin_errors.h"
+#include "type_traits"
 
 namespace OHOS {
 namespace MultimediaPlugin {
@@ -47,7 +51,7 @@ FARPROC PlatformAdp::AdpGetSymAddress(HMODULE handle, const string &symbol)
     return GetProcAddress(handle, symbol.c_str());
 }
 #else
-void *PlatformAdp::LoadLibrary(const string &packageName)
+void *PlatformAdp::LoadLibrary(const std::string &packageName)
 {
     return dlopen(packageName.c_str(), RTLD_LAZY);
 }
@@ -57,7 +61,7 @@ void PlatformAdp::FreeLibrary(void *handle)
     dlclose(handle);
 }
 
-void *PlatformAdp::GetSymAddress(void *handle, const string &symbol)
+void *PlatformAdp::GetSymAddress(void *handle, const std::string &symbol)
 {
     return dlsym(handle, symbol.c_str());
 }

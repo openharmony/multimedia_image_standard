@@ -16,9 +16,10 @@
 #ifndef HEIF_FORMAT_AGENT_H
 #define HEIF_FORMAT_AGENT_H
 
+#include <stddef.h>
+#include <stdint.h>
 #include "abs_image_format_agent.h"
-#include "hilog/log.h"
-#include "log_tags.h"
+#include "iosfwd"
 #include "plugin_class_base.h"
 
 namespace OHOS {
