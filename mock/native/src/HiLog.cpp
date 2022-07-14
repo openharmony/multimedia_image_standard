@@ -17,7 +17,7 @@
 #include <iostream>
 #include "__config"
 #include "iosfwd"
-#include "log_cpp.h"
+#include "hilog/log_cpp.h"
 #include "ostream"
 
 namespace OHOS {
