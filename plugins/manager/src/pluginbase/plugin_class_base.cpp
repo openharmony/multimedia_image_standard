@@ -14,7 +14,7 @@
  */
 
 #include "plugin_class_base.h"
-#include <cstdint.h>
+#include <cstdint>
 #include "abs_impl_class_key.h"
 #include "hilog/log_c.h"
 #include "hilog/log_cpp.h"

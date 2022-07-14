@@ -14,7 +14,7 @@
  */
 
 #include "attr_data.h"
-#include <cstdint.h>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include "__functional_base"

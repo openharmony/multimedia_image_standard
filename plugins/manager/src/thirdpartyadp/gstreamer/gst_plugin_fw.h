@@ -16,7 +16,7 @@
 #ifndef GST_PLUGIN_FW_H
 #define GST_PLUGIN_FW_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <map>
 #include <vector>
 #include "iosfwd"
