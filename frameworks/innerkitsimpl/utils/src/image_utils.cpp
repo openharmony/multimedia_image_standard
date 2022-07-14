@@ -14,14 +14,28 @@
  */
 
 #include "image_utils.h"
-#include <cmath>
 #include <sys/stat.h>
+#include "__config"
+#include "__string"
+#include "hilog/log_cpp.h"
 #include "image_log.h"
+#include "ios"
+#include "istream"
+#include "limits.h"
+#include "math.h"
 #include "media_errors.h"
+#include "new"
+#include "plugin_errors.h"
 #include "plugin_server.h"
+#include "singleton.h"
+#include "stdint.h"
 #ifdef _WIN32
-#include <stdlib.h>
+#include "stdlib.h"
 #endif
+#include "string"
+#include "type_traits"
+#include "vector"
+
 
 namespace OHOS {
 namespace Media {

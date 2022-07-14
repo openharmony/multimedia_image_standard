@@ -16,9 +16,9 @@
 #ifndef WBMP_FORMAT_AGENT_H
 #define WBMP_FORMAT_AGENT_H
 
-#include "hilog/log.h"
-#include "log_tags.h"
+#include <stdint.h>
 #include "abs_image_format_agent.h"
+#include "iosfwd"
 #include "plugin_class_base.h"
 
 namespace OHOS {

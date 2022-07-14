@@ -14,14 +14,27 @@
  */
 
 #include "attr_data.h"
+#include <stdint.h>
+#include <memory>
 #include <utility>
-#include "hilog/log.h"
+#include "__functional_base"
+#include "__tree"
+#include "cstdint"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
+#include "iosfwd"
+#include "iterator"
 #include "log_tags.h"
+#include "new"
+#include "plugin_errors.h"
 #ifndef _WIN32
 #include "securec.h"
 #else
 #include "memory.h"
 #endif
+#include "set"
+#include "string"
+#include "type_traits"
 
 namespace OHOS {
 namespace MultimediaPlugin {

@@ -14,9 +14,12 @@
  */
 
 #include "impl_class_key.h"
-#include "hilog/log.h"
-#include "log_tags.h"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
 #include "impl_class.h"
+#include "iosfwd"
+#include "log_tags.h"
+#include "string"
 
 namespace OHOS {
 namespace MultimediaPlugin {

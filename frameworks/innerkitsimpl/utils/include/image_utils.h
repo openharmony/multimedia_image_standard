@@ -16,12 +16,13 @@
 #ifndef FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_UTILS_H_
 #define FRAMEWORKS_INNERKITSIMPL_UTILS_INCLUDE_IMAGE_UTILS_H_
 
+#include <stdint.h>
 #include <cstdio>
-#include <istream>
 #include <string>
 #include "image_type.h"
-#include "plugin_server.h"
+#include "iosfwd"
 
+namespace OHOS { namespace MultimediaPlugin { class PluginServer; } }
 namespace OHOS {
 namespace Media {
 const std::string IMAGE_ENCODE_FORMAT = "encodeFormat";

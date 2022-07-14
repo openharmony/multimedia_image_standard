@@ -18,8 +18,12 @@
 #include <dlfcn.h>
 #endif
 #include "directory_ex.h"
-#include "hilog/log.h"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
 #include "log_tags.h"
+#include "plugin_errors.h"
+#include "string"
+#include "type_traits"
 
 namespace OHOS {
 namespace MultimediaPlugin {

@@ -14,12 +14,20 @@
  */
 
 #include "plugin_server.h"
-#include "hilog/log.h"
-#include "singleton.h"
-#include "log_tags.h"
 #include "gst_plugin_fw.h"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
+#include "log_tags.h"
+#include "map"
+#include "new"
 #include "platform_adp.h"
+#include "plugin_common_type.h"
+#include "plugin_errors.h"
 #include "plugin_fw.h"
+#include "singleton.h"
+#include "string"
+#include "type_traits"
+#include "vector"
 
 namespace OHOS {
 namespace MultimediaPlugin {

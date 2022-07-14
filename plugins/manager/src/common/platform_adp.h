@@ -16,14 +16,13 @@
 #ifndef PLATFORM_ADP_H
 #define PLATFORM_ADP_H
 
-#include <string>
+#include <stdint.h>
+#include "iosfwd"
 #include "nocopyable.h"
 #include "singleton.h"
-#include "plugin_errors.h"
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <dlfcn.h>
 #endif
 
 namespace OHOS {
