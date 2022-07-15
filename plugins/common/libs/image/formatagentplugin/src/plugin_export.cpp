@@ -14,7 +14,6 @@
  */
 
 #include "plugin_export.h"
-#include "bmp_format_agent.h"
 #include "gif_format_agent.h"
 #include "heif_format_agent.h"
 #include "hilog/log_c.h"
@@ -23,15 +22,24 @@
 #include "jpeg_format_agent.h"
 #include "log_tags.h"
 #include "map"
-#include "plugin_class_base.h"
 #include "plugin_utils.h"
 #include "png_format_agent.h"
+#include "webp_format_agent.h"
+#include "bmp_format_agent.h"
 #include "raw_format_agent.h"
 #include "string"
 #include "utility"
 #include "wbmp_format_agent.h"
-#include "webp_format_agent.h"
 
+namespace OHOS { namespace ImagePlugin { class BmpFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class GifFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class HeifFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class JpegFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class PngFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class RawFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class WbmpFormatAgent; } }
+namespace OHOS { namespace ImagePlugin { class WebpFormatAgent; } }
+namespace OHOS { namespace MultimediaPlugin { class PluginClassBase; } }
 
 // plugin package name same as metadata.
 namespace {

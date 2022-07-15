@@ -20,10 +20,11 @@
 #include "iosfwd"
 #include "log_tags.h"
 #include "map"
-#include "plugin_class_base.h"
 #include "plugin_utils.h"
 #include "string"
 #include "utility"
+namespace OHOS { namespace ImagePlugin { class GifDecoder; } }
+namespace OHOS { namespace MultimediaPlugin { class PluginClassBase; } }
 
 // plugin package name same as metadata.
 namespace {
