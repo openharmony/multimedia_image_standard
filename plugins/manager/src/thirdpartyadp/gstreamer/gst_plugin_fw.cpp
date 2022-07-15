@@ -22,9 +22,6 @@
 #include "plugin_errors.h"
 #include "vector"
 
-namespace OHOS { namespace MultimediaPlugin { class AttrData; } }
-namespace OHOS { namespace MultimediaPlugin { class PluginClassBase; } }
-namespace OHOS { namespace MultimediaPlugin { struct ClassInfo; } }
 namespace OHOS {
 namespace MultimediaPlugin {
 using std::map;

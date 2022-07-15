@@ -18,6 +18,7 @@
 #include <climits>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include "__config"
 #include "__string"
 #include "hilog/log_cpp.h"
@@ -26,16 +27,11 @@
 #include "istream"
 #include "media_errors.h"
 #include "new"
-#include "plugin_errors.h"
 #include "plugin_server.h"
 #include "singleton.h"
-#ifdef _WIN32
-#include "stdlib.h"
-#endif
 #include "string"
 #include "type_traits"
 #include "vector"
-
 
 namespace OHOS {
 namespace Media {

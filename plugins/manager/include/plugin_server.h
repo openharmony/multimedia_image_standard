@@ -30,10 +30,6 @@
 #include "priority_scheme.h"
 #include "singleton.h"
 
-namespace OHOS::MultimediaPlugin { class GstPluginFw; }
-namespace OHOS::MultimediaPlugin { class PlatformAdp; }
-namespace OHOS::MultimediaPlugin { class PluginFw; }
-namespace OHOS::MultimediaPlugin { struct ClassInfo; }
 namespace OHOS {
 namespace MultimediaPlugin {
 class PlatformAdp;
