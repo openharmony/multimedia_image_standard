@@ -14,26 +14,6 @@
  */
 
 #include "gif_decoder.h"
-#include <cstdlib>
-#include <climits>
-#include "ashmem.h"
-#include "bits/alltypes.h"
-#include "bits/stdint.h"
-#include "hilog/log_c.h"
-#include "hilog/log_cpp.h"
-#include "image_plugin_type.h"
-#include "image_type.h"
-#include "input_data_stream.h"
-#include "log_tags.h"
-#include "media_errors.h"
-#include "new"
-#include "pixel_map.h"
-#include "plugin_service.h"
-#include "sched.h"
-#include "securec.h"
-#include "string"
-#include "sys/mman.h"
-#include "unistd.h"
 
 namespace OHOS {
 namespace ImagePlugin {

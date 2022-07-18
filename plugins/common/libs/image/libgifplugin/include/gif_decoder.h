@@ -17,13 +17,21 @@
 #define GIF_DECODER_H
 
 #include <cstdint>
+#include <map>
+#include <string>
 #include "abs_image_decoder.h"
 #include "gif_lib.h"
-#include "image_plugin_type.h"
-#include "input_data_stream.h"
-#include "iosfwd"
+#include "hilog/log.h"
+#include "log_tags.h"
+#include "media_errors.h"
 #include "nocopyable.h"
 #include "plugin_class_base.h"
+#ifndef _WIN32
+#include "securec.h"
+#else
+#include "memory.h"
+#endif
+
 namespace OHOS {
 namespace ImagePlugin {
 static constexpr uint8_t PIXEL_FORMAT_BYTE_SIZE = 4;
