@@ -337,7 +337,7 @@ unique_ptr<PixelMap> ImageSource::CreatePixelMap(uint32_t index, const DecodeOpt
     }
 
     ImagePlugin::PlImageInfo plInfo;
-    errorCode = SetDecodeOptions(mainDecoder_, index, opts, plInfo);
+    errorCode = SetDecodeOptions(mainDecoder_, index, opts_, plInfo);
     if (errorCode != SUCCESS) {
         IMAGE_LOGE("[ImageSource]set decode options error (index:%{public}u), ret:%{public}u.", index, errorCode);
         return nullptr;
@@ -349,7 +349,12 @@ unique_ptr<PixelMap> ImageSource::CreatePixelMap(uint32_t index, const DecodeOpt
         guard.lock();
     }
 
-    errorCode = UpdatePixelMapInfo(opts, plInfo, *(pixelMap.get()));
+    Size size = {
+        .width = plInfo.size.width,
+        .height = plInfo.size.height
+    };
+    PostProc::ValidCropValue(opts_.CropRect, size);
+    errorCode = UpdatePixelMapInfo(opts_, plInfo, *(pixelMap.get()));
     if (errorCode != SUCCESS) {
         IMAGE_LOGE("[ImageSource]update pixelmap info error ret:%{public}u.", errorCode);
         return nullptr;
@@ -359,12 +364,12 @@ unique_ptr<PixelMap> ImageSource::CreatePixelMap(uint32_t index, const DecodeOpt
     FinalOutputStep finalOutputStep = FinalOutputStep::NO_CHANGE;
     if (!useSkia) {
         bool hasNinePatch = mainDecoder_->HasProperty(NINE_PATCH);
-        finalOutputStep = GetFinalOutputStep(opts, *(pixelMap.get()), hasNinePatch);
+        finalOutputStep = GetFinalOutputStep(opts_, *(pixelMap.get()), hasNinePatch);
         IMAGE_LOGD("[ImageSource]finalOutputStep:%{public}d. opts.allocatorType %{public}d",
-            finalOutputStep, opts.allocatorType);
+            finalOutputStep, opts_.allocatorType);
 
         if (finalOutputStep == FinalOutputStep::NO_CHANGE) {
-            context.allocatorType = opts.allocatorType;
+            context.allocatorType = opts_.allocatorType;
         } else {
             context.allocatorType = AllocatorType::HEAP_ALLOC;
         }
@@ -409,7 +414,7 @@ unique_ptr<PixelMap> ImageSource::CreatePixelMap(uint32_t index, const DecodeOpt
     pixelMap->SetPixelsAddr(context.pixelsBuffer.buffer, context.pixelsBuffer.context, context.pixelsBuffer.bufferSize,
                             context.allocatorType, context.freeFunc);
     DecodeOptions procOpts;
-    CopyOptionsToProcOpts(opts, procOpts, *(pixelMap.get()));
+    CopyOptionsToProcOpts(opts_, procOpts, *(pixelMap.get()));
     PostProc postProc;
     errorCode = postProc.DecodePostProc(procOpts, *(pixelMap.get()), finalOutputStep);
     if (errorCode != SUCCESS) {
@@ -447,6 +452,7 @@ uint32_t ImageSource::PromoteDecoding(uint32_t index, const DecodeOptions &opts,
     decodeProgress = 0;
     uint32_t ret = SUCCESS;
     std::unique_lock<std::mutex> guard(decodingMutex_);
+    opts_ = opts;
     auto imageStatusIter = GetValidImageStatus(index, ret);
     if (imageStatusIter == imageStatusMap_.end()) {
         IMAGE_LOGE("[ImageSource]get valid image status fail on promote decoding, ret:%{public}u.", ret);
@@ -463,7 +469,7 @@ uint32_t ImageSource::PromoteDecoding(uint32_t index, const DecodeOptions &opts,
     if (incrementalRecordIter->second.IncrementalState == ImageDecodingState::BASE_INFO_PARSED) {
         IMAGE_LOGD("[ImageSource]promote decode : set decode options.");
         ImagePlugin::PlImageInfo plInfo;
-        ret = SetDecodeOptions(incrementalRecordIter->second.decoder, index, opts, plInfo);
+        ret = SetDecodeOptions(incrementalRecordIter->second.decoder, index, opts_, plInfo);
         if (ret != SUCCESS) {
             IMAGE_LOGE("[ImageSource]set decode options error (image index:%{public}u), ret:%{public}u.", index, ret);
             return ret;
@@ -478,7 +484,12 @@ uint32_t ImageSource::PromoteDecoding(uint32_t index, const DecodeOptions &opts,
                 guard.lock();
             }
         }
-        ret = UpdatePixelMapInfo(opts, plInfo, pixelMap);
+        Size size = {
+            .width = plInfo.size.width,
+            .height = plInfo.size.height
+        };
+        PostProc::ValidCropValue(opts_.CropRect, size);
+        ret = UpdatePixelMapInfo(opts_, plInfo, pixelMap);
         if (ret != SUCCESS) {
             IMAGE_LOGE("[ImageSource]update pixelmap info error (image index:%{public}u), ret:%{public}u.", index, ret);
             return ret;
@@ -486,12 +497,12 @@ uint32_t ImageSource::PromoteDecoding(uint32_t index, const DecodeOptions &opts,
         incrementalRecordIter->second.IncrementalState = ImageDecodingState::IMAGE_DECODING;
     }
     if (incrementalRecordIter->second.IncrementalState == ImageDecodingState::IMAGE_DECODING) {
-        ret = DoIncrementalDecoding(index, opts, pixelMap, incrementalRecordIter->second);
+        ret = DoIncrementalDecoding(index, opts_, pixelMap, incrementalRecordIter->second);
         decodeProgress = incrementalRecordIter->second.decodingProgress;
         state = incrementalRecordIter->second.IncrementalState;
         if (isIncrementalCompleted_) {
             PostProc postProc;
-            ret = postProc.DecodePostProc(opts, pixelMap);
+            ret = postProc.DecodePostProc(opts_, pixelMap);
             if (state == ImageDecodingState::IMAGE_DECODED) {
                 auto iter = decodeEventMap_.find((int)DecodeEvent::EVENT_COMPLETE_DECODE);
                 if (iter == decodeEventMap_.end()) {
