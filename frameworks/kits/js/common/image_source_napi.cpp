@@ -1027,7 +1027,7 @@ static bool CheckExifDataValue(const std::string &key, const std::string &value,
             }
         }
     } else if (IsSameTextStr(key, "Orientation")) {
-        if (!IsNumericStr(value) || atoi(value.c_str()) < 1 || atoi(value.c_str()) > NUM_8) {
+        if (!IsNumericStr(value) || atoi(value.c_str()) < 1 || static_cast<uint32_t>(atoi(value.c_str()) > NUM_8)) {
             errorInfo = "Orientation has invalid exif value: ";
             errorInfo.append(value);
             return false;
