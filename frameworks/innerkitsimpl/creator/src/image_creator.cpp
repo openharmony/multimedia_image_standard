@@ -169,7 +169,7 @@ int32_t ImageCreator::SaveSTP(uint32_t *buffer,
     return errorCode;
 }
 
-static void ReleaseBuffer(AllocatorType allocatorType, int fd, uint64_t dataSize, uint8_t **buffer)
+static void ReleaseBuffer(AllocatorType allocatorType, uint8_t **buffer)
 {
     if (allocatorType == AllocatorType::HEAP_ALLOC) {
         if (*buffer != nullptr) {
@@ -195,7 +195,7 @@ static bool AllocHeapBuffer(uint64_t bufferSize, uint8_t **buffer)
     errno_t errRet = memset_s(*buffer, bufferSize, 0, bufferSize);
     if (errRet != EOK) {
         HiLog::Error(LABEL, "[PostProc]memset convertData fail, errorCode = %{public}d", errRet);
-        ReleaseBuffer(AllocatorType::HEAP_ALLOC, 0, 0, buffer);
+        ReleaseBuffer(AllocatorType::HEAP_ALLOC, buffer);
         return false;
     }
     return true;
