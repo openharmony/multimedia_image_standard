@@ -189,35 +189,35 @@ declare namespace image {
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    DateTimeOriginal = "2022:06:02 15:51:35",
+    DATE_TIME_ORIGINAL = "DateTimeOriginal",
 
     /**
      * Exposure time
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    ExposureTime = "1/33 sec.",
+    EXPOSURE_TIME = "ExposureTime",
 
     /**
      * Scene type
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    SceneType = "Directly photographed",
+    SCENE_TYPE = "SceneType",
 
     /**
      * ISO speedratings
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    ISOSpeedRatings = "400",
+    ISO_SPEED_RATINGS = "ISOSpeedRatings",
 
     /**
      * Aperture value
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
-    FNumber = "f/1.8",
+    F_NUMBER = "FNumber",
   }
 
   /**
