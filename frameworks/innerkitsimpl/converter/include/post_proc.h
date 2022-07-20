@@ -39,6 +39,7 @@ public:
     bool TranslatePixelMap(float tX, float tY, PixelMap &pixelMap);
     bool CenterScale(const Size &size, PixelMap &pixelMap);
     static CropValue GetCropValue(const Rect &rect, const Size &size);
+    static CropValue ValidCropValue(Rect &rect, const Size &size);
 
 private:
     static uint8_t *AllocSharedMemory(const Size &size, const uint64_t bufferSize, int &fd);
