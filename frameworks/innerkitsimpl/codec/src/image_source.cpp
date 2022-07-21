@@ -1228,6 +1228,24 @@ MemoryUsagePreference ImageSource::GetMemoryUsagePreference()
     return preference_;
 }
 
+uint32_t
+    ImageSource::GetRedactionArea(const int &fd, const int &redactionType, std::vector<std::vector<uint32_t>> &ranges)
+{
+    std::unique_lock<std::mutex> guard(decodingMutex_);
+    uint32_t ret;
+    auto iter = GetValidImageStatus(0, ret);
+    if (iter == imageStatusMap_.end()) {
+        IMAGE_LOGE("[ImageSource]get valid image status fail on get redaction area, ret:%{public}u.", ret);
+        return ret;
+    }
+    ret = mainDecoder_->GetRedactionArea(fd, redactionType, ranges);
+    if (ret != SUCCESS) {
+        IMAGE_LOGE("[ImageSource] GetRedactionArea fail, ret:%{public}u", ret);
+        return ret;
+    }
+    return SUCCESS;
+}
+
 void ImageSource::SetIncrementalSource(const bool isIncrementalSource)
 {
     isIncrementalSource_ = isIncrementalSource;

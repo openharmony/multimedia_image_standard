@@ -169,6 +169,13 @@ public:
         return Media::ERR_MEDIA_INVALID_OPERATION;
     }
 
+    // get redaction area.
+    virtual uint32_t
+        GetRedactionArea(const int &fd, const int &redactionType, std::vector<std::vector<uint32_t>> &ranges)
+    {
+        return Media::ERR_MEDIA_INVALID_OPERATION;
+    }
+
 #ifdef IMAGE_COLORSPACE_FLAG
     // get current source is support icc profile or not.
     bool IsSupportICCProfile()

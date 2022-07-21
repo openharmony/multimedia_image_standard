@@ -715,6 +715,17 @@ uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key
     return Media::SUCCESS;
 }
 
+uint32_t
+    JpegDecoder::GetRedactionArea(const int &fd, const int &redactionType, std::vector<std::vector<uint32_t>> &ranges)
+{
+    HiLog::Error(LABEL, "[GetRedactionArea] with fd:%{public}d, redactionType:%{public}d ", fd, redactionType);
+    uint32_t ret = exifInfo_.GetRedactionArea(fd, redactionType, ranges);
+    if (ret != Media::SUCCESS) {
+        return ret;
+    }
+    return Media::SUCCESS;
+}
+
 #ifdef IMAGE_COLORSPACE_FLAG
 OHOS::ColorManager::ColorSpace JpegDecoder::getGrColorSpace()
 {

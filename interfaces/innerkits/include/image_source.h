@@ -175,6 +175,9 @@ public:
     NATIVEEXPORT const NinePatchInfo &GetNinePatchInfo() const;
     NATIVEEXPORT void SetMemoryUsagePreference(const MemoryUsagePreference preference);
     NATIVEEXPORT MemoryUsagePreference GetMemoryUsagePreference();
+    NATIVEEXPORT uint32_t GetRedactionArea(const int &fd,
+                                           const int &redactionType,
+                                           std::vector<std::vector<uint32_t>> &ranges);
 
 private:
     DISALLOW_COPY_AND_MOVE(ImageSource);

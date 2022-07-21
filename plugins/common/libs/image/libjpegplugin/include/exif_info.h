@@ -15,11 +15,22 @@
 #ifndef EXIF_INFO_H
 #define EXIF_INFO_H
 #include <libexif/exif-data.h>
+#include <map>
 #include <string>
+#include <vector>
 #include "hilog/log.h"
 #include "log_tags.h"
 namespace OHOS {
 namespace ImagePlugin {
+struct DirectoryEntry {
+    ExifTag tag;
+    ExifFormat format;
+    int32_t dataCounts;   // Counts of this format data
+    uint32_t valueOffset; // Offset of Directory Entry data area from JPEG File
+    uint32_t valueLength; // Length of Directory Entry data area
+    ExifIfd ifd;          // IFD of this Entry is in
+};
+
 /*
  * Class responsible for storing and parsing EXIF information from a JPEG blob
  */
@@ -39,6 +50,7 @@ public:
     uint32_t ModifyExifData(const ExifTag &tag, const std::string &value, const std::string &path);
     uint32_t ModifyExifData(const ExifTag &tag, const std::string &value, const int fd);
     uint32_t ModifyExifData(const ExifTag &tag, const std::string &value, unsigned char *data, uint32_t size);
+    uint32_t GetRedactionArea(const int &fd, const int &redactionType, std::vector<std::vector<uint32_t>> &ranges);
 
 public:
     std::string bitsPerSample_ = ""; // Number of bits in each pixel of an image.
@@ -70,10 +82,48 @@ private:
         unsigned char *buf, FILE *fp);
     void UpdateCacheExifData(FILE *fp);
     bool CheckExifEntryValid(const ExifIfd &ifd, const ExifTag &tag);
+    void GetAreaFromExifEntries(const int &redactionType,
+                                const std::vector<DirectoryEntry> &entryArray,
+                                std::vector<std::vector<uint32_t>> &ranges);
 
 private:
     ExifIfd imageFileDirectory_;
     ExifData* exifData_;
+};
+
+class ByteOrderedBuffer {
+public:
+    ByteOrderedBuffer(unsigned char *fileBuf, uint32_t bufferLength);
+    ~ByteOrderedBuffer();
+    void GenerateDEArray();
+
+private:
+    void GetDataRangeFromIFD(const ExifIfd &ifd);
+    void GetDataRangeFromDE(const ExifIfd &ifd, const int16_t &count);
+    int32_t ReadInt32();
+    uint32_t ReadUnsignedInt32();
+    int16_t ReadShort();
+    uint16_t ReadUnsignedShort();
+    uint32_t Peek();
+    bool SetDEDataByteCount(const uint16_t &tagNumber,
+                            const uint16_t &dataFormat,
+                            const int32_t &numberOfComponents,
+                            uint32_t &count);
+    bool IsValidTagNumber(const uint16_t &tagNumber);
+    bool IsIFDhandled(const uint32_t &position);
+    bool IsIFDPointerTag(const uint16_t &tagNumber);
+    ExifIfd GetIFDOfIFDPointerTag(const uint16_t &tagNumber);
+    ExifIfd GetNextIfdFromLinkList(const ExifIfd &ifd);
+    void ParseIFDPointerTag(const ExifIfd &ifd, const uint16_t &dataFormat);
+    uint32_t TransformTiffOffsetToFilePos(const uint32_t &offset);
+
+public:
+    ExifByteOrder byteOrder_ = EXIF_BYTE_ORDER_MOTOROLA;
+    unsigned char *buf_ = nullptr;
+    uint32_t bufferLength_ = 0;
+    uint32_t curPosition_ = 0;
+    std::vector<DirectoryEntry> directoryEntryArray_;
+    std::vector<uint32_t> handledIfdOffsets_;
 };
 } // namespace ImagePlugin
 } // namespace OHOS
