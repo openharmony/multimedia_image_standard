@@ -42,7 +42,6 @@ namespace {
     static const int MOVE_OFFSET_8 = 8;
     static const int MOVE_OFFSET_16 = 16;
     static const int MOVE_OFFSET_24 = 24;
-    static const int LENGTH_ARRAY_SIZE = 2;
     static const int CONSTANT_2 = 2;
     static const int CONSTANT_3 = 3;
     static const int CONSTANT_4 = 4;
