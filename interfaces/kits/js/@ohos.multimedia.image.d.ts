@@ -436,6 +436,16 @@ declare namespace image {
      * @syscap SystemCapability.Multimedia.Image.ImagePacker
      */
     quality: number;
+
+
+    /**
+     * BufferSize of the target image. The value is an integer which better not be too big.
+     * if this bufferSize is less than or equal to 0, it will be converted to 10MB.
+     * image quality but larger space occupied.
+     * @since 9
+     * @syscap SystemCapability.Multimedia.Image.ImagePacker
+     */
+    bufferSize?: number;
   }
 
   /**
@@ -615,14 +625,14 @@ declare namespace image {
 
     /**
      * PixelMap expected format.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     sourcePixelFormat?: PixelMapFormat;
 
     /**
      * PixelMap size.
-     * @since 8
+     * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
     sourceSize?: Size;
