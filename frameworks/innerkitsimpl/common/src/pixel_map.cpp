@@ -25,6 +25,7 @@
 #include "post_proc.h"
 #include "parcel.h"
 #include "image_trace.h"
+#include "hitrace_meter.h"
 #ifndef _WIN32
 #include "securec.h"
 #else

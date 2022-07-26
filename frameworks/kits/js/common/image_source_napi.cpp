@@ -20,6 +20,7 @@
 #include "media_errors.h"
 #include "string_ex.h"
 #include "image_trace.h"
+#include "hitrace_meter.h"
 
 using OHOS::HiviewDFX::HiLog;
 namespace {

@@ -22,6 +22,7 @@
 #include "image_source_napi.h"
 #include "pixel_map_napi.h"
 #include "image_trace.h"
+#include "hitrace_meter.h"
 
 using OHOS::HiviewDFX::HiLog;
 namespace {
