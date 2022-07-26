@@ -574,7 +574,7 @@ uint32_t ImageSource::GetImageInfo(uint32_t index, ImageInfo &imageInfo)
     }
 
     imageInfo = info;
-#if !defined(_WIN32) && !defined(_APPLE)   
+#if !defined(_WIN32) && !defined(_APPLE)
     FinishTrace(HITRACE_TAG_ZIMAGE);
 #endif
     return SUCCESS;
