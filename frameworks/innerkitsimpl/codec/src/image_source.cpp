@@ -555,25 +555,29 @@ DecodeEvent ImageSource::GetDecodeEvent()
 
 uint32_t ImageSource::GetImageInfo(uint32_t index, ImageInfo &imageInfo)
 {
-    StartTrace(HITRACE_TAG_ZIMAGE, "GetImageInfo by index");
-    uint32_t ret = SUCCESS;
-    std::unique_lock<std::mutex> guard(decodingMutex_);
-    auto iter = GetValidImageStatus(index, ret);
-    if (iter == imageStatusMap_.end()) {
-        guard.unlock();
-        IMAGE_LOGE("[ImageSource]get valid image status fail on get image info, ret:%{public}u.", ret);
-        return ret;
-    }
-    ImageInfo &info = (iter->second).imageInfo;
-    if (info.size.width == 0 || info.size.height == 0) {
-        IMAGE_LOGE("[ImageSource]get the image size fail on get image info, width:%{public}d, height:%{public}d.",
-                   info.size.width, info.size.height);
-        return ERR_IMAGE_DECODE_FAILED;
-    }
+    #if !defined(_WIN32) && !defined(_APPLE)
+        StartTrace(HITRACE_TAG_ZIMAGE, "GetImageInfo by index");
+    #endif
+        uint32_t ret = SUCCESS;
+        std::unique_lock<std::mutex> guard(decodingMutex_);
+        auto iter = GetValidImageStatus(index, ret);
+        if (iter == imageStatusMap_.end()) {
+            guard.unlock();
+            IMAGE_LOGE("[ImageSource]get valid image status fail on get image info, ret:%{public}u.", ret);
+            return ret;
+        }
+        ImageInfo &info = (iter->second).imageInfo;
+        if (info.size.width == 0 || info.size.height == 0) {
+            IMAGE_LOGE("[ImageSource]get the image size fail on get image info, width:%{public}d, height:%{public}d.",
+                    info.size.width, info.size.height);
+            return ERR_IMAGE_DECODE_FAILED;
+        }
 
-    imageInfo = info;
-    FinishTrace(HITRACE_TAG_ZIMAGE);
-    return SUCCESS;
+        imageInfo = info;
+    #if !defined(_WIN32) && !defined(_APPLE)
+        FinishTrace(HITRACE_TAG_ZIMAGE);
+    #endif
+        return SUCCESS;
 }
 
 uint32_t ImageSource::ModifyImageProperty(uint32_t index, const std::string &key,
