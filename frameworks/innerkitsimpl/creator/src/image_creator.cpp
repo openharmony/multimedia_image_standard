@@ -269,7 +269,7 @@ sptr<Surface> ImageCreator::GetCreatorSurface()
 sptr<Surface> ImageCreator::getSurfaceById(std::string id)
 {
     ImageCreatorManager& imageCreatorManager = ImageCreatorManager::getInstance();
-    sptr<Surface> surface = imageCreatorManager.getSurfaceByKeyId(id);
+    sptr<Surface> surface = imageCreatorManager.GetSurfaceByKeyId(id);
     HiLog::Debug(LABEL, "getSurfaceByCreatorId");
     return surface;
 }

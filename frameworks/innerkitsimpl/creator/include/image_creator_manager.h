@@ -37,8 +37,8 @@ public:
         return instance;
     }
     string SaveImageCreator(shared_ptr<ImageCreator> imageCreator);
-    sptr<Surface> getSurfaceByKeyId(string keyId);
-    shared_ptr<ImageCreator> getImageCreatorByKeyId(string keyId);
+    sptr<Surface> GetSurfaceByKeyId(string keyId);
+    shared_ptr<ImageCreator> GetImageCreatorByKeyId(string keyId);
 private:
     map<string, shared_ptr<ImageCreator>> mapCreator_;
     ImageCreatorManager() {};

@@ -22,14 +22,14 @@ string ImageCreatorManager::SaveImageCreator(shared_ptr<ImageCreator> imageCreat
 {
     string id = "1";
 
-    if (getImageCreatorByKeyId(id) != nullptr) {
+    if (GetImageCreatorByKeyId(id) != nullptr) {
         mapCreator_.erase(id);
     }
 
     mapCreator_.insert(pair<string, shared_ptr<ImageCreator>>(id, imageCreator));
     return id;
 }
-sptr<Surface> ImageCreatorManager::getSurfaceByKeyId(string keyId)
+sptr<Surface> ImageCreatorManager::GetSurfaceByKeyId(string keyId)
 {
     map<string, shared_ptr<ImageCreator>>::iterator iter;
     shared_ptr<ImageCreator> imageCreator = nullptr;
@@ -42,7 +42,7 @@ sptr<Surface> ImageCreatorManager::getSurfaceByKeyId(string keyId)
     }
     return imageCreator->GetCreatorSurface();
 }
-shared_ptr<ImageCreator> ImageCreatorManager::getImageCreatorByKeyId(string keyId)
+shared_ptr<ImageCreator> ImageCreatorManager::GetImageCreatorByKeyId(string keyId)
 {
     map<string, shared_ptr<ImageCreator>>::iterator iter;
     shared_ptr<ImageCreator> imageCreator = nullptr;
