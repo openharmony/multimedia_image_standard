@@ -148,7 +148,6 @@ public:
      * then fill to outPixmap's width and height.
      * @return the error no
      */
-    void Translate(const PixmapInfo &inPixmap, PixmapInfo &outPixmap, AllocateMem allocate = nullptr);
     uint32_t TransformPixmap(const PixmapInfo &inPixmap, PixmapInfo &outPixmap, AllocateMem allocate = nullptr);
 
     void GetDstDimension(const Size &srcSize, Size &dstSize);

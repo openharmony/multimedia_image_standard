@@ -124,15 +124,16 @@ void BasicTransformer::ReleaseBuffer(AllocatorType allocatorType, int fd, int da
     }
 }
 
-void BasicTransformer::Translate(const PixmapInfo &inPixmap, PixmapInfo &outPixmap, AllocateMem allocate)
+uint32_t BasicTransformer::TransformPixmap(const PixmapInfo &inPixmap, PixmapInfo &outPixmap, AllocateMem allocate)
 {
     if (inPixmap.data == nullptr) {
         IMAGE_LOGE("[BasicTransformer]input data is null.");
+        return ERR_IMAGE_GENERAL_ERROR;
     }
-
     int32_t pixelBytes = ImageUtils::GetPixelBytes(inPixmap.imageInfo.pixelFormat);
     if (pixelBytes == 0) {
         IMAGE_LOGE("[BasicTransformer]input pixel is invalid.");
+        return ERR_IMAGE_INVALID_PIXEL;
     }
 
     Size dstSize = inPixmap.imageInfo.size;
@@ -140,35 +141,24 @@ void BasicTransformer::Translate(const PixmapInfo &inPixmap, PixmapInfo &outPixm
     outPixmap.imageInfo.size = dstSize;
     if (dstSize.width <= 0 || dstSize.height <= 0) {
         IMAGE_LOGE("[BasicTransformer]buffer size is invalid.");
+        return ERR_IMAGE_ALLOC_MEMORY_FAILED;
     }
 
     uint64_t bufferSize = static_cast<uint64_t>(dstSize.width) * dstSize.height * pixelBytes;
     if (bufferSize > PIXEL_MAP_MAX_RAM_SIZE) {
         IMAGE_LOGE("[BasicTransformer] buffer size:%{public}llu out of range.",
                    static_cast<unsigned long long>(bufferSize));
+        return ERR_IMAGE_ALLOC_MEMORY_FAILED;
     }
     int fd = 0;
-
+    if (!(CheckAllocateBuffer(outPixmap, allocate, fd, bufferSize, dstSize))) {
+        return ERR_IMAGE_ALLOC_MEMORY_FAILED;
+    }
     outPixmap.bufferSize = bufferSize;
     outPixmap.imageInfo.pixelFormat = inPixmap.imageInfo.pixelFormat;
     outPixmap.imageInfo.colorSpace = inPixmap.imageInfo.colorSpace;
     outPixmap.imageInfo.alphaType = inPixmap.imageInfo.alphaType;
     outPixmap.imageInfo.baseDensity = inPixmap.imageInfo.baseDensity;
-    return;
-}
-
-uint32_t BasicTransformer::TransformPixmap(const PixmapInfo &inPixmap, PixmapInfo &outPixmap, AllocateMem allocate)
-{
-    if (inPixmap.data == nullptr) {
-        IMAGE_LOGE("[BasicTransformer]input data is null.");
-        return ERR_IMAGE_GENERAL_ERROR;
-    }
-
-    int32_t pixelBytes = ImageUtils::GetPixelBytes(inPixmap.imageInfo.pixelFormat);
-    Size dstSize = inPixmap.imageInfo.size;
-    uint64_t bufferSize = static_cast<uint64_t>(dstSize.width) * dstSize.height * pixelBytes;
-    int fd = 0;
-    Translate(inPixmap, outPixmap, allocate);
 
 #ifdef _WIN32
     errno_t backRet = memset_s(outPixmap.data, COLOR_DEFAULT, bufferSize * sizeof(uint8_t));
@@ -186,6 +176,7 @@ uint32_t BasicTransformer::TransformPixmap(const PixmapInfo &inPixmap, PixmapInf
         return ERR_IMAGE_GENERAL_ERROR;
     }
 #endif
+
     if (!DrawPixelmap(inPixmap, pixelBytes, dstSize, outPixmap.data)) {
         IMAGE_LOGE("[BasicTransformer] the matrix can not invert.");
         ReleaseBuffer((allocate == nullptr) ? AllocatorType::HEAP_ALLOC : AllocatorType::SHARE_MEM_ALLOC,
