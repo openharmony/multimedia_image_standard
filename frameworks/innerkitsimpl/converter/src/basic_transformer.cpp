@@ -172,7 +172,7 @@ uint32_t BasicTransformer::TransformPixmap(const PixmapInfo &inPixmap, PixmapInf
 #ifdef _WIN32
     backRet(memset_s(outPixmap.data, COLOR_DEFAULT, bufferSize * sizeof(uint8_t)));
 #else
-    backRet(memset_s(outPixmap.data, bufferSize * sizeof(uint8_t), COLOR_DEFAULT, bufferSize * sizeof(uint8_t)) != EOK);
+    backRet(memset_s(outPixmap.data, bufferSize * sizeof(uint8_t), COLOR_DEFAULT, bufferSize * sizeof(uint8_t)));
 #endif
 
     if (!DrawPixelmap(inPixmap, pixelBytes, dstSize, outPixmap.data)) {
