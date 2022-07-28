@@ -348,7 +348,12 @@ uint32_t GifDecoder::AllocateLocalPixelMapBuffer()
             return ERR_IMAGE_MALLOC_ABNORMAL;
         }
 #ifdef _WIN32
-        memset(localPixelMapBuffer_, bgColor_, pixelMapBufferSize);
+        errno_t backRet = memset_s(localPixelMapBuffer_, bgColor_, pixelMapBufferSize);
+        if (backRet != EOK) {
+            HiLog::Error(LABEL, "[DisposeFirstPixelMap]memset local pixelmap buffer background failed", backRet);
+            FreeLocalPixelMapBuffer();
+            return ERR_IMAGE_MALLOC_ABNORMAL;
+        }
 #else
         if (memset_s(localPixelMapBuffer_, pixelMapBufferSize, bgColor_, pixelMapBufferSize) != EOK) {
             HiLog::Error(LABEL, "[DisposeFirstPixelMap]memset local pixelmap buffer background failed");
@@ -393,7 +398,11 @@ uint32_t GifDecoder::PaddingBgColor(const SavedImage *savedImage)
     uint32_t lineBufferSize = frameWidth * sizeof(uint32_t);
     for (int32_t row = 0; row < frameHeight; row++) {
 #ifdef _WIN32
-        memset(dstPixelMapBuffer, bgColor_, lineBufferSize);
+        errno_t backRet = memset_s(dstPixelMapBuffer, bgColor_, lineBufferSize);
+        if (backRet != EOK) {
+            HiLog::Error(LABEL, "[PaddingBgColor]memset local pixelmap buffer failed", backRet);
+            return ERR_IMAGE_MALLOC_ABNORMAL;
+        }
 #else
         if (memset_s(dstPixelMapBuffer, lineBufferSize, bgColor_, lineBufferSize) != EOK) {
             HiLog::Error(LABEL, "[PaddingBgColor]memset local pixelmap buffer failed");

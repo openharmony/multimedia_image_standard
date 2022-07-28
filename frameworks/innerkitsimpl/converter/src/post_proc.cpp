@@ -351,7 +351,12 @@ bool PostProc::AllocHeapBuffer(uint64_t bufferSize, uint8_t **buffer)
         return false;
     }
 #ifdef _WIN32
-    memset(*buffer, 0, bufferSize);
+    errno_t backRet = memset_s(*buffer, 0, bufferSize);
+    if (backRet != EOK) {
+        IMAGE_LOGE("[PostProc]memset convertData fail, errorCode = %{public}d", backRet);
+        ReleaseBuffer(AllocatorType::HEAP_ALLOC, 0, 0, buffer);
+        return false;
+    }
     return true;
 #else
     errno_t errRet = memset_s(*buffer, bufferSize, 0, bufferSize);

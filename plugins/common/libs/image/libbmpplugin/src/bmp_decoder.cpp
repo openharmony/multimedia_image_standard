@@ -153,7 +153,13 @@ uint32_t BmpDecoder::SetContextPixelsBuffer(uint64_t byteCount, DecodeContext &c
             return ERR_IMAGE_MALLOC_ABNORMAL;
         }
 #ifdef _WIN32
-        memset(outputBuffer, 0, byteCount);
+        errno_t backRet = memset_s(outputBuffer, 0, byteCount);
+        if (backRet != EOK) {
+            HiLog::Error(LABEL, "Decode failed, memset buffer failed", backRet);
+            free(outputBuffer);
+            outputBuffer = nullptr;
+            return ERR_IMAGE_DECODE_FAILED;
+        }
 #else
         if (memset_s(outputBuffer, byteCount, 0, byteCount) != EOK) {
             HiLog::Error(LABEL, "Decode failed, memset buffer failed");

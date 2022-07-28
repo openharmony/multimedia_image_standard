@@ -241,7 +241,13 @@ uint8_t *PngDecoder::AllocOutputHeapBuffer(DecodeContext &context)
                 return nullptr;
             }
 #ifdef _WIN32
-            memset(outputBuffer, 0, byteCount);
+            errno_t backRet = memset_s(outputBuffer, 0, byteCount);
+            if (backRet != EOK) {
+                HiLog::Error(LABEL, "init output buffer fail.", backRet);
+                free(outputBuffer);
+                outputBuffer = nullptr;
+                return nullptr;
+            }
 #else
             if (memset_s(outputBuffer, byteCount, 0, byteCount) != EOK) {
                 HiLog::Error(LABEL, "init output buffer fail.");

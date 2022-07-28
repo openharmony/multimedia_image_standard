@@ -424,7 +424,13 @@ bool WebpDecoder::AllocHeapBuffer(DecodeContext &context, bool isIncremental)
                 return false;
             }
 #ifdef _WIN32
-            memset(outputBuffer, 0, byteCount);
+            errno_t backRet = memset_s(outputBuffer, 0, byteCount);
+            if (backRet != EOK) {
+                HiLog::Error(LABEL, "memset buffer failed.", backRet);
+                free(outputBuffer);
+                outputBuffer = nullptr;
+                return false;
+            }
 #else
             if (memset_s(outputBuffer, byteCount, 0, byteCount) != EOK) {
                 HiLog::Error(LABEL, "memset buffer failed.");
