@@ -21,7 +21,7 @@ ohos_shared_library("pluginexample3") {
   ]
 
   include_dirs = [
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
     "//foundation/multimedia/utils/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",

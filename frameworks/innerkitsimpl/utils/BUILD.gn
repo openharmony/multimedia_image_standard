@@ -20,7 +20,7 @@ ohos_shared_library("image_utils") {
     "//foundation/multimedia/utils/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//foundation/multimedia/utils/lite/interfaces/kits",
     "//foundation/communication/ipc/utils/include",
   ]
@@ -56,10 +56,10 @@ ohos_shared_library("image_utils") {
 
     deps = [
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-      "//utils/native/base:utils",
     ]
 
     external_deps = [
+      "c_utils:utils",
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
     ]
@@ -76,7 +76,7 @@ ohos_static_library("image_utils_static") {
     "//foundation/multimedia/utils/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
   ]
 
   sources = [ "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils/src/image_utils.cpp" ]
@@ -104,10 +104,10 @@ ohos_static_library("image_utils_static") {
     sources += [ "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils/src/image_trace.cpp" ]
     deps = [
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-      "//utils/native/base:utils",
     ]
 
     external_deps = [
+      "c_utils:utils",
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
     ]

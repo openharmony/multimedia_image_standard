@@ -66,7 +66,7 @@ config("pixelconvertadapter_public_config") {
     ]
   } else {
     include_dirs += [
-      "//utils/native/base/include",
+      "//commonlibrary/c_utils/base/include",
       "//foundation/communication/ipc/utils/include",
       "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
       "//third_party/flutter/skia/include/core",
@@ -107,10 +107,12 @@ ohos_shared_library("pixelconvertadapter") {
     deps = [
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//third_party/flutter/build/skia:ace_skia_ohos",
-      "//utils/native/base:utils",
     ]
 
-    external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+    external_deps = [
+      "c_utils:utils",
+      "hiviewdfx_hilog_native:libhilog",
+    ]
   }
 
   #relative_install_dir = "module/multimedia"
@@ -138,10 +140,12 @@ ohos_static_library("pixelconvertadapter_static") {
     deps = [
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//third_party/flutter/build/skia:ace_skia_ohos",
-      "//utils/native/base:utils",
     ]
 
-    external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+    external_deps = [
+      "c_utils:utils",
+      "hiviewdfx_hilog_native:libhilog",
+    ]
   }
   subsystem_name = "multimedia"
   part_name = "multimedia_image_standard"
