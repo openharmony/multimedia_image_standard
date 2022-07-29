@@ -677,6 +677,7 @@ napi_value PixelMapNapi::GetIsEditable(napi_env env, napi_callback_info info)
     bool isEditable = pixelMapNapi->nativePixelMap_->IsEditable();
 
     napi_get_boolean(env, isEditable, &result);
+    pixelMapNapi.release();
 
     return result;
 }
