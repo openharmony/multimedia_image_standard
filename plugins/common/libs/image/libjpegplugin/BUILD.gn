@@ -87,7 +87,7 @@ ohos_shared_library("jpegplugin") {
   } else {
     defines = [ "DUAL_ADAPTER" ]
     DUAL_ADAPTER = true
-    include_dirs += [ "//utils/native/base/include" ]
+    include_dirs += [ "//commonlibrary/c_utils/base/include" ]
     sources += [
       "$flutter_root/skia/third_party/externals/libjpeg-turbo/jdicc.c",
       "//foundation/multimedia/image_standard/plugins/common/libs/image/libjpegplugin/src/jpeg_encoder.cpp",
@@ -101,7 +101,6 @@ ohos_shared_library("jpegplugin") {
       "//third_party/flutter/build/skia:ace_skcms",
       "//third_party/flutter/build/skia:ace_skia_ohos",
       "//third_party/libexif:libexif",
-      "//utils/native/base:utils",
     ]
 
     if (DUAL_ADAPTER) {
@@ -116,7 +115,10 @@ ohos_shared_library("jpegplugin") {
       ]
     }
 
-    external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+    external_deps = [
+      "c_utils:utils",
+      "hiviewdfx_hilog_native:libhilog",
+    ]
   }
 
   part_name = "multimedia_image_standard"

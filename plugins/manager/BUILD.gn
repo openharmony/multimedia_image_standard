@@ -73,13 +73,14 @@ ohos_shared_library("pluginmanager") {
       "//third_party/bounds_checking_function:libsec_static",
     ]
   } else {
-    include_dirs += [ "//utils/native/base/include" ]
+    include_dirs += [ "//commonlibrary/c_utils/base/include" ]
 
     ldflags = [ "-Wl,-Bsymbolic" ]
 
-    deps = [ "//utils/native/base:utils" ]
-
-    external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+    external_deps = [
+      "c_utils:utils",
+      "hiviewdfx_hilog_native:libhilog",
+    ]
   }
 
   #relative_install_dir = "module/multimedia"
@@ -141,13 +142,14 @@ ohos_static_library("pluginmanager_static") {
       "//third_party/bounds_checking_function:libsec_static",
     ]
   } else {
-    include_dirs += [ "//utils/native/base/include" ]
+    include_dirs += [ "//commonlibrary/c_utils/base/include" ]
 
     ldflags = [ "-Wl,-Bsymbolic" ]
 
-    deps = [ "//utils/native/base:utils" ]
-
-    external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+    external_deps = [
+      "c_utils:utils",
+      "hiviewdfx_hilog_native:libhilog",
+    ]
   }
   subsystem_name = "multimedia"
   part_name = "multimedia_image_standard"

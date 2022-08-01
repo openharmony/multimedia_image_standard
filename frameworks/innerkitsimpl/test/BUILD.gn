@@ -22,7 +22,7 @@ ohos_unittest("imagepixelmaptest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
     "//foundation/multimedia/utils/include",
     "//third_party/googletest/googletest/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//foundation/multimedia/image_standard/adapter/frameworks/bitmapconverter/native/include",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
   ]
@@ -33,8 +33,9 @@ ohos_unittest("imagepixelmaptest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
+
+  external_deps = [ "c_utils:utils" ]
 
   # external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 }
@@ -46,7 +47,7 @@ ohos_unittest("imagepixelmapparceltest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
     "//foundation/multimedia/utils/include",
     "//third_party/googletest/googletest/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
     "//foundation/multimedia/image_standard/mock/native/include",
@@ -58,12 +59,12 @@ ohos_unittest("imagepixelmapparceltest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
 
     #    "//foundation/multimedia/image_standard/mock/native:utils_mock_static",
     #    "//foundation/multimedia/image_standard/mock/native:log_mock_static",
   ]
   external_deps = [
+    "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
@@ -82,7 +83,7 @@ ohos_unittest("imagesourcetest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
     "//foundation/multimedia/utils/include",
     "//third_party/googletest/googletest/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",
   ]
   sources = [
@@ -106,8 +107,9 @@ ohos_unittest("imagesourcetest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
+
+  external_deps = [ "c_utils:utils" ]
 
   # external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
   resource_config_file =
@@ -122,7 +124,7 @@ ohos_unittest("colorconvertertest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
     "//foundation/multimedia/utils/include",
     "//third_party/googletest/googletest/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",
   ]
   sources = [ "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/test/unittest/color_converter_test.cpp" ]
@@ -131,8 +133,9 @@ ohos_unittest("colorconvertertest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
+
+  external_deps = [ "c_utils:utils" ]
 
   #  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 }
@@ -146,7 +149,7 @@ ohos_unittest("transformtest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits/include",
     "//foundation/multimedia/utils/include",
     "//third_party/googletest/googletest/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//foundation/multimedia/image_standard/plugins/manager/include",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
   ]
@@ -156,8 +159,9 @@ ohos_unittest("transformtest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
+
+  external_deps = [ "c_utils:utils" ]
 
   #  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 }
@@ -172,7 +176,7 @@ ohos_unittest("imagecolorspacetest") {
     "//foundation/multimedia/utils/include",
     "//foundation/graphic/graphic_2d/utils/color_manager/export",
     "//third_party/googletest/googletest/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
   ]
 
   cflags = [
@@ -192,10 +196,10 @@ ohos_unittest("imagecolorspacetest") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
   resource_config_file =
       "//foundation/multimedia/image_standard/test/resource/image/ohos_test.xml"
+  external_deps = [ "c_utils:utils" ]
 }
 
 ################################################

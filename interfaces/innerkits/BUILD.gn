@@ -51,12 +51,12 @@ config("image_external_config") {
     include_dirs += [
       "//foundation/multimedia/image_standard/mock/native/include",
       "//third_party/bounds_checking_function/include",
-      "//utils/native/base/include",
+      "//commonlibrary/c_utils/base/include",
       "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
     ]
   } else {
     include_dirs += [
-      "//utils/native/base/include",
+      "//commonlibrary/c_utils/base/include",
       "//third_party/libpng",
       "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
     ]
@@ -101,10 +101,10 @@ ohos_shared_library("image") {
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
     "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
+    "c_utils:utils",
     "hichecker_native:libhichecker",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
@@ -195,7 +195,6 @@ ohos_shared_library("image_native") {
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
       "//third_party/flutter/build/skia:ace_skia_ohos",
-      "//utils/native/base:utils",
     ]
 
     if (DUAL_ADAPTER) {
@@ -203,6 +202,7 @@ ohos_shared_library("image_native") {
       deps += [ "//third_party/libpng:libpng" ]
     }
     external_deps = [
+      "c_utils:utils",
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
       "ipc:ipc_core",
@@ -240,10 +240,10 @@ ohos_static_library("image_static_napi") {
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
     "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
     "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-    "//utils/native/base:utils",
   ]
   subsystem_name = "multimedia"
   part_name = "multimedia_image_standard"
+  external_deps = [ "c_utils:utils" ]
 }
 
 ohos_static_library("image_static") {
@@ -320,13 +320,13 @@ ohos_static_library("image_static") {
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/pixelconverter:pixelconvertadapter",
       "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/utils:image_utils",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager",
-      "//utils/native/base:utils",
     ]
 
     if (DUAL_ADAPTER) {
     } else {
       deps += [ "//third_party/libpng:libpng" ]
     }
+    external_deps = [ "c_utils:utils" ]
   }
   subsystem_name = "multimedia"
   part_name = "multimedia_image_standard"
