@@ -587,8 +587,8 @@ HWTEST_F(ImageSourcePngTest, PngNinePatch003, TestSize.Level3)
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_NE(imageSource.get(), nullptr);
     /**
-     * @tc.steps: step2. scale and covert pixelformat png image source to pixel map
-     * @tc.expected: step2. scale and covert pixelformat png image source to pixel map success.
+     * @tc.steps: step2. scale and convert pixelformat png image source to pixel map
+     * @tc.expected: step2. scale and convert pixelformat png image source to pixel map success.
      */
     DecodeOptions decodeOpts;
     decodeOpts.desiredSize = { 186, 160 };

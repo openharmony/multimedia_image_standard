@@ -327,7 +327,7 @@ uint32_t JpegDecoder::DoSwDecode(DecodeContext &context)
     streamPosition_ = srcMgr_.inputStream->Tell();
 
 #ifdef IMAGE_COLORSPACE_FLAG
-    // paser icc profile info
+    // parser icc profile info
     uint32_t iccPaseredResult = iccProfileInfo_.ParsingICCProfile(&decodeInfo_);
     if (iccPaseredResult == OHOS::Media::ERR_IMAGE_DENCODE_ICC_FAILED) {
         HiLog::Error(LABEL, "dencode image icc error.");

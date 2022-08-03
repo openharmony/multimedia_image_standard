@@ -42,7 +42,7 @@ public:
      * Parsing function for an entire JPEG image buffer.
      * PARAM 'data': A pointer to a JPEG image.
      * PARAM 'length': The length of the JPEG image.
-     * RETURN:  PARSE_EXIF_SUCCESS (0) on succes with 'result' filled out
+     * RETURN:  PARSE_EXIF_SUCCESS (0) on success with 'result' filled out
      *          error code otherwise, as defined by the PARSE_EXIF_ERROR_* macros
      */
     int ParseExifData(const unsigned char *buf, unsigned len);
