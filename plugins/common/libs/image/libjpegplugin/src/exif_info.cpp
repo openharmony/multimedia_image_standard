@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "exif_info.h"
 #include <algorithm>
 #include <cstdio>
@@ -388,6 +389,7 @@ uint32_t EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, 
     if (!isNewExifData && orginExifDataLength == 0) {
         HiLog::Error(LABEL, "There is no orginExifDataLength node in %{public}s.", path.c_str());
         exif_data_unref(ptrExifData);
+        free(fileBuf);
         return Media::ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
     }
 
@@ -462,6 +464,7 @@ uint32_t EXIFInfo::ModifyExifData(const ExifTag &tag, const std::string &value, 
     unsigned int orginExifDataLength = GetOrginExifDataLength(isNewExifData, fileBuf);
     if (!isNewExifData && orginExifDataLength == 0) {
         HiLog::Error(LABEL, "There is no orginExifDataLength node in %{public}d.", localFd);
+        free(fileBuf);
         exif_data_unref(ptrExifData);
         return Media::ERR_IMAGE_DECODE_EXIF_UNSUPPORT;
     }
