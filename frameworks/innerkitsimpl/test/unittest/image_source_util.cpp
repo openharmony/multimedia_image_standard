@@ -104,7 +104,7 @@ bool ReadFileToBuffer(const std::string &filePath, uint8_t *buffer, size_t buffe
         HiLog::Error(LABEL, "buffer is nullptr");
         return false;
     }
-    
+
     FILE *fp = fopen(realPath.c_str(), "rb");
     if (fp == nullptr) {
         HiLog::Error(LABEL_TEST, "open file failed, real path=%{public}s.", realPath.c_str());

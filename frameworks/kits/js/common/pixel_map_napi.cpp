@@ -668,7 +668,7 @@ napi_value PixelMapNapi::GetIsEditable(napi_env env, napi_callback_info info)
 
     std::unique_ptr<PixelMapNapi> pixelMapNapi = std::make_unique<PixelMapNapi>();
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&pixelMapNapi));
-    
+
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, pixelMapNapi), result, HiLog::Error(LABEL, "fail to unwrap context"));
 
     if (pixelMapNapi->nativePixelMap_ == nullptr) {
@@ -1103,7 +1103,7 @@ napi_value PixelMapNapi::SetAlphaAble(napi_env env, napi_callback_info info)
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&pixelMapNapi));
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, pixelMapNapi), result, HiLog::Error(LABEL, "fail to unwrap context"));
-    
+
     if (pixelMapNapi->nativePixelMap_ != nullptr) {
         AlphaType alphaType = pixelMapNapi->nativePixelMap_->GetAlphaType();
         if (isAlphaAble && (alphaType == AlphaType::IMAGE_ALPHA_TYPE_OPAQUE)) {
@@ -1402,7 +1402,7 @@ static void ScaleExec(napi_env env, PixelMapAsyncContext* context)
     }
     if (context->status == SUCCESS) {
         if (context->rPixelMap != nullptr) {
-            
+
             context->rPixelMap->scale(static_cast<float>(context->xArg), static_cast<float>(context->yArg));
             context->status = SUCCESS;
         } else {
