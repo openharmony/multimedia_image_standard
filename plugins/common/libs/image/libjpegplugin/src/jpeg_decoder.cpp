@@ -113,7 +113,7 @@ void JpegDecoder::SetSource(InputDataStream &sourceStream)
 {
     srcMgr_.inputStream = &sourceStream;
     state_ = JpegDecodingState::SOURCE_INITED;
-    HiLog::Error(LABEL, "SetSource ExifPrintMethod");
+    HiLog::Debug(LABEL, "SetSource ExifPrintMethod");
     ExifPrintMethod();
 }
 
@@ -586,13 +586,13 @@ uint32_t JpegDecoder::StartDecompress(const PixelDecodeOptions &opts)
 
 uint32_t JpegDecoder::GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value)
 {
-    HiLog::Error(LABEL, "[GetImagePropertyInt] enter jped plugin, key:%{public}s", key.c_str());
+    HiLog::Debug(LABEL, "[GetImagePropertyInt] enter jped plugin, key:%{public}s", key.c_str());
     return Media::SUCCESS;
 }
 
 uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &key, std::string &value)
 {
-    HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, key:%{public}s", key.c_str());
+    HiLog::Debug(LABEL, "[GetImagePropertyString] enter jped plugin, key:%{public}s", key.c_str());
     if (IsSameTextStr(key, BITS_PER_SAMPLE)) {
         value = exifInfo_.bitsPerSample_;
     } else if (IsSameTextStr(key, ORIENTATION)) {
@@ -627,7 +627,7 @@ uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &
         HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, ifd and entry are not matched!");
         return Media::ERR_MEDIA_VALUE_INVALID;
     }
-    HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, value:%{public}s", value.c_str());
+    HiLog::Debug(LABEL, "[GetImagePropertyString] enter jped plugin, value:%{public}s", value.c_str());
     return Media::SUCCESS;
 }
 
@@ -667,7 +667,7 @@ ExifTag JpegDecoder::getExifTagFromKey(const std::string &key)
 uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key,
     const std::string &value, const std::string &path)
 {
-    HiLog::Error(LABEL, "[ModifyImageProperty] with path:%{public}s, key:%{public}s, value:%{public}s",
+    HiLog::Debug(LABEL, "[ModifyImageProperty] with path:%{public}s, key:%{public}s, value:%{public}s",
         path.c_str(), key.c_str(), value.c_str());
     ExifTag tag = getExifTagFromKey(key);
     if (tag == EXIF_TAG_PRINT_IMAGE_MATCHING) {
@@ -684,7 +684,7 @@ uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key
 uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key,
     const std::string &value, const int fd)
 {
-    HiLog::Error(LABEL, "[ModifyImageProperty] with fd:%{public}d, key:%{public}s, value:%{public}s",
+    HiLog::Debug(LABEL, "[ModifyImageProperty] with fd:%{public}d, key:%{public}s, value:%{public}s",
         fd, key.c_str(), value.c_str());
     ExifTag tag = getExifTagFromKey(key);
     if (tag == EXIF_TAG_PRINT_IMAGE_MATCHING) {
@@ -701,7 +701,7 @@ uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key
 uint32_t JpegDecoder::ModifyImageProperty(uint32_t index, const std::string &key,
     const std::string &value, uint8_t *data, uint32_t size)
 {
-    HiLog::Error(LABEL, "[ModifyImageProperty] with buffer:%{public}p, key:%{public}s, value:%{public}s",
+    HiLog::Debug(LABEL, "[ModifyImageProperty] with buffer:%{public}p, key:%{public}s, value:%{public}s",
         data, key.c_str(), value.c_str());
     ExifTag tag = getExifTagFromKey(key);
     if (tag == EXIF_TAG_PRINT_IMAGE_MATCHING) {
@@ -719,7 +719,7 @@ uint32_t JpegDecoder::GetRedactionArea(const int &fd,
                                        const int &redactionType,
                                        std::vector<std::pair<uint32_t, uint32_t>> &ranges)
 {
-    HiLog::Error(LABEL, "[GetRedactionArea] with fd:%{public}d, redactionType:%{public}d ", fd, redactionType);
+    HiLog::Debug(LABEL, "[GetRedactionArea] with fd:%{public}d, redactionType:%{public}d ", fd, redactionType);
     uint32_t ret = exifInfo_.GetRedactionArea(fd, redactionType, ranges);
     if (ret != Media::SUCCESS) {
         return ret;

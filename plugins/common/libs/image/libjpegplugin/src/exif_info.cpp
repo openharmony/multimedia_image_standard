@@ -730,7 +730,7 @@ bool EXIFInfo::CreateExifData(unsigned char *buf, unsigned long length, ExifData
             return false;
         }
         isNewExifData = false;
-        HiLog::Error(LABEL, "Create exif data from buffer.");
+        HiLog::Debug(LABEL, "Create exif data from buffer.");
     } else {
         *ptrData = exif_data_new();
         if (!(*ptrData)) {
@@ -745,7 +745,7 @@ bool EXIFInfo::CreateExifData(unsigned char *buf, unsigned long length, ExifData
         /* Create the mandatory EXIF fields with default data */
         exif_data_fix(*ptrData);
         isNewExifData = true;
-        HiLog::Error(LABEL, "Create new exif data.");
+        HiLog::Debug(LABEL, "Create new exif data.");
     }
     return true;
 }
