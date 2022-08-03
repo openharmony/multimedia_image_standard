@@ -377,13 +377,13 @@ image提供了操作pixelmap的接口，如创建、读取和删除，以下展�
 
 ```
 const Color = new ArrayBuffer(96)
-    let opts = {
-      alphaType: 0,
-      editable: true,
-      pixelFormat: 4,
-      scaleMode: 1,
-      size: { height: 2, width: 3 },
-    }
+let opts = {
+  alphaType: 0,
+  editable: true,
+  pixelFormat: 4,
+  scaleMode: 1,
+  size: { height: 2, width: 3 },
+}
 ```
 
 2.调用createpixelmap通过属性创建pixelmap实例。
