@@ -789,7 +789,7 @@ void ImageReceiverNapi::DoCallBack(shared_ptr<ImageReceiverAsyncContext> context
         IMAGE_LINE_IN();
         Context context = reinterpret_cast<Context>(work->data);
         if (context == nullptr) {
-            IMAGE_ERR("contex is empty");
+            IMAGE_ERR("context is empty");
         } else {
             napi_value result[PARAM2] = {0};
             napi_value retVal;

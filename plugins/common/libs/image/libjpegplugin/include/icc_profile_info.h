@@ -43,14 +43,14 @@ public:
 #ifdef IMAGE_COLORSPACE_FLAG
     /**
      * @brief get icc data.
-     * @param cinfo jpeg decompress pionter.
+     * @param cinfo jpeg decompress pointer.
      * @return parse result data.
      */
     sk_sp<SkData> GetICCData(j_decompress_ptr cinfo);
 
     /**
      * @brief paser icc profile data form jpeg.
-     * @param cinfo jpeg decompress pionter.
+     * @param cinfo jpeg decompress pointer.
      * @return parse result data.
      */
     uint32_t ParsingICCProfile(j_decompress_ptr cinfo);
@@ -69,7 +69,7 @@ public:
 
     /**
      * @brief packing icc profile data
-     * @param cinfo jpeg decompress pionter.
+     * @param cinfo jpeg decompress pointer.
      * @param SkImageInfo.
      * @return packing result data.
      */

@@ -298,7 +298,7 @@ declare namespace image {
   }
 
   /**
-   * The componet type of image.
+   * The component type of image.
    * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageReceiver
    */
@@ -409,7 +409,7 @@ declare namespace image {
     size: Size;
 
     /**
-     * Indicates image defalt density.
+     * Indicates image default density.
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
      */
@@ -693,7 +693,7 @@ declare namespace image {
    * Creates an ImageSource instance based on the buffer.
    * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param buf The buffer of the iamge.
+   * @param buf The buffer of the image.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
   function createImageSource(buf: ArrayBuffer): ImageSource;
@@ -702,7 +702,7 @@ declare namespace image {
    * Creates an ImageSource instance based on the buffer.
    * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param buf The buffer of the iamge.
+   * @param buf The buffer of the image.
    * @param options The config of Image source.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
@@ -712,7 +712,7 @@ declare namespace image {
    * Creates an ImageSource instance based on the buffer in incremental.
    * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param buf The buffer of the iamge.
+   * @param buf The buffer of the image.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
   function CreateIncrementalSource(buf: ArrayBuffer): ImageSource;
@@ -721,7 +721,7 @@ declare namespace image {
    * Creates an ImageSource instance based on the buffer in incremental.
    * @since 9
    * @syscap SystemCapability.Multimedia.Image.ImageSource
-   * @param buf The buffer of the iamge.
+   * @param buf The buffer of the image.
    * @param options The config of source.
    * @return Returns the ImageSource instance if the operation is successful; returns null otherwise.
    */
@@ -1161,7 +1161,7 @@ declare namespace image {
      * @param buf The data to be updated.
      * @param isFinished If is it finished.
      * @param value The offset of data.
-     * @param length The lenght fo buf.
+     * @param length The length fo buf.
      * @return A Promise instance used to return the property value.
      */
     updateData(buf: ArrayBuffer, isFinished: boolean, value: number, length: number): Promise<void>;
@@ -1173,7 +1173,7 @@ declare namespace image {
      * @param buf The data to be updated.
      * @param isFinished If is it finished.
      * @param value The offset of data.
-     * @param length The lenght fo buf.
+     * @param length The length fo buf.
      * @param callback Callback to return the operation result.
      */
     updateData(buf: ArrayBuffer, isFinished: boolean, value: number, length: number, callback: AsyncCallback<void>): void;
@@ -1303,7 +1303,7 @@ declare namespace image {
      * Get component buffer from image and uses a callback to return the result.
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
-     * @param componentType The componet type of image.
+     * @param componentType The component type of image.
      * @param callback Callback used to return the component buffer.
      */
     getComponent(componentType: ComponentType, callback: AsyncCallback<Component>): void;
@@ -1312,7 +1312,7 @@ declare namespace image {
      * Get component buffer from image and uses a promise to return the result.
      * @since 9
      * @syscap SystemCapability.Multimedia.Image.Core
-     * @param componentType The componet type of image.
+     * @param componentType The component type of image.
      * @return A Promise instance used to return the component buffer.
      */
     getComponent(componentType: ComponentType): Promise<Component>;

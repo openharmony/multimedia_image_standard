@@ -728,7 +728,7 @@ static void DoCallBackAfterWork(uv_work_t *work, int status)
     IMAGE_LINE_IN();
     Contextc context = reinterpret_cast<Contextc>(work->data);
     if (context == nullptr) {
-        IMAGE_ERR("contex is empty");
+        IMAGE_ERR("context is empty");
     } else {
         napi_value result[PARAM2] = {0};
         napi_value retVal, callback = nullptr;
