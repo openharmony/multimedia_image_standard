@@ -1138,7 +1138,9 @@ void ByteOrderedBuffer::GetDataRangeFromDE(const ExifIfd &ifd, const int16_t &co
         if (byteCount > CONSTANT_4) {
             int32_t offset = ReadInt32();
             // Transform tiff offset to position of file
-            offset = static_cast<int32_t>(TransformTiffOffsetToFilePos(offset));
+            if (nextIfdOffset != -1) {
+                offset = static_cast<int32_t>(TransformTiffOffsetToFilePos(offset));
+            }
             if (static_cast<uint32_t>(offset + byteCount) <= bufferLength_) {
                 curPosition_ = static_cast<uint32_t>(offset);
             } else {
@@ -1341,7 +1343,7 @@ int32_t ByteOrderedBuffer::ReadInt32()
 
 uint32_t ByteOrderedBuffer::ReadUnsignedInt32()
 {
-    return (ReadInt32() & 0xffffffff);
+    return (static_cast<uint32_t>(ReadInt32()) & 0xffffffff);
 }
 
 int16_t ByteOrderedBuffer::ReadShort()
@@ -1364,7 +1366,7 @@ int16_t ByteOrderedBuffer::ReadShort()
 
 uint16_t ByteOrderedBuffer::ReadUnsignedShort()
 {
-    return (ReadShort() & 0xffff);
+    return (static_cast<uint32_t>(ReadShort()) & 0xffff);
 }
 
 uint32_t ByteOrderedBuffer::Peek()
