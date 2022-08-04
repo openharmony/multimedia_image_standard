@@ -1128,7 +1128,7 @@ void ByteOrderedBuffer::GetDataRangeFromDE(const ExifIfd &ifd, const int16_t &co
         bool valid = false;
         valid = SetDEDataByteCount(tagNumber, dataFormat, numberOfComponents, byteCount);
         if (!valid) {
-            curPosition_ = nextEntryOffset;
+            static_cast<uint32_t>curPosition_ = nextEntryOffset;
             continue;
         }
 
