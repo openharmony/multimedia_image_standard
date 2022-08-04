@@ -1046,10 +1046,12 @@ void EXIFInfo::GetAreaFromExifEntries(const int &redactionType,
 ByteOrderedBuffer::ByteOrderedBuffer(unsigned char *fileBuf, uint32_t bufferLength)
     : buf_(fileBuf), bufferLength_(bufferLength)
 {
-    if (fileBuf[BUFFER_POSITION_12] == 'M' && fileBuf[BUFFER_POSITION_13] == 'M') {
-        byteOrder_ = EXIF_BYTE_ORDER_MOTOROLA;
-    } else {
-        byteOrder_ = EXIF_BYTE_ORDER_INTEL;
+    if (bufferLength >= BUFFER_POSITION_12 && bufferLength >= BUFFER_POSITION_13) {
+        if (fileBuf[BUFFER_POSITION_12] == 'M' && fileBuf[BUFFER_POSITION_13] == 'M') {
+            byteOrder_ = EXIF_BYTE_ORDER_MOTOROLA;
+        } else {
+            byteOrder_ = EXIF_BYTE_ORDER_INTEL;
+        }
     }
 }
 
@@ -1213,7 +1215,7 @@ void ByteOrderedBuffer::ParseIFDPointerTag(const ExifIfd &ifd, const uint16_t &d
             break;
         }
         case EXIF_FORMAT_SLONG: {
-            offset = ReadInt32();
+            offset = static_cast<uint32_t>ReadInt32();
             break;
         }
         default: {
