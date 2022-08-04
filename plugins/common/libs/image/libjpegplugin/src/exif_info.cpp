@@ -1203,7 +1203,7 @@ void ByteOrderedBuffer::ParseIFDPointerTag(const ExifIfd &ifd, const uint16_t &d
     // Get offset from data field
     switch (static_cast<ExifFormat>(dataFormat)) {
         case EXIF_FORMAT_SHORT: {
-            offset = ReadUnsignedShort();
+            offset = static_cast<uint32_t>(ReadUnsignedShort());
             break;
         }
         case EXIF_FORMAT_SSHORT: {
@@ -1215,7 +1215,7 @@ void ByteOrderedBuffer::ParseIFDPointerTag(const ExifIfd &ifd, const uint16_t &d
             break;
         }
         case EXIF_FORMAT_SLONG: {
-            offset = static_cast<uint32_t>ReadInt32();
+            offset = static_cast<uint32_t>(ReadInt32());
             break;
         }
         default: {
