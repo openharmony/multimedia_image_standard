@@ -1046,10 +1046,12 @@ void EXIFInfo::GetAreaFromExifEntries(const int &redactionType,
 ByteOrderedBuffer::ByteOrderedBuffer(unsigned char *fileBuf, uint32_t bufferLength)
     : buf_(fileBuf), bufferLength_(bufferLength)
 {
-    if (fileBuf[BUFFER_POSITION_12] == 'M' && fileBuf[BUFFER_POSITION_13] == 'M') {
-        byteOrder_ = EXIF_BYTE_ORDER_MOTOROLA;
-    } else {
-        byteOrder_ = EXIF_BYTE_ORDER_INTEL;
+    if (bufferLength >= BUFFER_POSITION_12 && bufferLength >= BUFFER_POSITION_13) {
+        if (fileBuf[BUFFER_POSITION_12] == 'M' && fileBuf[BUFFER_POSITION_13] == 'M') {
+            byteOrder_ = EXIF_BYTE_ORDER_MOTOROLA;
+        } else {
+            byteOrder_ = EXIF_BYTE_ORDER_INTEL;
+        }
     }
 }
 
@@ -1068,9 +1070,9 @@ void ByteOrderedBuffer::GenerateDEArray()
         return;
     }
     // Transform tiff offset to position of file
-    ifd0Offset = TransformTiffOffsetToFilePos(ifd0Offset);
+    ifd0Offset = static_cast<int32_t>(TransformTiffOffsetToFilePos(ifd0Offset));
     // Move current position to begin of IFD0 segment
-    curPosition_ = ifd0Offset;
+    curPosition_ = static_cast<uint32_t>(ifd0Offset);
 
     if (curPosition_ + CONSTANT_2 > bufferLength_) {
         HiLog::Error(LABEL, "There is no data from the offset: %{public}d.", curPosition_);
@@ -1083,7 +1085,7 @@ void ByteOrderedBuffer::GetDataRangeFromIFD(const ExifIfd &ifd)
 {
     handledIfdOffsets_.push_back(curPosition_);
     int16_t entryCount = ReadShort();
-    if (curPosition_ + BYTE_COUNTS_12 * entryCount > bufferLength_ || entryCount <= 0) {
+    if (static_cast<uint32_t>(curPosition_ + BYTE_COUNTS_12 * entryCount) > bufferLength_ || entryCount <= 0) {
         HiLog::Error(LABEL, " The size of entries is either too big or negative.");
         return;
     }
@@ -1096,13 +1098,15 @@ void ByteOrderedBuffer::GetDataRangeFromIFD(const ExifIfd &ifd)
             return;
         }
         // Transform tiff offset to position of file
-        nextIfdOffset = static_cast<int32_t>(TransformTiffOffsetToFilePos(nextIfdOffset));
+        if (nextIfdOffset != -1) {
+            nextIfdOffset = static_cast<int32_t>(TransformTiffOffsetToFilePos(nextIfdOffset));
+        }
         // Check if the next IFD offset
         // 1. Exists within the boundaries of the buffer
         // 2. Does not point to a previously read IFD.
         if (nextIfdOffset > 0L && static_cast<uint32_t>(nextIfdOffset) < bufferLength_) {
             if (!IsIFDhandled(nextIfdOffset)) {
-                curPosition_ = nextIfdOffset;
+                curPosition_ = static_cast<uint32_t>(nextIfdOffset);
                 ExifIfd nextIfd = GetNextIfdFromLinkList(ifd);
                 GetDataRangeFromIFD(nextIfd);
             } else {
@@ -1126,7 +1130,7 @@ void ByteOrderedBuffer::GetDataRangeFromDE(const ExifIfd &ifd, const int16_t &co
         bool valid = false;
         valid = SetDEDataByteCount(tagNumber, dataFormat, numberOfComponents, byteCount);
         if (!valid) {
-            curPosition_ = nextEntryOffset;
+            curPosition_ = static_cast<int32_t>(nextEntryOffset);
             continue;
         }
 
@@ -1136,9 +1140,11 @@ void ByteOrderedBuffer::GetDataRangeFromDE(const ExifIfd &ifd, const int16_t &co
         if (byteCount > CONSTANT_4) {
             int32_t offset = ReadInt32();
             // Transform tiff offset to position of file
-            offset = static_cast<int32_t>(TransformTiffOffsetToFilePos(offset));
-            if (offset + byteCount <= bufferLength_) {
-                curPosition_ = offset;
+            if (offset != -1) {
+                offset = static_cast<int32_t>(TransformTiffOffsetToFilePos(offset));
+            }
+            if (static_cast<uint32_t>(offset + byteCount) <= bufferLength_) {
+                curPosition_ = static_cast<uint32_t>(offset);
             } else {
                 // Skip if invalid data offset.
                 HiLog::Error(LABEL, "Skip the tag entry since data offset is invalid: %{public}d.", offset);
@@ -1201,7 +1207,7 @@ void ByteOrderedBuffer::ParseIFDPointerTag(const ExifIfd &ifd, const uint16_t &d
     // Get offset from data field
     switch (static_cast<ExifFormat>(dataFormat)) {
         case EXIF_FORMAT_SHORT: {
-            offset = ReadUnsignedShort();
+            offset = static_cast<uint32_t>(ReadUnsignedShort());
             break;
         }
         case EXIF_FORMAT_SSHORT: {
@@ -1213,7 +1219,7 @@ void ByteOrderedBuffer::ParseIFDPointerTag(const ExifIfd &ifd, const uint16_t &d
             break;
         }
         case EXIF_FORMAT_SLONG: {
-            offset = ReadInt32();
+            offset = static_cast<uint32_t>(ReadInt32());
             break;
         }
         default: {
@@ -1339,7 +1345,7 @@ int32_t ByteOrderedBuffer::ReadInt32()
 
 uint32_t ByteOrderedBuffer::ReadUnsignedInt32()
 {
-    return (ReadInt32() & 0xffffffff);
+    return (static_cast<uint32_t>(ReadInt32()) & 0xffffffff);
 }
 
 int16_t ByteOrderedBuffer::ReadShort()
@@ -1362,7 +1368,7 @@ int16_t ByteOrderedBuffer::ReadShort()
 
 uint16_t ByteOrderedBuffer::ReadUnsignedShort()
 {
-    return (ReadShort() & 0xffff);
+    return (static_cast<uint32_t>(ReadShort()) & 0xffff);
 }
 
 uint32_t ByteOrderedBuffer::Peek()
