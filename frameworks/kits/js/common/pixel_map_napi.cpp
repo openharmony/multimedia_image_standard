@@ -586,6 +586,17 @@ void PixelMapNapi::CreatePixelMapComplete(napi_env env, napi_status status, void
 
 napi_value PixelMapNapi::CreatePixelMap(napi_env env, napi_callback_info info)
 {
+    napi_value globalValue;
+    napi_get_global(env, &globalValue);
+    napi_value func;
+    napi_get_named_property(env, globalValue, "requireNapi", &func);
+
+    napi_value imageInfo;
+    napi_create_string_utf8(env, "multimedia.image", NAPI_AUTO_LENGTH, &imageInfo);
+    napi_value funcArgv[1] = { imageInfo };
+    napi_value returnValue;
+    napi_call_function(env, globalValue, func, 1, funcArgv, &returnValue);
+    
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
 
@@ -632,6 +643,17 @@ napi_value PixelMapNapi::CreatePixelMap(napi_env env, napi_callback_info info)
 
 napi_value PixelMapNapi::CreatePixelMap(napi_env env, std::shared_ptr<PixelMap> pixelmap)
 {
+    napi_value globalValue;
+    napi_get_global(env, &globalValue);
+    napi_value func;
+    napi_get_named_property(env, globalValue, "requireNapi", &func);
+
+    napi_value imageInfo;
+    napi_create_string_utf8(env, "multimedia.image", NAPI_AUTO_LENGTH, &imageInfo);
+    napi_value funcArgv[1] = { imageInfo };
+    napi_value returnValue;
+    napi_call_function(env, globalValue, func, 1, funcArgv, &returnValue);
+
     napi_value constructor = nullptr;
     napi_value result = nullptr;
     napi_status status;
