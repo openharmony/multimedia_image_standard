@@ -60,6 +60,7 @@ ImageNapi::~ImageNapi()
         napi_delete_reference(env_, wrapper_);
     }
 }
+
 static inline void YUV422SPDataCopy(uint8_t* surfaceBuffer, uint64_t bufferSize,
     std::vector<uint8_t> &y, uint64_t ySize, std::vector<uint8_t> &u,
     std::vector<uint8_t> &v, uint64_t uvSize, bool flip)
@@ -93,6 +94,7 @@ static inline void YUV422SPDataCopy(uint8_t* surfaceBuffer, uint64_t bufferSize,
         }
     }
 }
+
 static uint32_t ProcessYUV422SP(ImageNapi* imageNapi, sptr<SurfaceBuffer> surface)
 {
     IMAGE_FUNCTION_IN();
@@ -116,11 +118,11 @@ static uint32_t ProcessYUV422SP(ImageNapi* imageNapi, sptr<SurfaceBuffer> surfac
     uint64_t uvSize = static_cast<uint64_t>(surface->GetHeight() * uvStride);
     if (surfaceSize < (ySize + uvSize * NUM2)) {
         HiLog::Error(LABEL, "Surface size %{public}" PRIu64 " < y plane %{public}" PRIu64
-            " + uv plane %{public}" PRIu64 , surfaceSize, ySize, uvSize * NUM2);
+            " + uv plane %{public}" PRIu64, surfaceSize, ySize, uvSize * NUM2 );
         return ERR_IMAGE_DATA_ABNORMAL;
     }
 
-    Component* y = imageNapi->CreateComponentData(ComponentType::YUV_Y, ySize, ySize, NUM1);
+    Component* y = imageNapi->CreateComponentData(ComponentType::YUV_Y, ySize, surface->GetWidth(), NUM1);
     Component* u = imageNapi->CreateComponentData(ComponentType::YUV_U, uvSize, uvStride, NUM2);
     Component* v = imageNapi->CreateComponentData(ComponentType::YUV_V, uvSize, uvStride, NUM2);
     if ((y == nullptr) || (u == nullptr) || (v == nullptr)) {
@@ -130,11 +132,11 @@ static uint32_t ProcessYUV422SP(ImageNapi* imageNapi, sptr<SurfaceBuffer> surfac
     YUV422SPDataCopy(surfaceBuffer, surfaceSize, y->raw, ySize, u->raw, v->raw, uvSize, false);
     return SUCCESS;
 }
+
 static uint32_t SplitSurfaceToComponent(ImageNapi* imageNapi, sptr<SurfaceBuffer> surface)
 {
     auto surfaceFormat = surface->GetFormat();
-    switch (surfaceFormat)
-    {
+    switch (surfaceFormat) {
         case int32_t(ImageFormat::YCBCR_422_SP):
         case int32_t(PIXEL_FMT_YCBCR_422_SP):
             return ProcessYUV422SP(imageNapi, surface);
@@ -202,8 +204,7 @@ void ImageNapi::NativeRelease()
         sSurfaceBuffer_ = nullptr;
     }
     if (componentData_.size() > 0) {
-        for(auto iter = componentData_.begin();iter != componentData_.end();)
-        {
+        for( auto iter = componentData_.begin(); iter != componentData_.end(); ) {
             iter->second = nullptr;
             componentData_.erase(iter++);
         }
@@ -608,10 +609,10 @@ static bool IsYUVType(const int32_t& type)
 }
 static inline bool IsYCbCr422SP(int32_t format)
 {
-    if(int32_t(ImageFormat::YCBCR_422_SP) == format) {
+    if( int32_t( ImageFormat::YCBCR_422_SP ) == format ) {
         return true;
     }
-    if(int32_t(PIXEL_FMT_YCBCR_422_SP) == format) {
+    if( int32_t( PIXEL_FMT_YCBCR_422_SP ) == format ) {
         return true;
     }
     return false;
@@ -666,7 +667,7 @@ void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status, ImageAs
             HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
         }
     } else {
-        HiLog::Error(LABEL, "buffer is nullptr or bufferSize is %{public}" PRIu32 , bufferSize);
+        HiLog::Error( LABEL, "buffer is nullptr or bufferSize is %{public}" PRIu32, bufferSize );
     }
 
     IMAGE_FUNCTION_OUT();
