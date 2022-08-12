@@ -118,7 +118,7 @@ static uint32_t ProcessYUV422SP(ImageNapi* imageNapi, sptr<SurfaceBuffer> surfac
     uint64_t uvSize = static_cast<uint64_t>(surface->GetHeight() * uvStride);
     if (surfaceSize < (ySize + uvSize * NUM2)) {
         HiLog::Error(LABEL, "Surface size %{public}" PRIu64 " < y plane %{public}" PRIu64
-            " + uv plane %{public}" PRIu64, surfaceSize, ySize, uvSize * NUM2 );
+            " + uv plane %{public}", PRIu64, surfaceSize, ySize, uvSize * NUM2 );
         return ERR_IMAGE_DATA_ABNORMAL;
     }
 
@@ -612,7 +612,7 @@ static inline bool IsYCbCr422SP(int32_t format)
     if (int32_t(ImageFormat::YCBCR_422_SP) == format) {
         return true;
     }
-    if (int32_t( PIXEL_FMT_YCBCR_422_SP) == format) {
+    if (int32_t(PIXEL_FMT_YCBCR_422_SP) == format) {
         return true;
     }
     return false;
