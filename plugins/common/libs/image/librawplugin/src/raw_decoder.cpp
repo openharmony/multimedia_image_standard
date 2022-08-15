@@ -14,34 +14,20 @@
  */
 #include "raw_decoder.h"
 #include "src/images/SkImageEncoderFns.h"
-#include "src/piex.h"
-#include "src/piex_types.h"
 #include "hilog/log.h"
 #include "log_tags.h"
 #include "buffer_source_stream.h"
 #include "jpeg_decoder.h"
+#include "raw_stream.h"
 namespace OHOS {
 namespace ImagePlugin {
 using namespace OHOS::HiviewDFX;
 using namespace MultimediaPlugin;
 using namespace Media;
 namespace {
-constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "RawDecoder" };
+constexpr HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "RawDecoder" };
 constexpr uint32_t RAW_IMAGE_NUM = 1;
 }
-
-class ProxyStream : public piex::StreamInterface {
-public:
-    ProxyStream(InputDataStream &sourceStream);
-    ~ProxyStream();
-
-public:
-    // api for piex::StreamInterface
-    piex::Error GetData(const size_t offset, const size_t length, uint8_t* data) override;
-
-private:
-    InputDataStream *inputStream_ {nullptr};
-};
 
 RawDecoder::RawDecoder()
 {
@@ -72,7 +58,7 @@ void RawDecoder::Reset()
     PlImageInfo info;
     info_ = info;
 
-    proxyStream_ = nullptr;
+    rawStream_ = nullptr;
 
     // PIEX used.
     jpegStream_ = nullptr;
@@ -107,7 +93,7 @@ void RawDecoder::SetSource(InputDataStream &sourceStream)
     HiLog::Debug(LABEL, "SetSource IN");
 
     inputStream_ = &sourceStream;
-    proxyStream_ = std::make_unique<ProxyStream>(sourceStream);
+    rawStream_ = std::make_unique<RawStream>(sourceStream);
 
     state_ = RawDecodingState::SOURCE_INITED;
 
@@ -135,7 +121,6 @@ uint32_t RawDecoder::SetDecodeOptions(uint32_t index, const PixelDecodeOptions &
     }
 
     if (state_ >= RawDecodingState::IMAGE_DECODING) {
-        //FinishOldDecompress();
         state_ = RawDecodingState::SOURCE_INITED;
     }
 
@@ -211,7 +196,8 @@ uint32_t RawDecoder::Decode(uint32_t index, DecodeContext &context)
     HiLog::Debug(LABEL, "Decode IN index=%{public}u", index);
 
     if (index >= RAW_IMAGE_NUM) {
-        HiLog::Error(LABEL, "[Decode] decode image index:[%{public}u] out of range:[%{public}u].", index, RAW_IMAGE_NUM);
+        HiLog::Error(LABEL, "[Decode] decode image index:[%{public}u] out of range:[%{public}u].",
+            index, RAW_IMAGE_NUM);
         return Media::ERR_IMAGE_INVALID_PARAMETER;
     }
     if (state_ < RawDecodingState::IMAGE_DECODING) {
@@ -236,7 +222,7 @@ uint32_t RawDecoder::DoDecodeHeader()
 {
     HiLog::Debug(LABEL, "DoDecodeHeader IN");
 
-    if (piex::IsRaw(proxyStream_.get())) {
+    if (piex::IsRaw(rawStream_.get())) {
         jpegDecoder_ = nullptr;
         jpegStream_ = nullptr;
         uint32_t ret = DoDecodeHeaderByPiex();
@@ -263,7 +249,7 @@ uint32_t RawDecoder::DoDecodeHeaderByPiex()
     HiLog::Debug(LABEL, "DoDecodeHeaderByPiex IN");
 
     piex::PreviewImageData imageData;
-    piex::Error error = piex::GetPreviewImageData(proxyStream_.get(), &imageData);
+    piex::Error error = piex::GetPreviewImageData(rawStream_.get(), &imageData);
     if (error == piex::Error::kFail) {
         HiLog::Error(LABEL, "DoDecodeHeaderByPiex get preview fail");
         return Media::ERR_IMAGE_DATA_ABNORMAL;
@@ -288,7 +274,7 @@ uint32_t RawDecoder::DoDecodeHeaderByPiex()
 
     uint32_t size = piexImage.length;
     std::unique_ptr<uint8_t[]> data = std::make_unique<uint8_t[]>(size);
-    error = proxyStream_->GetData(piexImage.offset, size, data.get());
+    error = rawStream_->GetData(piexImage.offset, size, data.get());
     if (error != piex::Error::kOk) {
         HiLog::Error(LABEL, "DoDecodeHeaderByPiex getdata fail");
         return Media::ERR_IMAGE_MALLOC_ABNORMAL;
@@ -382,63 +368,6 @@ uint32_t RawDecoder::DoDecode(uint32_t index, DecodeContext &context)
 
     HiLog::Debug(LABEL, "DoDecode OUT ret=%{public}u", ret);
     return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-ProxyStream::ProxyStream(InputDataStream &sourceStream)
-{
-    HiLog::Debug(LABEL, "create IN");
-
-    inputStream_ = &sourceStream;
-
-    HiLog::Debug(LABEL, "create OUT");
-}
-
-ProxyStream::~ProxyStream()
-{
-    HiLog::Debug(LABEL, "release IN");
-
-    inputStream_ = nullptr;
-
-    HiLog::Debug(LABEL, "release OUT");
-}
-
-// api for piex::StreamInterface
-piex::Error ProxyStream::GetData(const size_t offset, const size_t length, uint8_t* data)
-{
-    if (inputStream_ == nullptr) {
-        HiLog::Error(LABEL, "GetData, InputStream is null");
-        return piex::kUnsupported;
-    }
-
-    uint32_t u32Offset = static_cast<uint32_t>(offset);
-    uint32_t u32Length = static_cast<uint32_t>(length);
-
-    if (inputStream_->Tell() != u32Offset) {
-        if (!inputStream_->Seek(u32Offset)) {
-            HiLog::Error(LABEL, "GetData, seek fail");
-            return piex::kFail;
-        }
-
-        if (inputStream_->Tell() != u32Offset) {
-            HiLog::Error(LABEL, "GetData, seeked fail");
-            return piex::kFail;
-        }
-    }
-
-    uint32_t readSize = 0;
-    if (!inputStream_->Read(u32Length, data, u32Length, readSize)) {
-        HiLog::Error(LABEL, "GetData, read fail");
-        return piex::kFail;
-    }
-
-    if (readSize != u32Length) {
-        HiLog::Error(LABEL, "GetData, read want:%{public}u, real:%{public}u", u32Length, readSize);
-        return piex::kFail;
-    }
-
-    return piex::kOk;
 }
 } // namespace ImagePlugin
 } // namespace OHOS

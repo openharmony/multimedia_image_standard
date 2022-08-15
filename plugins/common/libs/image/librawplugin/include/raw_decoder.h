@@ -22,7 +22,7 @@
 #include "abs_image_decoder.h"
 namespace OHOS {
 namespace ImagePlugin {
-class ProxyStream;
+class RawStream;
 class RawDecoder : public AbsImageDecoder, public OHOS::MultimediaPlugin::PluginClassBase {
 public:
     RawDecoder();
@@ -64,7 +64,7 @@ private:
     PixelDecodeOptions opts_;
     PlImageInfo info_;
 
-    std::unique_ptr<ProxyStream> proxyStream_;
+    std::unique_ptr<RawStream> rawStream_;
 
     // PIEX used.
     std::unique_ptr<InputDataStream> jpegStream_;

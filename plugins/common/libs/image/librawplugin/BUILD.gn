@@ -18,6 +18,7 @@ ohos_shared_library("rawplugin") {
   sources = [
     "//foundation/multimedia/image_standard/plugins/common/libs/image/librawplugin/src/plugin_export.cpp",
     "//foundation/multimedia/image_standard/plugins/common/libs/image/librawplugin/src/raw_decoder.cpp",
+    "//foundation/multimedia/image_standard/plugins/common/libs/image/librawplugin/src/raw_stream.cpp",
   ]
 
   cflags = [
@@ -42,9 +43,8 @@ ohos_shared_library("rawplugin") {
 
   if (use_mingw_win) {
     defines = image_decode_windows_defines
-    include_dirs += [
-      "//foundation/multimedia/image_standard/mock/native/include",
-    ]
+    include_dirs +=
+        [ "//foundation/multimedia/image_standard/mock/native/include" ]
     deps = [
       "//foundation/multimedia/image_standard/mock/native:log_mock_static",
       "//foundation/multimedia/image_standard/plugins/manager:pluginmanager_static",
