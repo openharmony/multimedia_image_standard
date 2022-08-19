@@ -90,16 +90,16 @@ struct ImageEnum {
     std::string strVal;
 };
 static std::vector<struct ImageEnum> sPixelMapFormatMap = {
-    {"UNKNOWN", 0,""},
-    {"ARGB_8888", 1,""},
-    {"RGB_565", 2,""},
-    {"RGBA_8888", 3,""},
-    {"BGRA_8888", 4,""},
-    {"RGB_888", 5,""},
-    {"ALPHA_8", 6,""},
-    {"RGBA_F16", 7,""},
-    {"NV21", 8,""},
-    {"NV12", 9,""},
+    {"UNKNOWN", 0, ""},
+    {"ARGB_8888", 1, ""},
+    {"RGB_565", 2, ""},
+    {"RGBA_8888", 3, ""},
+    {"BGRA_8888", 4, ""},
+    {"RGB_888", 5, ""},
+    {"ALPHA_8", 6, ""},
+    {"RGBA_F16", 7, ""},
+    {"NV21", 8, ""},
+    {"NV12", 9, ""},
 };
 static std::vector<struct ImageEnum> sPropertyKeyMap = {
     {"BITS_PER_SAMPLE", 0, "BitsPerSample"},
@@ -117,23 +117,23 @@ static std::vector<struct ImageEnum> sPropertyKeyMap = {
     {"F_NUMBER", 0, "FNumber"},
 };
 static std::vector<struct ImageEnum> sImageFormatMap = {
-    {"YCBCR_422_SP", 1000,""},
+    {"YCBCR_422_SP", 1000, ""},
     {"JPEG", 2000, ""},
 };
 static std::vector<struct ImageEnum> sAlphaTypeMap = {
-    {"UNKNOWN", 0,""},
-    {"OPAQUE", 1,""},
-    {"PREMUL", 2,""},
-    {"UNPREMUL", 3,""},
+    {"UNKNOWN", 0, ""},
+    {"OPAQUE", 1, ""},
+    {"PREMUL", 2, ""},
+    {"UNPREMUL", 3, ""},
 };
 static std::vector<struct ImageEnum> sScaleModeMap = {
-    {"FIT_TARGET_SIZE", 0,""},
-    {"CENTER_CROP", 1,""},
+    {"FIT_TARGET_SIZE", 0, ""},
+    {"CENTER_CROP", 1, ""},
 };
 static std::vector<struct ImageEnum> sComponentTypeMap = {
-    {"YUV_Y", 1,""},
-    {"YUV_U", 2,""},
-    {"YUV_V", 3,""},
+    {"YUV_Y", 1, ""},
+    {"YUV_U", 2, ""},
+    {"YUV_V", 3, ""},
     {"JPEG", 4, ""},
 };
 
@@ -353,7 +353,7 @@ napi_value ImageSourceNapi::Init(napi_env env, napi_value exports)
         .staticPropertyCount = sizeof(static_prop) / sizeof(static_prop[NUM_0]),
     };
 
-    if(DoInit(env, exports, info)) {
+    if (DoInit(env, exports, info)) {
         return nullptr;
     }
 
@@ -1168,7 +1168,7 @@ static bool CheckExifDataValue(const std::string &key, const std::string &value,
 {
     if (IsSameTextStr(key, "BitsPerSample")) {
         std::vector<std::string> bitsVec;
-        SplitStr(value, ",", bitsVec);
+        SplitStr(value, ", ", bitsVec);
         if (bitsVec.size() > NUM_2) {
             errorInfo = "BitsPerSample has invalid exif value: ";
             errorInfo.append(value);
@@ -1195,7 +1195,7 @@ static bool CheckExifDataValue(const std::string &key, const std::string &value,
         }
     } else if (IsSameTextStr(key, "GPSLatitude") || IsSameTextStr(key, "GPSLongitude")) {
         std::vector<std::string> gpsVec;
-        SplitStr(value, ",", gpsVec);
+        SplitStr(value, ", ", gpsVec);
         if (gpsVec.size() != NUM_2) {
             errorInfo = "GPSLatitude or GPSLongitude has invalid exif value: ";
             errorInfo.append(value);
