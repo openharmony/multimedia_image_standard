@@ -152,13 +152,7 @@ ImageSourceNapi::ImageSourceNapi()
 
 ImageSourceNapi::~ImageSourceNapi()
 {
-    if (nativeImgSrc != nullptr) {
-        nativeImgSrc = nullptr;
-    }
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
-    isRelease = true;
+    release();
 }
 
 napi_value ImageSourceNapi::Init(napi_env env, napi_value exports)
@@ -257,7 +251,7 @@ void ImageSourceNapi::Destructor(napi_env env, void *nativeObject, void *finaliz
 {
     ImageSourceNapi *pImgSrcNapi = reinterpret_cast<ImageSourceNapi*>(nativeObject);
     if (pImgSrcNapi != nullptr) {
-        pImgSrcNapi->~ImageSourceNapi();
+        pImgSrcNapi->release();
     }
 }
 
@@ -1367,7 +1361,7 @@ static void ReleaseComplete(napi_env env, napi_status status, void *data)
     napi_get_undefined(env, &result);
 
     auto context = static_cast<ImageSourceAsyncContext*>(data);
-    context->constructor_->~ImageSourceNapi();
+    delete context->constructor_;
     HiLog::Debug(LABEL, "ReleaseComplete OUT");
     ImageSourceCallbackRoutine(env, context, result);
 }
@@ -1407,6 +1401,19 @@ napi_value ImageSourceNapi::Release(napi_env env, napi_callback_info info)
         [](napi_env env, void *data) {}, ReleaseComplete, asyncContext, asyncContext->work);
     HiLog::Debug(LABEL, "Release exit");
     return result;
+}
+
+void ImageSourceNapi::release()
+{
+    if (!isRelease) {
+        if (nativeImgSrc != nullptr) {
+            nativeImgSrc = nullptr;
+        }
+        if (wrapper_ != nullptr) {
+            napi_delete_reference(env_, wrapper_);
+        }
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS
