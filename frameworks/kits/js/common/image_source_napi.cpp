@@ -46,6 +46,13 @@ int ImageSourceNapi::fileDescriptor_ = -1;
 void* ImageSourceNapi::fileBuffer_ = nullptr;
 size_t ImageSourceNapi::fileBufferSize_ = 0;
 
+napi_ref ImageSourceNapi::pixelMapFormatRef_ = nullptr;
+napi_ref ImageSourceNapi::propertyKeyRef_ = nullptr;
+napi_ref ImageSourceNapi::imageFormatRef_ = nullptr;
+napi_ref ImageSourceNapi::alphaTypeRef_ = nullptr;
+napi_ref ImageSourceNapi::scaleModeRef_ = nullptr;
+napi_ref ImageSourceNapi::componentTypeRef_ = nullptr;
+
 struct ImageSourceAsyncContext {
     napi_env env;
     napi_async_work work;
@@ -76,6 +83,58 @@ struct ImageSourceAsyncContext {
     std::shared_ptr<ImageSource> rImageSource;
     std::shared_ptr<PixelMap> rPixelMap;
     std::string errMsg;
+};
+struct ImageEnum {
+    std::string name;
+    int32_t numVal;
+    std::string strVal;
+};
+static std::vector<struct ImageEnum> sPixelMapFormatMap = {
+    {"UNKNOWN", 0,""},
+    {"ARGB_8888", 1,""},
+    {"RGB_565", 2,""},
+    {"RGBA_8888", 3,""},
+    {"BGRA_8888", 4,""},
+    {"RGB_888", 5,""},
+    {"ALPHA_8", 6,""},
+    {"RGBA_F16", 7,""},
+    {"NV21", 8,""},
+    {"NV12", 9,""},
+};
+static std::vector<struct ImageEnum> sPropertyKeyMap = {
+    {"BITS_PER_SAMPLE", 0, "BitsPerSample"},
+    {"ORIENTATION", 0, "Orientation"},
+    {"IMAGE_LENGTH", 0, "ImageLength"},
+    {"IMAGE_WIDTH", 0, "ImageWidth"},
+    {"GPS_LATITUDE", 0, "GPSLatitude"},
+    {"GPS_LONGITUDE", 0, "GPSLongitude"},
+    {"GPS_LATITUDE_REF", 0, "GPSLatitudeRef"},
+    {"GPS_LONGITUDE_REF", 0, "GPSLongitudeRef"},
+    {"DATE_TIME_ORIGINAL", 0, "DateTimeOriginal"},
+    {"EXPOSURE_TIME", 0, "ExposureTime"},
+    {"SCENE_TYPE", 0, "SceneType"},
+    {"ISO_SPEED_RATINGS", 0, "ISOSpeedRatings"},
+    {"F_NUMBER", 0, "FNumber"},
+};
+static std::vector<struct ImageEnum> sImageFormatMap = {
+    {"YCBCR_422_SP", 1000,""},
+    {"JPEG", 2000, ""},
+};
+static std::vector<struct ImageEnum> sAlphaTypeMap = {
+    {"UNKNOWN", 0,""},
+    {"OPAQUE", 1,""},
+    {"PREMUL", 2,""},
+    {"UNPREMUL", 3,""},
+};
+static std::vector<struct ImageEnum> sScaleModeMap = {
+    {"FIT_TARGET_SIZE", 0,""},
+    {"CENTER_CROP", 1,""},
+};
+static std::vector<struct ImageEnum> sComponentTypeMap = {
+    {"YUV_Y", 1,""},
+    {"YUV_U", 2,""},
+    {"YUV_V", 3,""},
+    {"JPEG", 4, ""},
 };
 
 static std::string GetStringArgument(napi_env env, napi_value value)
@@ -144,6 +203,46 @@ static void ImageSourceCallbackRoutine(napi_env env, ImageSourceAsyncContext* &c
     context = nullptr;
 }
 
+static napi_value CreateEnumTypeObject(napi_env env,
+    napi_valuetype type, napi_ref* ref, std::vector<struct ImageEnum> imageEnumMap)
+{
+    napi_value result = nullptr;
+    napi_status status;
+    int32_t refCount = 1;
+    std::string propName;
+    status = napi_create_object(env, &result);
+    if (status == napi_ok) {
+        for (auto imgEnum : imageEnumMap) {
+            napi_value enumNapiValue = nullptr;
+            if (type == napi_string) {
+                status = napi_create_string_utf8(env, imgEnum.strVal.c_str(),
+                    NAPI_AUTO_LENGTH, &enumNapiValue);
+            } else if (type == napi_number) {
+                status = napi_create_int32(env, imgEnum.numVal, &enumNapiValue);
+            } else {
+                HiLog::Error(LABEL, "Unsupported type %{public}d!", type);
+            }
+            if (status == napi_ok && enumNapiValue != nullptr) {
+                status = napi_set_named_property(env, result, imgEnum.name.c_str(), enumNapiValue);
+            }
+            if (status != napi_ok) {
+                HiLog::Error(LABEL, "Failed to add named prop!");
+                break;
+            }
+        }
+
+        if (status == napi_ok) {
+            status = napi_create_reference(env, result, refCount, ref);
+            if (status == napi_ok) {
+                return result;
+            }
+        }
+    }
+    HiLog::Error(LABEL, "CreateEnumTypeObject is Failed!");
+    napi_get_undefined(env, &result);
+    return result;
+}
+
 ImageSourceNapi::ImageSourceNapi()
     :env_(nullptr), wrapper_(nullptr)
 {
@@ -161,6 +260,60 @@ ImageSourceNapi::~ImageSourceNapi()
     isRelease = true;
 }
 
+struct ImageConstructorInfo {
+    std::string className;
+    napi_ref* classRef;
+    napi_callback constructor;
+    const napi_property_descriptor* property;
+    size_t propertyCount;
+    const napi_property_descriptor* staticProperty;
+    size_t staticPropertyCount;
+};
+
+static napi_value DoInit(napi_env env, napi_value exports, struct ImageConstructorInfo info)
+{
+    napi_value constructor = nullptr;
+    napi_status status = napi_define_class(env, info.className.c_str(), NAPI_AUTO_LENGTH,
+        info.constructor, nullptr, info.propertyCount, info.property, &constructor);
+
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "define class fail");
+        return nullptr;
+    }
+
+    status = napi_create_reference(env, constructor, NUM_1, info.classRef);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "create reference fail");
+        return nullptr;
+    }
+
+    napi_value global = nullptr;
+    status = napi_get_global(env, &global);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Init:get global fail");
+        return nullptr;
+    }
+
+    status = napi_set_named_property(env, global, info.className.c_str(), constructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Init:set global named property fail");
+        return nullptr;
+    }
+
+    status = napi_set_named_property(env, exports, info.className.c_str(), constructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "set named property fail");
+        return nullptr;
+    }
+
+    status = napi_define_properties(env, exports, info.staticPropertyCount, info.staticProperty);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "define properties fail");
+        return nullptr;
+    }
+    return exports;
+}
+
 napi_value ImageSourceNapi::Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor properties[] = {
@@ -176,47 +329,34 @@ napi_value ImageSourceNapi::Init(napi_env env, napi_value exports)
     napi_property_descriptor static_prop[] = {
         DECLARE_NAPI_STATIC_FUNCTION("createImageSource", CreateImageSource),
         DECLARE_NAPI_STATIC_FUNCTION("createIncrementalSource", CreateIncrementalSource),
+        DECLARE_NAPI_PROPERTY("PixelMapFormat",
+            CreateEnumTypeObject(env, napi_number, &pixelMapFormatRef_, sPixelMapFormatMap)),
+        DECLARE_NAPI_PROPERTY("PropertyKey",
+            CreateEnumTypeObject(env, napi_string, &propertyKeyRef_, sPropertyKeyMap)),
+        DECLARE_NAPI_PROPERTY("ImageFormat",
+            CreateEnumTypeObject(env, napi_number, &imageFormatRef_, sImageFormatMap)),
+        DECLARE_NAPI_PROPERTY("AlphaType",
+            CreateEnumTypeObject(env, napi_number, &alphaTypeRef_, sAlphaTypeMap)),
+        DECLARE_NAPI_PROPERTY("ScaleMode",
+            CreateEnumTypeObject(env, napi_number, &scaleModeRef_, sScaleModeMap)),
+        DECLARE_NAPI_PROPERTY("ComponentType",
+            CreateEnumTypeObject(env, napi_number, &componentTypeRef_, sComponentTypeMap)),
     };
 
-    napi_value constructor = nullptr;
-    napi_status status = napi_define_class(env, CLASS_NAME.c_str(), NAPI_AUTO_LENGTH, Constructor, nullptr,
-        sizeof(properties) / sizeof(properties[NUM_0]), properties, &constructor);
+    struct ImageConstructorInfo info = {
+        .className = CLASS_NAME,
+        .classRef = &sConstructor_,
+        .constructor = Constructor,
+        .property = properties,
+        .propertyCount = sizeof(properties) / sizeof(properties[NUM_0]),
+        .staticProperty = static_prop,
+        .staticPropertyCount = sizeof(static_prop) / sizeof(static_prop[NUM_0]),
+    };
 
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "define class fail");
+    if(DoInit(env, exports, info)) {
         return nullptr;
     }
 
-    status = napi_create_reference(env, constructor, NUM_1, &sConstructor_);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "create reference fail");
-        return nullptr;
-    }
-
-    napi_value global = nullptr;
-    status = napi_get_global(env, &global);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Init:get global fail");
-        return nullptr;
-    }
-
-    status = napi_set_named_property(env, global, CLASS_NAME.c_str(), constructor);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Init:set global named property fail");
-        return nullptr;
-    }
-
-    status = napi_set_named_property(env, exports, CLASS_NAME.c_str(), constructor);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "set named property fail");
-        return nullptr;
-    }
-
-    status = napi_define_properties(env, exports, sizeof(static_prop) / sizeof(static_prop[NUM_0]), static_prop);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "define properties fail");
-        return nullptr;
-    }
     HiLog::Debug(LABEL, "Init success");
     return exports;
 }
