@@ -86,6 +86,7 @@ private:
     bool IsMarker(uint8_t rawPrefix, uint8_t rawMarkderCode, uint8_t markerCode);
     bool FindMarker(InputDataStream &stream, uint8_t marker);
     ExifTag getExifTagFromKey(const std::string &key);
+    void FormatTimeStamp(std::string &value, std::string &src);
 
     static MultimediaPlugin::PluginServer &pluginServer_;
     jpeg_decompress_struct decodeInfo_;

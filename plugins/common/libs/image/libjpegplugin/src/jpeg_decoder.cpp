@@ -51,6 +51,8 @@ constexpr uint8_t JPG_MARKER_RSTN = 0XD7;
 constexpr uint8_t JPG_MARKER_APP = 0XE0;
 constexpr uint8_t JPG_MARKER_APP0 = 0XE0;
 constexpr uint8_t JPG_MARKER_APPN = 0XEF;
+constexpr size_t TIMES_LEN = 19;
+constexpr size_t DATE_LEN = 10;
 const std::string BITS_PER_SAMPLE = "BitsPerSample";
 const std::string ORIENTATION = "Orientation";
 const std::string IMAGE_LENGTH = "ImageLength";
@@ -60,6 +62,7 @@ const std::string GPS_LONGITUDE = "GPSLongitude";
 const std::string GPS_LATITUDE_REF = "GPSLatitudeRef";
 const std::string GPS_LONGITUDE_REF = "GPSLongitudeRef";
 const std::string DATE_TIME_ORIGINAL = "DateTimeOriginal";
+const std::string DATE_TIME_ORIGINAL_MEDIA = "DateTimeOriginalForMedia";
 const std::string EXPOSURE_TIME = "ExposureTime";
 const std::string F_NUMBER = "FNumber";
 const std::string ISO_SPEED_RATINGS = "ISOSpeedRatings";
@@ -625,6 +628,8 @@ uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &
         value = exifInfo_.gpsLongitudeRef_;
     } else if (IsSameTextStr(key, DATE_TIME_ORIGINAL)) {
         value = exifInfo_.dateTimeOriginal_;
+    } else if (IsSameTextStr(key, DATE_TIME_ORIGINAL_MEDIA)) {
+        FormatTimeStamp(value, exifInfo_.dateTimeOriginal_);
     } else if (IsSameTextStr(key, EXPOSURE_TIME)) {
         value = exifInfo_.exposureTime_;
     } else if (IsSameTextStr(key, F_NUMBER)) {
@@ -643,6 +648,60 @@ uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &
     }
     HiLog::Debug(LABEL, "[GetImagePropertyString] enter jped plugin, value:%{public}s", value.c_str());
     return Media::SUCCESS;
+}
+
+void InitOriginalTimes(std::string &dataTime)
+{
+    for (size_t i = 0; i < dataTime.size() && i < TIMES_LEN; i++) {
+        if ((dataTime[i] < '0' || dataTime[i] > '9') && dataTime[i] != ' ') {
+            if (i < DATE_LEN) {
+                dataTime[i] = '-';
+            } else {
+                dataTime[i] = ':';
+            }
+        }
+    }
+}
+
+std::string SetOriginalTimes(std::string &dataTime)
+{
+    InitOriginalTimes(dataTime);
+    std::string data = "";
+    std::string time = "";
+    std::string::size_type position = dataTime.find(" ");
+    if (position == dataTime.npos) {
+        data = dataTime;
+        if (data.find("-") == data.npos) {
+            data += "-01-01";
+        } else if (data.find_first_of("-") == data.find_last_of("-")) {
+            data += "-01";
+        }
+        time += " 00:00:00";
+    } else {
+        data = dataTime.substr(0, position);
+        time = dataTime.substr(position);
+        if (data.find("-") == data.npos) {
+            data += "-01-01";
+        } else if (data.find_first_of("-") == data.find_last_of("-")) {
+            data += "-01";
+        }
+        if (time.find(":") == data.npos) {
+            time += ":00:00";
+        } else if (time.find_first_of(":") == time.find_last_of(":")) {
+            time += ":00";
+        } else {
+            time = time.substr(0, time.find("."));
+        }
+    }
+    return data + time;
+}
+
+void JpegDecoder::FormatTimeStamp(std::string &value, std::string &src)
+{
+    value = "";
+    if (!IsSameTextStr(src, "")) {
+        value = SetOriginalTimes(src);
+    }
 }
 
 ExifTag JpegDecoder::getExifTagFromKey(const std::string &key)
