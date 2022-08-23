@@ -984,7 +984,8 @@ uint32_t EXIFInfo::GetRedactionArea(const int &fd,
                                     const int &redactionType,
                                     std::vector<std::pair<uint32_t, uint32_t>> &ranges)
 {
-    FILE *file = fdopen(fd, "rb");
+    // Do not close origin fd by fclose function, so dup fd
+    FILE *file = fdopen(dup(fd), "rb");
     if (file == nullptr) {
         HiLog::Error(LABEL, "Error creating file %{public}d", fd);
         return Media::ERR_MEDIA_IO_ABNORMAL;
