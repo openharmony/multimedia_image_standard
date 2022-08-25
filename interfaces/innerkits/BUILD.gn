@@ -13,6 +13,7 @@
 
 import("//build/ohos.gni")
 import("//build/ohos/ace/ace.gni")
+import("//foundation/graphic/graphic_2d/graphic_config.gni")
 import("//foundation/multimedia/image_standard/ide/image_decode_config.gni")
 
 config("image_external_config") {
@@ -186,6 +187,12 @@ ohos_shared_library("image_native") {
   } else {
     defines = [ "DUAL_ADAPTER" ]
     DUAL_ADAPTER = true
+
+    if (rs_enable_gpu) {
+      defines += [ "UPLOAD_GPU_ENABLED" ]
+    }
+
+    sources += [ "//foundation/multimedia/image_standard/frameworks/innerkitsimpl/converter/src/pixel_map_rosen_utils.cpp" ]
 
     deps = [
       "//foundation/arkui/napi:ace_napi",
