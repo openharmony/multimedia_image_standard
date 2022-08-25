@@ -524,7 +524,7 @@ napi_value PixelMapNapi::Constructor(napi_env env, napi_callback_info info)
     pPixelMapNapi->nativeInner_ = sPixelMap_;
 
     status = napi_wrap(env, thisVar, reinterpret_cast<void*>(pPixelMapNapi.get()),
-                        PixelMapNapi::Destructor, nullptr, nullptr);
+        PixelMapNapi::Destructor, nullptr, nullptr);
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), undefineVar, HiLog::Error(LABEL, "Failure wrapping js to native napi"));
 
     pPixelMapNapi.release();

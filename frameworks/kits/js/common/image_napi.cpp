@@ -55,7 +55,6 @@ ImageNapi::ImageNapi():env_(nullptr)
 ImageNapi::~ImageNapi()
 {
     release();
-
 }
 
 static inline void YUV422SPDataCopy(uint8_t* surfaceBuffer, uint64_t bufferSize,
