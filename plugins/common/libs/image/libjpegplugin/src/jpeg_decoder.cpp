@@ -595,7 +595,7 @@ uint32_t JpegDecoder::StartDecompress(const PixelDecodeOptions &opts)
 
 uint32_t JpegDecoder::GetImagePropertyInt(uint32_t index, const std::string &key, int32_t &value)
 {
-    HiLog::Debug(LABEL, "[GetImagePropertyInt] enter jped plugin, key:%{public}s", key.c_str());
+    HiLog::Debug(LABEL, "[GetImagePropertyInt] enter jpeg plugin, key:%{public}s", key.c_str());
     if (IsSameTextStr(key, ORIENTATION)) {
         if (PROPERTY_INT.find(exifInfo_.orientation_) != PROPERTY_INT.end()) {
             value = PROPERTY_INT.at(exifInfo_.orientation_);
@@ -609,7 +609,7 @@ uint32_t JpegDecoder::GetImagePropertyInt(uint32_t index, const std::string &key
 
 uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &key, std::string &value)
 {
-    HiLog::Debug(LABEL, "[GetImagePropertyString] enter jped plugin, key:%{public}s", key.c_str());
+    HiLog::Debug(LABEL, "[GetImagePropertyString] enter jpeg plugin, key:%{public}s", key.c_str());
     if (IsSameTextStr(key, BITS_PER_SAMPLE)) {
         value = exifInfo_.bitsPerSample_;
     } else if (IsSameTextStr(key, ORIENTATION)) {
@@ -643,10 +643,10 @@ uint32_t JpegDecoder::GetImagePropertyString(uint32_t index, const std::string &
     }
 
     if (IsSameTextStr(value, "")) {
-        HiLog::Error(LABEL, "[GetImagePropertyString] enter jped plugin, ifd and entry are not matched!");
+        HiLog::Error(LABEL, "[GetImagePropertyString] enter jpeg plugin, ifd and entry are not matched!");
         return Media::ERR_MEDIA_VALUE_INVALID;
     }
-    HiLog::Debug(LABEL, "[GetImagePropertyString] enter jped plugin, value:%{public}s", value.c_str());
+    HiLog::Debug(LABEL, "[GetImagePropertyString] enter jpeg plugin, value:%{public}s", value.c_str());
     return Media::SUCCESS;
 }
 
