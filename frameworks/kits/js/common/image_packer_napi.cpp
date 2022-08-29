@@ -557,8 +557,10 @@ static void ReleaseComplete(napi_env env, napi_status status, void *data)
     napi_get_undefined(env, &result);
 
     auto context = static_cast<ImagePackerAsyncContext*>(data);
-    delete context->constructor_;
-    context->constructor_ = nullptr;
+    if (context != nullptr && context->constructor_ != nullptr) {
+        delete context->constructor_;
+        context->constructor_ = nullptr;
+    }
     HiLog::Debug(LABEL, "ReleaseComplete OUT");
     CommonCallbackRoutine(env, context, result);
 }
