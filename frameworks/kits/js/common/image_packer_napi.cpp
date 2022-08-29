@@ -73,15 +73,12 @@ struct PackingOption {
     uint8_t quality = 100;
 };
 
-ImagePackerNapi::ImagePackerNapi()
-    :env_(nullptr), wrapper_(nullptr)
+ImagePackerNapi::ImagePackerNapi():env_(nullptr)
 {}
 
 ImagePackerNapi::~ImagePackerNapi()
 {
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
+    release();
 }
 
 static void CommonCallbackRoutine(napi_env env, ImagePackerAsyncContext* &connect, const napi_value &valueParam)
@@ -274,7 +271,7 @@ napi_value ImagePackerNapi::Constructor(napi_env env, napi_callback_info info)
             pImgPackerNapi->env_ = env;
             pImgPackerNapi->nativeImgPck = sImgPck_;
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(pImgPackerNapi.get()),
-                               ImagePackerNapi::Destructor, nullptr, &(pImgPackerNapi->wrapper_));
+                               ImagePackerNapi::Destructor, nullptr, nullptr);
             if (status == napi_ok) {
                 pImgPackerNapi.release();
                 return thisVar;
@@ -315,8 +312,7 @@ void ImagePackerNapi::Destructor(napi_env env, void *nativeObject, void *finaliz
     ImagePackerNapi *pImagePackerNapi = reinterpret_cast<ImagePackerNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImagePackerNapi)) {
-        pImagePackerNapi->nativeImgPck = nullptr;
-        pImagePackerNapi->~ImagePackerNapi();
+        pImagePackerNapi->release();
     }
 }
 
@@ -561,7 +557,10 @@ static void ReleaseComplete(napi_env env, napi_status status, void *data)
     napi_get_undefined(env, &result);
 
     auto context = static_cast<ImagePackerAsyncContext*>(data);
-    context->constructor_->~ImagePackerNapi();
+    if (context != nullptr && context->constructor_ != nullptr) {
+        delete context->constructor_;
+        context->constructor_ = nullptr;
+    }
     HiLog::Debug(LABEL, "ReleaseComplete OUT");
     CommonCallbackRoutine(env, context, result);
 }
@@ -602,6 +601,13 @@ napi_value ImagePackerNapi::Release(napi_env env, napi_callback_info info)
     HiLog::Debug(LABEL, "Release exit");
     FinishTrace(HITRACE_TAG_ZIMAGE);
     return result;
+}
+void ImagePackerNapi::release()
+{
+    if (!isRelease) {
+        nativeImgPck = nullptr;
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS

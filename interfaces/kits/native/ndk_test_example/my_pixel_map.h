@@ -41,7 +41,6 @@ private:
     static napi_ref sConstructor_;
 
     napi_env env_ = nullptr;
-    napi_ref wrapper_ = nullptr;
 };
 } // namespace Media
 } // namespace OHOS

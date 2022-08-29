@@ -243,21 +243,14 @@ static napi_value CreateEnumTypeObject(napi_env env,
     return result;
 }
 
-ImageSourceNapi::ImageSourceNapi()
-    :env_(nullptr), wrapper_(nullptr)
+ImageSourceNapi::ImageSourceNapi():env_(nullptr)
 {
 
 }
 
 ImageSourceNapi::~ImageSourceNapi()
 {
-    if (nativeImgSrc != nullptr) {
-        nativeImgSrc = nullptr;
-    }
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
-    isRelease = true;
+    release();
 }
 
 struct ImageConstructorInfo {
@@ -380,7 +373,7 @@ napi_value ImageSourceNapi::Constructor(napi_env env, napi_callback_info info)
             sIncPixelMap_ = nullptr;
 
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(pImgSrcNapi.get()),
-                               ImageSourceNapi::Destructor, nullptr, &(pImgSrcNapi->wrapper_));
+                               ImageSourceNapi::Destructor, nullptr, nullptr);
             if (status == napi_ok) {
                 pImgSrcNapi.release();
                 return thisVar;
@@ -397,7 +390,7 @@ void ImageSourceNapi::Destructor(napi_env env, void *nativeObject, void *finaliz
 {
     ImageSourceNapi *pImgSrcNapi = reinterpret_cast<ImageSourceNapi*>(nativeObject);
     if (pImgSrcNapi != nullptr) {
-        pImgSrcNapi->~ImageSourceNapi();
+        pImgSrcNapi->release();
     }
 }
 
@@ -1507,7 +1500,8 @@ static void ReleaseComplete(napi_env env, napi_status status, void *data)
     napi_get_undefined(env, &result);
 
     auto context = static_cast<ImageSourceAsyncContext*>(data);
-    context->constructor_->~ImageSourceNapi();
+    delete context->constructor_;
+    context->constructor_ = nullptr;
     HiLog::Debug(LABEL, "ReleaseComplete OUT");
     ImageSourceCallbackRoutine(env, context, result);
 }
@@ -1547,6 +1541,16 @@ napi_value ImageSourceNapi::Release(napi_env env, napi_callback_info info)
         [](napi_env env, void *data) {}, ReleaseComplete, asyncContext, asyncContext->work);
     HiLog::Debug(LABEL, "Release exit");
     return result;
+}
+
+void ImageSourceNapi::release()
+{
+    if (!isRelease) {
+        if (nativeImgSrc != nullptr) {
+            nativeImgSrc = nullptr;
+        }
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS
