@@ -84,11 +84,13 @@ struct ImageSourceAsyncContext {
     std::shared_ptr<PixelMap> rPixelMap;
     std::string errMsg;
 };
+
 struct ImageEnum {
     std::string name;
     int32_t numVal;
     std::string strVal;
 };
+
 static std::vector<struct ImageEnum> sPixelMapFormatMap = {
     {"UNKNOWN", 0, ""},
     {"ARGB_8888", 1, ""},
