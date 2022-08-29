@@ -199,12 +199,6 @@ void ImageNapi::NativeRelease()
     if (sSurfaceBuffer_ != nullptr) {
         sSurfaceBuffer_ = nullptr;
     }
-    if (componentData_.size() > 0) {
-        for (auto iter = componentData_.begin(); iter != componentData_.end();) {
-            iter->second = nullptr;
-            componentData_.erase(iter++);
-        }
-    }
 }
 
 napi_value ImageNapi::Init(napi_env env, napi_value exports)
@@ -594,97 +588,40 @@ static bool CreateArrayBuffer(napi_env env, uint8_t* src, size_t srcLen, napi_va
     return true;
 }
 
-static bool IsYUVType(const int32_t& type)
-{
-    if (type == static_cast<int32_t>(ComponentType::YUV_Y) ||
-        type == static_cast<int32_t>(ComponentType::YUV_U) ||
-        type == static_cast<int32_t>(ComponentType::YUV_V)) {
-        return true;
-    }
-    return false;
-}
-static inline bool IsYCbCr422SP(int32_t format)
-{
-    if (int32_t(ImageFormat::YCBCR_422_SP) == format) {
-        return true;
-    }
-    if (int32_t(PIXEL_FMT_YCBCR_422_SP) == format) {
-        return true;
-    }
-    return false;
-}
-void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status, ImageAsyncContext* context)
+void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
+                                       ImageAsyncContext* context)
 {
     IMAGE_FUNCTION_IN();
-    napi_value result;
-    context->status = ERROR;
-    napi_get_undefined(env, &result);
+    napi_value result = nullptr;
 
-    if (context == nullptr || context->constructor_ == nullptr ||
-        context->constructor_->sSurfaceBuffer_ == nullptr) {
-        HiLog::Error(LABEL, "Invalid input context");
-        CommonCallbackRoutine(env, context, result);
-        return;
-    }
+    napi_create_object(env, &result);
+    uint32_t bufferSize = context->constructor_->sSurfaceBuffer_->GetSize();
+    void *buffer = context->constructor_->sSurfaceBuffer_->GetVirAddr();
 
-    auto surfaceBuffer = context->constructor_->sSurfaceBuffer_;
-    uint32_t bufferSize = 0;
-    uint8_t *buffer = nullptr;
-    uint32_t rowStride = 0;
-    uint32_t pixelStride = 0;
-    if (IsYCbCr422SP(surfaceBuffer->GetFormat()) && IsYUVType(context->componentType)) {
-        Component* component = context->constructor_->GetComponentData(
-            ComponentType(context->componentType));
-        if (component != nullptr) {
-            bufferSize = component->raw.size();
-            buffer = component->raw.data();
-            rowStride = component->rowStride;
-            pixelStride = component->pixelStride;
-        } else {
-            HiLog::Error(LABEL, "Failed to GetComponentData");
-        }
+    napi_value array;
+    if (!CreateArrayBuffer(env, static_cast<uint8_t*>(buffer), bufferSize, &array)) {
+        context->status = ERROR;
+        HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
+        napi_get_undefined(env, &result);
     } else {
-        bufferSize = surfaceBuffer->GetSize();
-        buffer = static_cast<uint8_t*>(surfaceBuffer->GetVirAddr());
-        rowStride = surfaceBuffer->GetWidth();
-        pixelStride = NUM1;
+        context->status = SUCCESS;
+        napi_set_named_property(env, result, "byteBuffer", array);
     }
 
-    if (buffer != nullptr && bufferSize != NUM0) {
-        napi_value array;
-        if (CreateArrayBuffer(env, buffer, bufferSize, &array)) {
-            napi_create_object(env, &result);
-            napi_set_named_property(env, result, "byteBuffer", array);
-            BuildIntProperty(env, "componentType", context->componentType, result);
-            BuildIntProperty(env, "rowStride", rowStride, result);
-            BuildIntProperty(env, "pixelStride", pixelStride, result);
-            context->status = SUCCESS;
-        } else {
-            HiLog::Error(LABEL, "napi_create_arraybuffer failed!");
-        }
-    } else {
-        HiLog::Error(LABEL, "buffer is nullptr or bufferSize is %{public}" PRIu32, bufferSize);
-    }
+    BuildIntProperty(env, "componentType", context->componentType, result);
+    BuildIntProperty(env, "rowStride", 0, result);
+    BuildIntProperty(env, "pixelStride", 0, result);
 
     IMAGE_FUNCTION_OUT();
     CommonCallbackRoutine(env, context, result);
 }
-static void JsGetComponentExec(napi_env env, ImageAsyncContext* context)
-{
-    if (context == nullptr || context->constructor_ == nullptr ||
-        context->constructor_->sSurfaceBuffer_ == nullptr) {
-        HiLog::Error(LABEL, "Invalid input context");
-        return;
-    }
-    auto surfaceBuffer = context->constructor_->sSurfaceBuffer_;
-    HiLog::Info(LABEL,
-        "JsGetComponentExec surface buffer type %{public}" PRId32, surfaceBuffer->GetFormat());
-    SplitSurfaceToComponent(context->constructor_, surfaceBuffer);
-}
 
 static bool CheckComponentType(const int32_t& type)
 {
-    if (IsYUVType(type) || type == static_cast<int32_t>(ComponentType::JPEG)) {
+    if (type == static_cast<int32_t>(ComponentType::YUV_Y) ||
+        type == static_cast<int32_t>(ComponentType::YUV_U) ||
+        type == static_cast<int32_t>(ComponentType::YUV_V) ||
+        type == static_cast<int32_t>(ComponentType::JPEG)) {
         return true;
     }
     return false;
@@ -765,8 +702,7 @@ napi_value ImageNapi::JsGetComponent(napi_env env, napi_callback_info info)
     napi_value resource = nullptr;
     napi_create_string_utf8(env, "JsGetComponent", NAPI_AUTO_LENGTH, &resource);
     status = napi_create_async_work(
-        env, nullptr, resource,
-        reinterpret_cast<napi_async_execute_callback>(JsGetComponentExec),
+        env, nullptr, resource, [](napi_env env, void* data) {},
         reinterpret_cast<napi_async_complete_callback>(JsGetComponentCallBack),
         static_cast<void *>(context.get()), &(context->work));
     if (status != napi_ok) {
