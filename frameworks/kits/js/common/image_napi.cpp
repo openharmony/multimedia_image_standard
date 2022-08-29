@@ -46,8 +46,6 @@ const int PARAM0 = 0;
 const int PARAM1 = 1;
 const int PARAM2 = 2;
 const int NUM0 = 0;
-const int NUM1 = 1;
-const int NUM2 = 2;
 
 ImageNapi::ImageNapi():env_(nullptr)
 {}
@@ -55,92 +53,6 @@ ImageNapi::ImageNapi():env_(nullptr)
 ImageNapi::~ImageNapi()
 {
     release();
-}
-
-static inline void YUV422SPDataCopy(uint8_t* surfaceBuffer, uint64_t bufferSize,
-    std::vector<uint8_t> &y, uint64_t ySize, std::vector<uint8_t> &u,
-    std::vector<uint8_t> &v, uint64_t uvSize, bool flip)
-{
-    uint64_t ui = NUM0, vi = NUM0;
-    for (uint64_t i = NUM0; i < bufferSize; i++) {
-        if (i < ySize) {
-            if (flip) {
-                surfaceBuffer[i] = y[i];
-            } else {
-                y[i] = surfaceBuffer[i];
-            }
-            continue;
-        }
-        if (vi >= uvSize || ui >= uvSize) {
-            // Over write buffer size.
-            continue;
-        }
-        if (i % NUM2 == NUM1) {
-            if (flip) {
-                surfaceBuffer[i] = v[vi++];
-            } else {
-                v[vi++] = surfaceBuffer[i];
-            }
-        } else {
-            if (flip) {
-                surfaceBuffer[i] = u[ui++];
-            } else {
-                u[ui++] = surfaceBuffer[i];
-            }
-        }
-    }
-}
-
-static uint32_t ProcessYUV422SP(ImageNapi* imageNapi, sptr<SurfaceBuffer> surface)
-{
-    IMAGE_FUNCTION_IN();
-    uint8_t* surfaceBuffer = static_cast<uint8_t*>(surface->GetVirAddr());
-    if (surfaceBuffer == nullptr) {
-        HiLog::Error(LABEL, "Nullptr surface buffer");
-        return ERR_IMAGE_DATA_ABNORMAL;
-    }
-    uint64_t surfaceSize = surface->GetSize();
-    if (surfaceSize == NUM0) {
-        HiLog::Error(LABEL, "Surface size is 0");
-        return ERR_IMAGE_DATA_ABNORMAL;
-    }
-    if (surface->GetHeight() <= NUM0 || surface->GetWidth() <= NUM0) {
-        HiLog::Error(LABEL, "Invaild width %{public}" PRId32 " height %{public}" PRId32,
-            surface->GetWidth(), surface->GetHeight());
-        return ERR_IMAGE_DATA_ABNORMAL;
-    }
-    uint64_t ySize = static_cast<uint64_t>(surface->GetHeight() * surface->GetWidth());
-    uint64_t uvStride = static_cast<uint64_t>((surface->GetWidth() + NUM1) / NUM2);
-    uint64_t uvSize = static_cast<uint64_t>(surface->GetHeight() * uvStride);
-    if (surfaceSize < (ySize + uvSize * NUM2)) {
-        HiLog::Error(LABEL, "Surface size %{public}" PRIu64 " < y plane %{public}" PRIu64
-            " + uv plane %{public}" PRIu64, surfaceSize, ySize, uvSize * NUM2);
-        return ERR_IMAGE_DATA_ABNORMAL;
-    }
-
-    Component* y = imageNapi->CreateComponentData(ComponentType::YUV_Y, ySize, surface->GetWidth(), NUM1);
-    Component* u = imageNapi->CreateComponentData(ComponentType::YUV_U, uvSize, uvStride, NUM2);
-    Component* v = imageNapi->CreateComponentData(ComponentType::YUV_V, uvSize, uvStride, NUM2);
-    if ((y == nullptr) || (u == nullptr) || (v == nullptr)) {
-        HiLog::Error(LABEL, "Create Component failed");
-        return ERR_IMAGE_DATA_ABNORMAL;
-    }
-    YUV422SPDataCopy(surfaceBuffer, surfaceSize, y->raw, ySize, u->raw, v->raw, uvSize, false);
-    return SUCCESS;
-}
-
-static uint32_t SplitSurfaceToComponent(ImageNapi* imageNapi, sptr<SurfaceBuffer> surface)
-{
-    auto surfaceFormat = surface->GetFormat();
-    switch (surfaceFormat) {
-        case int32_t(ImageFormat::YCBCR_422_SP):
-        case int32_t(PIXEL_FMT_YCBCR_422_SP):
-            return ProcessYUV422SP(imageNapi, surface);
-        default:
-            break;
-    }
-    // Unsupport split component
-    return ERR_IMAGE_DATA_UNSUPPORT;
 }
 
 static void CommonCallbackRoutine(napi_env env, ImageAsyncContext* &context,
