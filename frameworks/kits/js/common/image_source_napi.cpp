@@ -1525,7 +1525,7 @@ napi_value ImageSourceNapi::Release(napi_env env, napi_callback_info info)
     IMG_NAPI_CHECK_RET_D(IMG_IS_OK(status), result, HiLog::Error(LABEL, "fail to napi_get_cb_info"));
 
     std::unique_ptr<ImageSourceAsyncContext> asyncContext = std::make_unique<ImageSourceAsyncContext>();
-    status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->constructor_));
+    status = napi_remove_wrap(env, thisVar, reinterpret_cast<void**>(&asyncContext->constructor_));
 
     IMG_NAPI_CHECK_RET_D(IMG_IS_READY(status, asyncContext->constructor_), result,
         HiLog::Error(LABEL, "fail to unwrap context"));
