@@ -265,7 +265,8 @@ unique_ptr<PixelMap> PixelMap::Create(PixelMap &source, const Rect &srcRect, con
     ImageInfo srcImageInfo;
     source.GetImageInfo(srcImageInfo);
     PostProc postProc;
-    CropValue cropType = PostProc::GetCropValue(srcRect, srcImageInfo.size);
+    Rect sRect = srcRect;
+    CropValue cropType = PostProc::ValidCropValue(sRect, srcImageInfo.size);
     if (cropType == CropValue::INVALID) {
         HiLog::Error(LABEL, "src crop range is invalid");
         return nullptr;
@@ -286,8 +287,8 @@ unique_ptr<PixelMap> PixelMap::Create(PixelMap &source, const Rect &srcRect, con
         return nullptr;
     }
     if (cropType == CropValue::VALID) {
-        dstImageInfo.size.width = srcRect.width;
-        dstImageInfo.size.height = srcRect.height;
+        dstImageInfo.size.width = sRect.width;
+        dstImageInfo.size.height = sRect.height;
     } else {
         dstImageInfo.size = srcImageInfo.size;
     }
@@ -296,7 +297,7 @@ unique_ptr<PixelMap> PixelMap::Create(PixelMap &source, const Rect &srcRect, con
     }
     // dst pixelmap is source crop and convert pixelmap
     if ((cropType == CropValue::VALID) || isHasConvert) {
-        if (!SourceCropAndConvert(source, srcImageInfo, dstImageInfo, srcRect, *dstPixelMap.get())) {
+        if (!SourceCropAndConvert(source, srcImageInfo, dstImageInfo, sRect, *dstPixelMap.get())) {
             return nullptr;
         }
     } else {

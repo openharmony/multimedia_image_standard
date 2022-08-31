@@ -515,6 +515,21 @@ CropValue PostProc::GetCropValue(const Rect &rect, const Size &size)
     return CropValue::VALID;
 }
 
+CropValue PostProc::ValidCropValue(Rect &rect, const Size &size)
+{
+    CropValue res = GetCropValue(rect, size);
+    if (res == CropValue::INVALID) {
+        if (rect.top + rect.height > size.height) {
+            rect.height = size.height - rect.top;
+        }
+        if (rect.left + rect.width > size.width) {
+            rect.width = size.width - rect.left;
+        }
+        res = GetCropValue(rect, size);
+    }
+    return res;
+}
+
 bool PostProc::IsHasCrop(const Rect &rect)
 {
     return (rect.top != 0 || rect.left != 0 || rect.width != 0 || rect.height != 0);
