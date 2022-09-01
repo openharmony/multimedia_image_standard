@@ -456,7 +456,15 @@ static void TestAcquireBuffer(OHOS::sptr<OHOS::Surface> &creatorSurface, int32_t
     int64_t &timestamp, OHOS::Rect &damage, std::shared_ptr<ImageCreator> imageCreator)
 {
     OHOS::sptr<OHOS::SurfaceBuffer> buffer;
+    if (creatorSurface == nullptr) {
+        IMAGE_ERR("Creator Surface is nullptr");
+        return;
+    }
     creatorSurface->AcquireBuffer(buffer, fence, timestamp, damage);
+    if (buffer == nullptr) {
+        IMAGE_ERR("Creator Surface is nullptr");
+        return;
+    }
     IMAGE_ERR("...AcquireBuffer...");
     int32_t *p = (int32_t *)buffer->GetVirAddr();
     IMAGE_ERR("AcquireBuffer %{public}p", p);
@@ -472,6 +480,10 @@ static void TestAcquireBuffer(OHOS::sptr<OHOS::Surface> &creatorSurface, int32_t
 
 static void DoTest(std::shared_ptr<ImageCreator> imageCreator)
 {
+    if (imageCreator == nullptr || imageCreator->iraContext_ == nullptr) {
+        IMAGE_ERR("image creator is nullptr");
+        return;
+    }
     std::string creatorKey = imageCreator->iraContext_->GetCreatorKey();
     IMAGE_ERR("CreatorKey = %{public}s", creatorKey.c_str());
     OHOS::sptr<OHOS::Surface> creatorSurface = ImageCreator::getSurfaceById(creatorKey);
