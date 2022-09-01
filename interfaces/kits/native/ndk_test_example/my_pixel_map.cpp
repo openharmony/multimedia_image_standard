@@ -28,16 +28,12 @@ namespace OHOS {
 namespace Media {
 static const std::string CLASS_NAME = "MyPixelMap";
 napi_ref MyPixelMap::sConstructor_ = nullptr;
-MyPixelMap::MyPixelMap()
-    :env_(nullptr), wrapper_(nullptr)
+MyPixelMap::MyPixelMap():env_(nullptr)
 {
 }
 
 MyPixelMap::~MyPixelMap()
 {
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
 }
 
 napi_value MyPixelMap::Init(napi_env env, napi_value exports)

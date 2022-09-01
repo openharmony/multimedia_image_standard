@@ -49,16 +49,12 @@ const int PARAM1 = 1;
 const int PARAM2 = 2;
 const int PARAM3 = 3;
 
-ImageCreatorNapi::ImageCreatorNapi()
-    :env_(nullptr), wrapper_(nullptr)
+ImageCreatorNapi::ImageCreatorNapi():env_(nullptr)
 {}
 
 ImageCreatorNapi::~ImageCreatorNapi()
 {
-    NativeRelease();
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
+    release();
 }
 
 static void CommonCallbackRoutine(napi_env env, Contextc &context, const napi_value &valueParam, bool isRelease = true)
@@ -179,7 +175,7 @@ napi_value ImageCreatorNapi::Constructor(napi_env env, napi_callback_info info)
             reference->env_ = env;
             reference->imageCreator_ = staticInstance_;
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(reference.get()),
-                               ImageCreatorNapi::Destructor, nullptr, &(reference->wrapper_));
+                               ImageCreatorNapi::Destructor, nullptr, nullptr);
             if (status == napi_ok) {
                 IMAGE_FUNCTION_OUT();
                 reference.release();
@@ -198,7 +194,7 @@ void ImageCreatorNapi::Destructor(napi_env env, void *nativeObject, void *finali
     ImageCreatorNapi *pImageCreatorNapi = reinterpret_cast<ImageCreatorNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImageCreatorNapi)) {
-        pImageCreatorNapi->~ImageCreatorNapi();
+        pImageCreatorNapi->release();
     }
 }
 
@@ -597,9 +593,6 @@ void ImageCreatorNapi::JsQueueImageCallBack(napi_env env, napi_status status,
         IMAGE_ERR("Native instance is nullptr");
         context->status = ERR_IMAGE_INIT_ABNORMAL;
     } else {
-        if (SUCCESS != context->imageNapi_->CombineComponentsIntoSurface()) {
-            IMAGE_ERR("JsQueueImageCallBack: try to combine componests");
-        }
         auto surfacebuffer = context->imageNapi_->sSurfaceBuffer_;
         native->QueueImage(surfacebuffer);
         context->status = SUCCESS;
@@ -846,6 +839,14 @@ napi_value ImageCreatorNapi::JsRelease(napi_env env, napi_callback_info info)
     };
 
     return JSCommonProcess(args);
+}
+
+void ImageCreatorNapi::release()
+{
+    if (!isRelease) {
+        NativeRelease();
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS
