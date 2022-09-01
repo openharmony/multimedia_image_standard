@@ -504,7 +504,7 @@ static void DoTest(std::shared_ptr<ImageReceiver> imageReceiver)
         },
     };
 
-    if (imageReceiver == nullptr || imageReceiver->iraContext_) {
+    if (imageReceiver == nullptr || imageReceiver->iraContext_ == nullptr) {
         IMAGE_ERR("Image receiver DoTest imageReceiver is nullptr");
         return;
     }
