@@ -40,7 +40,7 @@ using namespace MultimediaPlugin;
 "image/x-samsung-srw",
 */
 const std::string FORMAT_TYPE = "image/x-raw";
-constexpr uint32_t HEADER_SIZE = 32;
+constexpr uint32_t HEADER_SIZE = 0;
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "RawFormatAgent" };
 
 std::string RawFormatAgent::GetFormatType()
@@ -55,11 +55,6 @@ uint32_t RawFormatAgent::GetHeaderSize()
 
 bool RawFormatAgent::CheckFormat(const void *headerData, uint32_t dataSize)
 {
-    if (headerData == nullptr) {
-        HiLog::Error(LABEL, "check format failed: header data is null.");
-        return false;
-    }
-
     HiLog::Info(LABEL, "RawFormatAgent now pass all image format. dataSize = [%{public}d]", dataSize);
     return true;
 }
