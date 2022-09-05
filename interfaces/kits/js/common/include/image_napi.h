@@ -34,6 +34,7 @@
 namespace OHOS {
 namespace Media {
 struct ImageAsyncContext;
+
 class ImageNapi {
 public:
     ImageNapi();
@@ -61,13 +62,14 @@ private:
     static std::unique_ptr<ImageAsyncContext> UnwarpContext(napi_env env, napi_callback_info info);
     static void JsGetComponentCallBack(napi_env env, napi_status status, ImageAsyncContext* context);
 
+    void release();
+    bool isRelease = false;
     static thread_local napi_ref sConstructor_;
     static sptr<SurfaceBuffer> staticInstance_;
     static std::shared_ptr<ImageReceiver> staticImageReceiverInstance_;
     static std::shared_ptr<ImageCreator> staticImageCreatorInstance_;
 
     napi_env env_ = nullptr;
-    napi_ref wrapper_ = nullptr;
     std::shared_ptr<ImageReceiver> imageReceiver_;
     std::shared_ptr<ImageCreator> imageCreator_;
     std::shared_ptr<ImageNapi> nativeImage_;

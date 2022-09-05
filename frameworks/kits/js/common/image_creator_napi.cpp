@@ -49,16 +49,12 @@ const int PARAM1 = 1;
 const int PARAM2 = 2;
 const int PARAM3 = 3;
 
-ImageCreatorNapi::ImageCreatorNapi()
-    :env_(nullptr), wrapper_(nullptr)
+ImageCreatorNapi::ImageCreatorNapi():env_(nullptr)
 {}
 
 ImageCreatorNapi::~ImageCreatorNapi()
 {
-    NativeRelease();
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
+    release();
 }
 
 static void CommonCallbackRoutine(napi_env env, Contextc &context, const napi_value &valueParam, bool isRelease = true)
@@ -179,7 +175,7 @@ napi_value ImageCreatorNapi::Constructor(napi_env env, napi_callback_info info)
             reference->env_ = env;
             reference->imageCreator_ = staticInstance_;
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(reference.get()),
-                               ImageCreatorNapi::Destructor, nullptr, &(reference->wrapper_));
+                               ImageCreatorNapi::Destructor, nullptr, nullptr);
             if (status == napi_ok) {
                 IMAGE_FUNCTION_OUT();
                 reference.release();
@@ -198,7 +194,7 @@ void ImageCreatorNapi::Destructor(napi_env env, void *nativeObject, void *finali
     ImageCreatorNapi *pImageCreatorNapi = reinterpret_cast<ImageCreatorNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImageCreatorNapi)) {
-        pImageCreatorNapi->~ImageCreatorNapi();
+        pImageCreatorNapi->release();
     }
 }
 
@@ -460,7 +456,15 @@ static void TestAcquireBuffer(OHOS::sptr<OHOS::Surface> &creatorSurface, int32_t
     int64_t &timestamp, OHOS::Rect &damage, std::shared_ptr<ImageCreator> imageCreator)
 {
     OHOS::sptr<OHOS::SurfaceBuffer> buffer;
+    if (creatorSurface == nullptr) {
+        IMAGE_ERR("Creator Surface is nullptr");
+        return;
+    }
     creatorSurface->AcquireBuffer(buffer, fence, timestamp, damage);
+    if (buffer == nullptr) {
+        IMAGE_ERR("Creator Surface is nullptr");
+        return;
+    }
     IMAGE_ERR("...AcquireBuffer...");
     int32_t *p = (int32_t *)buffer->GetVirAddr();
     IMAGE_ERR("AcquireBuffer %{public}p", p);
@@ -476,6 +480,10 @@ static void TestAcquireBuffer(OHOS::sptr<OHOS::Surface> &creatorSurface, int32_t
 
 static void DoTest(std::shared_ptr<ImageCreator> imageCreator)
 {
+    if (imageCreator == nullptr || imageCreator->iraContext_ == nullptr) {
+        IMAGE_ERR("image creator is nullptr");
+        return;
+    }
     std::string creatorKey = imageCreator->iraContext_->GetCreatorKey();
     IMAGE_ERR("CreatorKey = %{public}s", creatorKey.c_str());
     OHOS::sptr<OHOS::Surface> creatorSurface = ImageCreator::getSurfaceById(creatorKey);
@@ -843,6 +851,14 @@ napi_value ImageCreatorNapi::JsRelease(napi_env env, napi_callback_info info)
     };
 
     return JSCommonProcess(args);
+}
+
+void ImageCreatorNapi::release()
+{
+    if (!isRelease) {
+        NativeRelease();
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS

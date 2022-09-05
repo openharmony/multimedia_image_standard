@@ -69,12 +69,13 @@ private:
 #ifdef IMAGE_DEBUG_FLAG
     static napi_value JsTest(napi_env env, napi_callback_info info);
 #endif
+    void release();
     static thread_local napi_ref sConstructor_;
     static std::shared_ptr<ImageReceiver> staticInstance_;
 
     napi_env env_ = nullptr;
-    napi_ref wrapper_ = nullptr;
     std::shared_ptr<ImageReceiver> imageReceiver_;
+    bool isRelease = false;
 };
 struct ImageReceiverAsyncContext {
     napi_env env = nullptr;

@@ -63,14 +63,19 @@ private:
     static napi_value UpdateData(napi_env env, napi_callback_info info);
     static napi_value Release(napi_env env, napi_callback_info info);
 
+    void release();
     static thread_local napi_ref sConstructor_;
     static std::shared_ptr<ImageSource> sImgSrc_;
     static std::shared_ptr<IncrementalPixelMap> sIncPixelMap_;
     std::shared_ptr<IncrementalPixelMap> navIncPixelMap_ = nullptr;
+    static napi_ref pixelMapFormatRef_;
+    static napi_ref propertyKeyRef_;
+    static napi_ref imageFormatRef_;
+    static napi_ref alphaTypeRef_;
+    static napi_ref scaleModeRef_;
+    static napi_ref componentTypeRef_;
 
     napi_env env_ = nullptr;
-    napi_ref wrapper_ = nullptr;
-
     bool isRelease = false;
 };
 } // namespace Media

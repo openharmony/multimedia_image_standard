@@ -18,7 +18,15 @@
 
 namespace OHOS {
 namespace Media {
-enum class ImageFormat { UNKNOWN = 0, NV21 = 1, YUV420_888 = 2, JPEG = 3, RAW10 = 4, RAW16 = 5, H264 = 6, H265 = 7 };
+enum class ImageFormat : int32_t {
+    UNKNOWN = 0,
+    NV21 = 1,
+    YUV420_888 = 2,
+    RAW10 = 4,
+    RAW16 = 5,
+    H264 = 6,
+    H265 = 7,
+};
 
 enum class ComponentType {
     UNKNOWN = 0,

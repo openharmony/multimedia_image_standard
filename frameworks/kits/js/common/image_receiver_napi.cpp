@@ -50,16 +50,12 @@ const int PARAM1 = 1;
 const int PARAM2 = 2;
 const int PARAM3 = 3;
 
-ImageReceiverNapi::ImageReceiverNapi()
-    :env_(nullptr), wrapper_(nullptr)
+ImageReceiverNapi::ImageReceiverNapi():env_(nullptr)
 {}
 
 ImageReceiverNapi::~ImageReceiverNapi()
 {
-    NativeRelease();
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
+    release();
 }
 
 static void CommonCallbackRoutine(napi_env env, Context &context, const napi_value &valueParam, bool isRelease = true)
@@ -185,7 +181,7 @@ napi_value ImageReceiverNapi::Constructor(napi_env env, napi_callback_info info)
             reference->env_ = env;
             reference->imageReceiver_ = staticInstance_;
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(reference.get()),
-                               ImageReceiverNapi::Destructor, nullptr, &(reference->wrapper_));
+                               ImageReceiverNapi::Destructor, nullptr, nullptr);
             if (status == napi_ok) {
                 IMAGE_FUNCTION_OUT();
                 reference.release();
@@ -204,7 +200,7 @@ void ImageReceiverNapi::Destructor(napi_env env, void *nativeObject, void *final
     ImageReceiverNapi *pImageReceiverNapi = reinterpret_cast<ImageReceiverNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImageReceiverNapi)) {
-        pImageReceiverNapi->~ImageReceiverNapi();
+        pImageReceiverNapi->release();
     }
 }
 
@@ -467,9 +463,17 @@ static void TestRequestBuffer(OHOS::sptr<OHOS::Surface> &receiverSurface,
 {
     OHOS::sptr<OHOS::SurfaceBuffer> buffer;
     int32_t releaseFence;
+    if (receiverSurface == nullptr) {
+        IMAGE_ERR("Image receiver receiverSurface is nullptr");
+        return;
+    }
     requestConfig.width = receiverSurface->GetDefaultWidth();
     requestConfig.height = receiverSurface->GetDefaultHeight();
     receiverSurface->RequestBuffer(buffer, releaseFence, requestConfig);
+    if (buffer == nullptr) {
+        IMAGE_ERR("Image receiver buffer is nullptr");
+        return;
+    }
     IMAGE_ERR("RequestBuffer");
     int32_t *p = reinterpret_cast<int32_t *>(buffer->GetVirAddr());
     IMAGE_ERR("RequestBuffer %{public}p", p);
@@ -500,9 +504,17 @@ static void DoTest(std::shared_ptr<ImageReceiver> imageReceiver)
         },
     };
 
+    if (imageReceiver == nullptr || imageReceiver->iraContext_ == nullptr) {
+        IMAGE_ERR("Image receiver DoTest imageReceiver is nullptr");
+        return;
+    }
     std::string receiveKey = imageReceiver->iraContext_->GetReceiverKey();
     IMAGE_ERR("ReceiverKey = %{public}s", receiveKey.c_str());
     OHOS::sptr<OHOS::Surface> receiverSurface = ImageReceiver::getSurfaceById(receiveKey);
+    if (receiverSurface == nullptr) {
+        IMAGE_ERR("Image receiver DoTest receiverSurface is nullptr");
+        return;
+    }
     IMAGE_ERR("getDefaultWidth = %{public}d", receiverSurface->GetDefaultWidth());
     IMAGE_ERR("getDefaultHeight = %{public}d", receiverSurface->GetDefaultHeight());
     IMAGE_ERR("TestRequestBuffer 1 ...");
@@ -881,6 +893,14 @@ napi_value ImageReceiverNapi::JsRelease(napi_env env, napi_callback_info info)
     };
 
     return JSCommonProcess(args);
+}
+
+void ImageReceiverNapi::release()
+{
+    if (!isRelease) {
+        NativeRelease();
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS

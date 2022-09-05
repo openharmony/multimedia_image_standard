@@ -72,14 +72,15 @@ private:
     static napi_value Flip(napi_env env, napi_callback_info info);
     static napi_value Crop(napi_env env, napi_callback_info info);
 
+    void release();
     static thread_local napi_ref sConstructor_;
     static std::shared_ptr<PixelMap> sPixelMap_;
 
     napi_env env_ = nullptr;
-    napi_ref wrapper_ = nullptr;
     std::shared_ptr<PixelMap> nativePixelMap_;
     std::shared_ptr<PixelMap> nativeInner_;
     int32_t lockCount = 0;
+    bool isRelease = false;
 };
 } // namespace Media
 } // namespace OHOS

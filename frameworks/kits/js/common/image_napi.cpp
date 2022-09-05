@@ -47,16 +47,12 @@ const int PARAM1 = 1;
 const int PARAM2 = 2;
 const int NUM0 = 0;
 
-ImageNapi::ImageNapi()
-    :env_(nullptr), wrapper_(nullptr)
+ImageNapi::ImageNapi():env_(nullptr)
 {}
 
 ImageNapi::~ImageNapi()
 {
-    NativeRelease();
-    if (wrapper_ != nullptr) {
-        napi_delete_reference(env_, wrapper_);
-    }
+    release();
 }
 
 static void CommonCallbackRoutine(napi_env env, ImageAsyncContext* &context,
@@ -191,7 +187,7 @@ napi_value ImageNapi::Constructor(napi_env env, napi_callback_info info)
             reference->imageReceiver_ = staticImageReceiverInstance_;
             staticImageReceiverInstance_ = nullptr;
             status = napi_wrap(env, thisVar, reinterpret_cast<void *>(reference.get()),
-                               ImageNapi::Destructor, nullptr, &(reference->wrapper_));
+                               ImageNapi::Destructor, nullptr, nullptr);
             if (status == napi_ok) {
                 IMAGE_FUNCTION_OUT();
                 reference.release();
@@ -210,7 +206,7 @@ void ImageNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
     ImageNapi *pImageNapi = reinterpret_cast<ImageNapi*>(nativeObject);
 
     if (IMG_NOT_NULL(pImageNapi)) {
-        pImageNapi->~ImageNapi();
+        pImageNapi->release();
     }
 }
 
@@ -511,7 +507,6 @@ void ImageNapi::JsGetComponentCallBack(napi_env env, napi_status status,
     napi_value result = nullptr;
 
     napi_create_object(env, &result);
-
     uint32_t bufferSize = context->constructor_->sSurfaceBuffer_->GetSize();
     void *buffer = context->constructor_->sSurfaceBuffer_->GetVirAddr();
 
@@ -636,6 +631,14 @@ napi_value ImageNapi::JsGetComponent(napi_env env, napi_callback_info info)
 
     IMAGE_FUNCTION_OUT();
     return result;
+}
+
+void ImageNapi::release()
+{
+    if (!isRelease) {
+        NativeRelease();
+        isRelease = true;
+    }
 }
 }  // namespace Media
 }  // namespace OHOS
