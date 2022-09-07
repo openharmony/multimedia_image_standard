@@ -61,7 +61,6 @@ ohos_shared_library("imageformatagent") {
 
     #    external_deps = [ "hilog:libhilog" ]
     external_deps = [
-      "c_utils:utils",
       "hiviewdfx_hilog_native:libhilog",
     ]
   }
