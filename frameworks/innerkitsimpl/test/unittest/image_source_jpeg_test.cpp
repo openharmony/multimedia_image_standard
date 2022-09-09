@@ -36,6 +36,8 @@ using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::ImageSourceUtil;
 
+namespace OHOS {
+namespace Multimedia {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceJpegTest"
 };
@@ -1093,3 +1095,5 @@ HWTEST_F(ImageSourceJpegTest, JpegImageReceiver001, TestSize.Level3)
     receiverSurface->FlushBuffer(buffer, -1, flushConfig);
     HiLog::Debug(LABEL_TEST, "FlushBuffer");
 }
+} // namespace Multimedia
+} // namespace OHOS

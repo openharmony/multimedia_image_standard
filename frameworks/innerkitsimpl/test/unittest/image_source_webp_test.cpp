@@ -32,6 +32,8 @@ using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::ImageSourceUtil;
 
+namespace OHOS {
+namespace Multimedia {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceWebpTest"
 };
@@ -534,3 +536,5 @@ HWTEST_F(ImageSourceWebpTest, WebpImageCrop001, TestSize.Level3)
     EXPECT_EQ(200, pixelMap->GetWidth());
     EXPECT_EQ(300, pixelMap->GetHeight());
 }
+} // namespace Multimedia
+} // namespace OHOS

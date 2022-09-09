@@ -270,7 +270,6 @@ static napi_value DoInit(napi_env env, napi_value exports, struct ImageConstruct
     napi_value constructor = nullptr;
     napi_status status = napi_define_class(env, info.className.c_str(), NAPI_AUTO_LENGTH,
         info.constructor, nullptr, info.propertyCount, info.property, &constructor);
-
     if (status != napi_ok) {
         HiLog::Error(LABEL, "define class fail");
         return nullptr;

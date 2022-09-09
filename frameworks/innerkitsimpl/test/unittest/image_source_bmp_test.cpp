@@ -29,7 +29,8 @@ using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::ImageSourceUtil;
-
+namespace OHOS {
+namespace Multimedia {
 static const std::string IMAGE_INPUT_BMP_PATH = "/data/local/tmp/image/test.bmp";
 static const std::string IMAGE_OUTPUT_BMP_FILE_PATH = "/data/test/test_bmp_file.jpg";
 
@@ -397,3 +398,5 @@ HWTEST_F(ImageSourceBmpTest, BmpImageDecode011, TestSize.Level3)
     ASSERT_NE(errorCode, SUCCESS);
     ASSERT_EQ(pixelMap.get(), nullptr);
 }
+} // namespace Multimedia
+} // namespace OHOS

@@ -28,6 +28,8 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::MultimediaPlugin;
 using namespace OHOS::PluginExample;
 
+namespace OHOS {
+namespace Multimedia {
 static constexpr HiLogLabel LABEL = { LOG_CORE, LOG_TAG_DOMAIN_ID_PLUGIN, "PluginManagerTest" };
 
 class PluginManagerTest : public testing::Test {
@@ -987,3 +989,5 @@ TEST_END:
 
     return testRet;
 }
+} // namespace Multimedia
+} // namespace OHOS

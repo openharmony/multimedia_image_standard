@@ -1401,6 +1401,8 @@ static const string GetNamedAlphaType(const AlphaType alphaType)
             return "Alpha Type Premul";
         case AlphaType::IMAGE_ALPHA_TYPE_UNPREMUL:
             return "Alpha Type Unpremul";
+        default:
+            return "Alpha Type Unknown";
     }
     return "Alpha Type Unknown";
 }
@@ -1430,6 +1432,8 @@ static const string GetNamedPixelFormat(const PixelFormat pixelFormat)
             return "Pixel Format BGRA_8888";
         case PixelFormat::RGBA_F16:
             return "Pixel Format RGBA_F16";
+        default:
+            return "Pixel Format UNKNOWN";
     }
     return "Pixel Format UNKNOWN";
 }
@@ -1453,10 +1457,11 @@ constexpr uint8_t RGBA_F16_G_OFFSET = 2;
 constexpr uint8_t RGBA_F16_B_OFFSET = 4;
 constexpr uint8_t RGBA_F16_A_OFFSET = 6;
 
+static constexpr float Floatnumber_ZERO = 0.000001; 
 static constexpr float FLOAT_ZERO = 0.0f;
 static float ProcessPremulF16Pixel(float mulPixel, float alpha, const float percent)
 {
-    if (alpha < 0.000001 && alpha > -0.000001) {
+    if (alpha < Floatnumber_ZERO && alpha > -Floatnumber_ZERO) {
         return FLOAT_ZERO;
     }
     float res = mulPixel * percent / alpha;

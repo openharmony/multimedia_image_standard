@@ -32,6 +32,8 @@ using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::ImageSourceUtil;
 
+namespace OHOS {
+namespace Multimedia {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourceGifTest"
 };
@@ -369,3 +371,5 @@ HWTEST_F(ImageSourceGifTest, GifImageDecode007, TestSize.Level3)
     ASSERT_EQ(errorCode, SUCCESS);
     ASSERT_EQ(3, imageCount);
 }
+} // namespace Multimedia
+} // namespace OHOS

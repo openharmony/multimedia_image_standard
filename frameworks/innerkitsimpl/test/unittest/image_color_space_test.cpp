@@ -35,6 +35,8 @@ using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::ImageSourceUtil;
 
+namespace OHOS {
+namespace Multimedia {
 static const std::string IMAGE_INPUT_JPEG_INCLUDE_ICC_PATH = "/data/local/tmp/image/jpeg_include_icc_profile.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_INCLUDE_ICC_PATH = "/data/test/test_jpeg_include_icc_profile.jpg";
 static const std::string IMAGE_INPUT_JPEG_NOT_INCLUDE_ICC_PATH = "/data/local/tmp/image/test.jpg";
@@ -259,3 +261,5 @@ HWTEST_F(ImageColorSpaceTest, JpegColorSpaceEncode002, TestSize.Level3)
     EXPECT_EQ(grColorSpaceTwo.ToSkColorSpace(), nullptr);
 #endif
 }
+} // namespace Multimedia
+} // namespace OHOS

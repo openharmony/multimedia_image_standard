@@ -31,7 +31,8 @@ using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::ImageSourceUtil;
-
+namespace OHOS {
+namespace Multimedia {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
     LOG_CORE, LOG_TAG_DOMAIN_ID_IMAGE, "ImageSourcePngTest"
 };
@@ -603,3 +604,5 @@ HWTEST_F(ImageSourcePngTest, PngNinePatch003, TestSize.Level3)
     ASSERT_NE(ninePatch.ninePatch, nullptr);
     ASSERT_EQ(static_cast<int32_t>(ninePatch.patchSize), 84);
 }
+} // namespace Multimedia
+} // namespace OHOS
