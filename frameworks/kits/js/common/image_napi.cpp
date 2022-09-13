@@ -203,11 +203,6 @@ napi_value ImageNapi::Constructor(napi_env env, napi_callback_info info)
 
 void ImageNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
 {
-    ImageNapi *pImageNapi = reinterpret_cast<ImageNapi*>(nativeObject);
-
-    if (IMG_NOT_NULL(pImageNapi)) {
-        pImageNapi->release();
-    }
 }
 
 napi_value ImageNapi::Create(napi_env env, sptr<SurfaceBuffer> surfaceBuffer,

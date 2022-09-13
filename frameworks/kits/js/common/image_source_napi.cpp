@@ -389,10 +389,6 @@ napi_value ImageSourceNapi::Constructor(napi_env env, napi_callback_info info)
 
 void ImageSourceNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
 {
-    ImageSourceNapi *pImgSrcNapi = reinterpret_cast<ImageSourceNapi*>(nativeObject);
-    if (pImgSrcNapi != nullptr) {
-        pImgSrcNapi->release();
-    }
 }
 
 napi_value ImageSourceNapi::GetSupportedFormats(napi_env env, napi_callback_info info)

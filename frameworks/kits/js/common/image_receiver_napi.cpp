@@ -197,11 +197,6 @@ napi_value ImageReceiverNapi::Constructor(napi_env env, napi_callback_info info)
 
 void ImageReceiverNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
 {
-    ImageReceiverNapi *pImageReceiverNapi = reinterpret_cast<ImageReceiverNapi*>(nativeObject);
-
-    if (IMG_NOT_NULL(pImageReceiverNapi)) {
-        pImageReceiverNapi->release();
-    }
 }
 
 napi_value ImageReceiverNapi::JSCreateImageReceiver(napi_env env, napi_callback_info info)
