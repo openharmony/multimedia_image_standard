@@ -191,11 +191,6 @@ napi_value ImageCreatorNapi::Constructor(napi_env env, napi_callback_info info)
 
 void ImageCreatorNapi::Destructor(napi_env env, void *nativeObject, void *finalize)
 {
-    ImageCreatorNapi *pImageCreatorNapi = reinterpret_cast<ImageCreatorNapi*>(nativeObject);
-
-    if (IMG_NOT_NULL(pImageCreatorNapi)) {
-        pImageCreatorNapi->release();
-    }
 }
 
 napi_value ImageCreatorNapi::JSCreateImageCreator(napi_env env, napi_callback_info info)
