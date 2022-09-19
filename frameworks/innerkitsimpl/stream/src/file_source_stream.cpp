@@ -67,7 +67,6 @@ unique_ptr<FileSourceStream> FileSourceStream::CreateSourceStream(const int fd)
     size_t size = 0;
 
     int dupFd = dup(fd);
-
     if (dupFd < 0) {
         IMAGE_LOGE("[FileSourceStream]Fail to dup fd.");
         return nullptr;
