@@ -552,10 +552,6 @@ static void ReleaseComplete(napi_env env, napi_status status, void *data)
     napi_get_undefined(env, &result);
 
     auto context = static_cast<ImagePackerAsyncContext*>(data);
-    if (context == nullptr) {
-        HiLog::Debug(LABEL, "context is nullptr");
-        return;
-    }
     if (context != nullptr && context->constructor_ != nullptr) {
         delete context->constructor_;
         context->constructor_ = nullptr;
