@@ -13,7 +13,7 @@
 
 import("//build/ohos.gni")
 
-SUBSYSTEM_DIR = "//foundation/multimedia/image_standard"
+SUBSYSTEM_DIR = "//foundation/multimedia/image_framework"
 
 ohos_shared_library("pixelmap_ndk") {
   include_dirs = [
