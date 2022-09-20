@@ -109,7 +109,9 @@ void PixelMap::ReleaseSharedMemory(void *addr, void *context, uint32_t size)
 
 void PixelMap::SetPixelsAddr(void *addr, void *context, uint32_t size, AllocatorType type, CustomFreePixelMap func)
 {
-    FreePixelMap();
+    if (data_ != nullptr) {
+        FreePixelMap();
+    }
     data_ = static_cast<uint8_t *>(addr);
     context_ = context;
     pixelsSize_ = size;
