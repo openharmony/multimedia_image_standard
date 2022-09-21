@@ -356,7 +356,7 @@ image提供了操作imagesource的接口，如创建、读取和删除，以下�
 const imageSourceApi = image.createImageSource('/sdcard/test.jpg')
 ```
 
-1.通过fd创建imagesource。
+2.通过fd创建imagesource。
 
 ```
 const imageSourceApi = image.createImageSource(fd)
