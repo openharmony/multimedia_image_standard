@@ -519,6 +519,7 @@ HWTEST_F(ImagePixelMapTest, ImagePixelMap011, TestSize.Level3)
     EXPECT_EQ(true, pixelmap1->IsSameImage(*pixelmap2));
     GTEST_LOG_(INFO) << "ImagePixelMapTest: ImagePixelMap011 end";
 }
+
 /**
  * @tc.name: ImagePixelMap012
  * @tc.desc: create pixelmap with color,colorlength,offset,width and initialization options
@@ -579,6 +580,58 @@ HWTEST_F(ImagePixelMapTest, ImagePixelMap013, TestSize.Level3)
     GTEST_LOG_(INFO) << "ImagePixelMap013 GetColorSpace success";
     EXPECT_EQ(true, pixelmap1->IsSameImage(*pixelmap2));
     GTEST_LOG_(INFO) << "ImagePixelMapTest: ImagePixelMap013 end";
+}
+
+/**
+ * @tc.name: ImagePixelMap014
+ * @tc.desc: test ProcessPremulF16Pixel
+ * @tc.type: FUNC
+ */
+HWTEST_F(ImagePixelMapTest, ImagePixelMap014, TestSize.Level3)
+{
+    GTEST_LOG_(INFO) << "ImagePixelMapTest: ImagePixelMap014 start";
+    /**
+     * @tc.steps: step1. set mulPixel, alpha, and percent
+     * @tc.expected: step1. The new alpha is float zero.
+     */
+    constexpr uint8_t RGBA_F16_R_OFFSET = 0;
+    uint8_t *data_ = nullptr;
+    const float alpha = 0.0f;
+    const float percent = 0.5;
+    float mulPixel = HalfTranslate(data_ + RGBA_F16_R_OFFSET);
+    float zero= PixelMap::ProcessPremulF16Pixel(mulPixel, alpha, percent);
+    bool res = false;
+    if (zero < 0.000001 && zero >-0.000001) {
+        res = true;
+    }
+    EXPECT_EQ(res, true);
+    GTEST_LOG_(INFO) << "ImagePixelMapTest: ImagePixelMap014 end";
+}
+
+/**
+ * @tc.name: ImagePixelMap015
+ * @tc.desc: test ProcessPremulF16Pixel
+ * @tc.type: FUNC
+ */
+HWTEST_F(ImagePixelMapTest, ImagePixelMap015, TestSize.Level3)
+{
+    GTEST_LOG_(INFO) << "ImagePixelMapTest: ImagePixelMap015 start";
+    /**
+     * @tc.steps: step1. set mulPixel, alpha, and percent
+     * @tc.expected: step1. The new alpha is float zero.
+     */
+    constexpr uint8_t RGBA_F16_R_OFFSET = 0;
+    uint8_t *data_ = nullptr;
+    const float alpha = 0.3;
+    const float percent = 0.5;
+    float mulPixel = HalfTranslate(data_ + RGBA_F16_R_OFFSET);
+    float zero= PixelMap::ProcessPremulF16Pixel(mulPixel, alpha, percent);
+    bool res = true;
+    if (zero < 0.000001 && zero >-0.000001) {
+        res = false;
+    }
+    EXPECT_EQ(res, true);
+    GTEST_LOG_(INFO) << "ImagePixelMapTest: ImagePixelMap015 end";
 }
 } // namespace Multimedia
 } // namespace OHOS
