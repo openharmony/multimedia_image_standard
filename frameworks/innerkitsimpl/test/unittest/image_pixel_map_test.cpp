@@ -627,7 +627,7 @@ HWTEST_F(ImagePixelMapTest, ImagePixelMap015, TestSize.Level3)
     float mulPixel = HalfTranslate(data_ + RGBA_F16_R_OFFSET);
     float zero= PixelMap::ProcessPremulF16Pixel(mulPixel, alpha, percent);
     bool res = true;
-    if (zero < 0.000001 && zero >-0.000001) {
+    if (zero < 0.000001 && zero > -0.000001) {
         res = false;
     }
     EXPECT_EQ(res, true);
