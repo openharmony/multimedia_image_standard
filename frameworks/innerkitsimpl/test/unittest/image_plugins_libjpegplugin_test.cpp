@@ -32,8 +32,8 @@ namespace OHOS {
 namespace Multimedia {
 class ImagePluginsLibjpegpluginTest : public testing::Test {
 public:
-    ImagePluginsLibjpegpluginTest(){}
-    ~ImagePluginsLibjpegpluginTest(){}
+    ImagePluginsLibjpegpluginTest() {}
+    ~ImagePluginsLibjpegpluginTest() {}
 };
 
 /**
@@ -50,7 +50,7 @@ HWTEST_F(ImagePluginsLibjpegpluginTest, Libjpegplugin001, TestSize.Level3)
      */
     uint32_t index = 0;
     std::string value = "default_exif_value";
-    std::string key="BitsPerSample";
+    std::string key = "BitsPerSample";
     uint32_t ret = JpegDecoder::GetImagePropertyString(index, key, value);
     EXPECT_EQ(res, true);
     GTEST_LOG_(INFO) << "ImagePluginsLibjpegpluginTest: Libjpegplugin001 end";
@@ -75,10 +75,5 @@ HWTEST_F(ImagePluginsLibjpegpluginTest, Libjpegplugin001, TestSize.Level3)
     EXPECT_EQ(res, true);
     GTEST_LOG_(INFO) << "ImagePluginsLibjpegpluginTest: Libjpegplugin001 end";
 }
-
-
-
-
-
 }
 }
