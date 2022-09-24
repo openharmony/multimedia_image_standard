@@ -44,6 +44,7 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LABEL_TEST = {
 static constexpr uint32_t DEFAULT_DELAY_UTIME = 10000;  // 10 ms.
 static const std::string IMAGE_INPUT_JPEG_PATH = "/data/local/tmp/image/test.jpg";
 static const std::string IMAGE_INPUT_HW_JPEG_PATH = "/data/local/tmp/image/test_hw.jpg";
+static const std::string IMAGE_INPUT__PATH = "/data/local/tmp/image/test.tiff";
 static const std::string IMAGE_INPUT_EXIF_JPEG_PATH = "/data/local/tmp/image/test_exif.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_FILE_PATH = "/data/test/test_file.jpg";
 static const std::string IMAGE_OUTPUT_JPEG_BUFFER_PATH = "/data/test/test_buffer.jpg";
@@ -205,6 +206,31 @@ HWTEST_F(ImageSourceJpegTest, TC034, TestSize.Level3)
 
     uint32_t index = 0;
     std::string value;
+    std::string key;
+    uint32_t ret = imageSource->GetImagePropertyString(index, key, value);
+
+    ASSERT_EQ(ret, SUCCESS);
+}
+
+/**
+ * @tc.name: TC034_1
+ * @tc.desc: Test GetImagePropertyString
+ * @tc.type: FUNC
+ */
+HWTEST_F(ImageSourceJpegTest, TC034, TestSize.Level3)
+{
+    /**
+     * @tc.steps: step1. create image source by error jpeg data and jpeg format hit.
+     * @tc.expected: step1. create image source success.
+     */
+    uint32_t errorCode = 0;
+    SourceOptions opts;
+    std::unique_ptr<ImageSource> imageSource = ImageSource::CreateImageSource(IMAGE_INPUT_TIFF_PATH, opts, errorCode);
+    ASSERT_EQ(errorCode, SUCCESS);
+    ASSERT_NE(imageSource.get(), nullptr);
+
+    uint32_t index = 0;
+    std::string value = "BitsPerSample";
     std::string key;
     uint32_t ret = imageSource->GetImagePropertyString(index, key, value);
 
