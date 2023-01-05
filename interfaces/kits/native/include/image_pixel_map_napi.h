@@ -38,7 +38,6 @@
 #define IMAGE_PIXEL_MAP_NAPI_H
 #include <stdint.h>
 #include "napi/native_api.h"
-#include "napi/native_node_api.h"
 
 #ifdef __cplusplus
 extern "C" {
